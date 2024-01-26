@@ -12,7 +12,7 @@ cd nwb_benchmarks
 Setup the environment...
 
 ```
-conda env create -f environments/streaming.yaml
+conda env create -f environments/nwb_benchmarks.yaml
 conda activate nwb_benchmarks
 ```
 
