@@ -9,8 +9,7 @@ copyright = "2024, Neurodata Without Borders"
 author = "Cody Baker, Urjoshi Sinha, Ryan Ly, Ben Dichter, and Oliver Ruebel."
 
 extensions = [
-    "sphinx_toggleprompt",  # Used to control >>> behavior in the conversion gallery example doctests
-    "sphinx_copybutton",  # Used to control the copy button behavior in the conversion gallery doctests
+    "sphinx_copybutton",  # For copying code snippets
     "sphinx.ext.intersphinx",  # Allows links to other sphinx project documentation sites
     "sphinx_search.extension",  # Allows for auto search function the documentation
     "sphinx.ext.viewcode",  # Shows source code in the documentation
