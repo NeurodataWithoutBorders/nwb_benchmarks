@@ -1,0 +1,77 @@
+{
+    // The version of the config file format.
+    // From ASV: "Do not change, unless you know what you are doing."
+    "version": 1,
+
+    "project": "nwb_benchmarks",
+    "project_url": "https://github.com/NeurodataWithoutBorders/nwb_benchmarks",
+    "repo": ".",
+    "benchmark_dir": "src/nwb_benchmarks/benchmarks",
+    "branches": ["main"],
+    "environment_type": "conda",
+    "conda_environment_file": "environments/nwb_benchmarks.yaml",
+    "results_dir": ".asv/results",
+    "html_dir": ".asv/html",
+
+    // These are surprisingly slow operations; the timeout must be extended
+    "default_benchmark_timeout": 600,
+
+    // `asv` will cache results of the recent builds in each
+    // environment, making them faster to install next time.  This is
+    // the number of builds to keep, per environment.
+    // "build_cache_size": 2,
+
+    // The matrix of dependencies to test.  Each key of the "req"
+    // requirements dictionary is the name of a package (in PyPI) and
+    // the values are version numbers.  An empty list or empty string
+    // indicates to just test against the default (latest)
+    // version. null indicates that the package is to not be
+    // installed. If the package to be tested is only available from
+    // PyPi, and the 'environment_type' is conda, then you can preface
+    // the package name by 'pip+', and the package will be installed
+    // via pip (with all the conda available packages installed first,
+    // followed by the pip installed packages).
+    //
+    // The ``@env`` and ``@env_nobuild`` keys contain the matrix of
+    // environment variables to pass to build and benchmark commands.
+    // An environment will be created for every combination of the
+    // cartesian product of the "@env" variables in this matrix.
+    // Variables in "@env_nobuild" will be passed to every environment
+    // during the benchmark phase, but will not trigger creation of
+    // new environments.  A value of ``null`` means that the variable
+    // will not be set for the current combination.
+    //
+    // "matrix": {
+    //     "req": {
+    //         "numpy": ["1.6", "1.7"],
+    //         "six": ["", null],  // test with and without six installed
+    //         "pip+emcee": [""]   // emcee is only available for install with pip.
+    //     },
+    //     "env": {"ENV_VAR_1": ["val1", "val2"]},
+    //     "env_nobuild": {"ENV_VAR_2": ["val3", null]},
+    // },
+
+    // The commits after which the regression search in `asv publish`
+    // should start looking for regressions. Dictionary whose keys are
+    // regexps matching to benchmark names, and values corresponding to
+    // the commit (exclusive) after which to start looking for
+    // regressions.  The default is to start from the first commit
+    // with results. If the commit is `null`, regression detection is
+    // skipped for the matching benchmark.
+    //
+    // "regressions_first_commits": {
+    //    "some_benchmark": "352cdf",  // Consider regressions only after this commit
+    //    "another_benchmark": null,   // Skip regression detection altogether
+    // },
+
+    // The thresholds for relative change in results, after which `asv
+    // publish` starts reporting regressions. Dictionary of the same
+    // form as in ``regressions_first_commits``, with values
+    // indicating the thresholds.  If multiple entries match, the
+    // maximum is taken. If no entry matches, the default is 5%.
+    //
+    // "regressions_thresholds": {
+    //    "some_benchmark": 0.01,     // Threshold of 1%
+    //    "another_benchmark": 0.5,   // Threshold of 50%
+    // },
+}

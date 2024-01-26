@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nwb_benchmarks"]
+
+[project]
+name = "nwb_benchmarks"
+version="0.1.0"
+authors = [
+  { name="Cody Baker", email="cody.baker@catalystneuro.com" },
+]
+description = "Benchmarking for NWB."
+readme = "README.md"
+requires-python = ">=3.9,<3.12"
+license = {file = "license.txt"}
+
+keywords = ["nwb", "benchmark"]
+
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: BSD License",
+    "Intended Audience :: Developers",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Operating System :: Unix",
+]
+
+[project.scripts]
+nwb_benchmarks = "nwb_benchmarks.command_line_interface:main"
+
+[tool.black]
+line-length = 120
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  \.toml
+  |\.yml
+  |\.txt
+  |\.sh
+  |\.git
+  |\.ini
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+reverse_relative = true
+known_first_party = ["nwb_benchmarks"]
