@@ -1,48 +1,120 @@
 """Basic benchmarks for network performance metrics for streaming read of NWB files."""
-import os
-import time
-import warnings
-
 import pynwb
-
-from .netperf.profile import CaptureConnections, NetProfiler, NetStats
+import remfile
+import h5py
+import fsspec
+from fsspec.asyn import reset_lock
+from .netperf.benchmarks import NetworkBenchmarkBase
 
 # Useful if running in verbose mode
+import warnings
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
 warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
 
-class FileReadStreamingNetworkBenchmark:
+class NetworkBenchmarkRos3Read(NetworkBenchmarkBase):
+
+    s3_url = "https://dandiarchive.s3.amazonaws.com/ros3test.nwb"
     repeat = 1
     unit = "Bytes"
 
-    def start_net_capture(self):
-        # start the capture_connections() function to update the current connections of this machine
-        self.connections_thread = CaptureConnections()
-        self.connections_thread.start()
-        time.sleep(0.2)  # not sure if this is needed but just to be safe
+    def setup_cache(self):
+        return self.compute_test_case_metrics()
 
-        # start capturing the raw packets by running the tshark commandline tool in a subprocess
-        self.netprofiler = NetProfiler()
-        self.netprofiler.start_capture()
+    def test_case(self):
 
-    def stop_netcapture(self):
-        # Stop capturing packets and connections
-        self.netprofiler.stop_capture()
-        self.connections_thread.stop()
-
-        # get the connections for the PID of this process
-        self.pid_connections = self.connections_thread.get_connections_for_pid(os.getpid())
-        # Parse packets and filter out all the packets for this process pid by matching with the pid_connections
-        self.pid_packets = self.netprofiler.get_packets_for_connections(self.pid_connections)
-        # Compute all the network statistics
-        self.net_stats = NetStats.get_stats(packets=self.pid_packets)
-
-    def track_network_bytes_downloaded_ros3(self):
-        self.start_net_capture()
-        s3_path = "https://dandiarchive.s3.amazonaws.com/ros3test.nwb"
-        with pynwb.NWBHDF5IO(s3_path, mode="r", driver="ros3") as io:
+        with pynwb.NWBHDF5IO(self.s3_url, mode="r", driver="ros3") as io:
             nwbfile = io.read()
-            test_data = nwbfile.acquisition["ts_name"].data[:]
-        self.stop_netcapture()
-        return self.net_stats["bytes_downloaded"]
+            # test_data = nwbfile.acquisition["ts_name"].data[:]
+
+    def track_bytes_downloaded(self, cache):
+        return cache["bytes_downloaded"]
+
+    def track_bytes_uploaded(self, cache):
+        return cache["bytes_uploaded"]
+
+    def track_bytes_total(self, cache):
+        return cache["bytes_total"]
+
+    def track_num_packets(self, cache):
+        return cache["num_packets"]
+
+    def track_num_packets_downloaded(self, cache):
+        return cache["num_packets_downloaded"]
+
+    def track_num_packets_uploaded(self, cache):
+        return cache["num_packets_uploaded"]
+
+
+class NetworkBenchmarkRemFileRead(NetworkBenchmarkBase):
+
+    s3_url = "https://dandiarchive.s3.amazonaws.com/ros3test.nwb"
+    repeat = 1
+    unit = "Bytes"
+
+    def setup_cache(self):
+        return self.compute_test_case_metrics()
+
+    def test_case(self):
+        byte_stream = remfile.File(url=self.s3_url)
+        with h5py.File(name=byte_stream) as file:
+            with pynwb.NWBHDF5IO(file=file, load_namespaces=True) as io:
+                nwbfile = io.read()
+                # test_data = nwbfile.acquisition["ts_name"].data[:]
+
+    def track_bytes_downloaded(self, cache):
+        return cache["bytes_downloaded"]
+
+    def track_bytes_uploaded(self, cache):
+        return cache["bytes_uploaded"]
+
+    def track_bytes_total(self, cache):
+        return cache["bytes_total"]
+
+    def track_num_packets(self, cache):
+        return cache["num_packets"]
+
+    def track_num_packets_downloaded(self, cache):
+        return cache["num_packets_downloaded"]
+
+    def track_num_packets_uploaded(self, cache):
+        return cache["num_packets_uploaded"]
+
+
+class NetworkBenchmarkFsspecFileRead(NetworkBenchmarkBase):
+
+    s3_url = "https://dandiarchive.s3.amazonaws.com/ros3test.nwb"
+    repeat = 1
+    unit = "Bytes"
+
+    def setup_cache(self):
+        return self.compute_test_case_metrics()
+
+    def test_case(self):
+        reset_lock()
+        fsspec.get_filesystem_class("https").clear_instance_cache()
+        filesystem = fsspec.filesystem("https")
+
+        with filesystem.open(path=self.s3_url, mode="rb") as byte_stream:
+            with h5py.File(name=byte_stream) as file:
+                with pynwb.NWBHDF5IO(file=file, load_namespaces=True) as io:
+                    nwbfile = io.read()
+                    # test_data = nwbfile.acquisition["ts_name"].data[:]
+
+    def track_bytes_downloaded(self, cache):
+        return cache["bytes_downloaded"]
+
+    def track_bytes_uploaded(self, cache):
+        return cache["bytes_uploaded"]
+
+    def track_bytes_total(self, cache):
+        return cache["bytes_total"]
+
+    def track_num_packets(self, cache):
+        return cache["num_packets"]
+
+    def track_num_packets_downloaded(self, cache):
+        return cache["num_packets_downloaded"]
+
+    def track_num_packets_uploaded(self, cache):
+        return cache["num_packets_uploaded"]
