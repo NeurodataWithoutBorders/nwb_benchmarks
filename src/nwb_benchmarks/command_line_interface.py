@@ -32,6 +32,8 @@ def main():
         ]
         if debug_mode:
             cmd.extend(["--verbose", "--show-std-err"])
+        if bench_mode:
+            cmd.extend(["--bench", specific_benchmark_pattern])
 
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE)  # , bufsize=1)
         encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
