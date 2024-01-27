@@ -18,14 +18,14 @@ extensions = [
 
 templates_path = ["_templates"]
 master_doc = "index"
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["build", "_build", "Thumbs.db", ".DS_Store"]
 html_theme = "pydata_sphinx_theme"
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = "favicon.ico"
+# html_favicon = "favicon.ico"
 
 html_context = {
     # "github_url": "https://github.com", # or your GitHub Enterprise site

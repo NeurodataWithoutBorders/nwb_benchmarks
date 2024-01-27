@@ -11,7 +11,7 @@ Funding is provided by NOSI ...
 
   setup
   using_asv
-  writing_nwb_benchmarks
+  writing_benchmarks
   development
 
 .. Indices and tables
