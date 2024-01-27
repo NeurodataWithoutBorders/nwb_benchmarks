@@ -14,6 +14,7 @@ class FileReadStreaming(FileReadStreamingBase):
     """A basic benchmark for streaming an NWB file from the DANDI archive."""
 
     repeat = 1
+    s3_url = "https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
 
     def time_fsspec_no_cache(self):
         self.fsspec_no_cache()
@@ -32,6 +33,7 @@ class ElectricalSeriesStreamingROS3(ElectricalSeriesStreamingROS3Base):
     Needs separate setup per class to only time slicing operation.
     """
     repeat = 1
+    s3_url = "s3://dandiarchive/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
 
     def time_ros3(self):
         self.ros3()
@@ -45,6 +47,7 @@ class ElectricalSeriesStreamingFsspec(ElectricalSeriesStreamingFsspecBase):
     """
 
     repeat = 1
+    s3_url = "https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
 
     def time_fsspec_no_cache(self):
         self.fsspec_no_cache()
@@ -56,8 +59,8 @@ class ElectricalSeriesStreamingRemfile(ElectricalSeriesStreamingRemfileBase):
 
     Needs separate setup per class to only time slicing operation.
     """
-
     repeat = 1
+    s3_url = "https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
 
     def time_remfile(self):
         self.remfile()

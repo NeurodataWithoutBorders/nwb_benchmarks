@@ -7,10 +7,15 @@ from fsspec.asyn import reset_lock
 
 
 class FileReadStreamingBase:
-    """Base class for basic benchmarks for streaming an NWB file from the DANDI archive."""
-    def setup(self):
-        # Random IBL raw data file; not that many groups
-        self.s3_url = "https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
+    """
+    Base class for basic benchmarks for streaming an NWB file from the DANDI archive.
+
+    Child classes must set:
+    - s3_url on the class to an S3 asset, e.g.,"
+      'https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319'
+    """
+
+    s3_url: str
 
     def fsspec_no_cache(self):
         reset_lock()
@@ -43,9 +48,15 @@ class ElectricalSeriesStreamingROS3Base:
     "Base class for basic benchmark for streaming raw ecephys data.
 
     Needs separate setup per class to only time slicing operation.
+
+     Child classes must set:
+    - s3_url on the class to an S3 asset, e.g.,"
+      'https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319'
     """
+
+    s3_url : str
+
     def setup(self):
-        self.s3_url = "s3://dandiarchive/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
         self.acquisition_path = "ElectricalSeriesAp"
         self.slice_range = (slice(0, 30_000), slice(0, 384))  # ~23 MB
         self.io = pynwb.NWBHDF5IO(path=self.s3_url, mode="r", load_namespaces=True, driver="ros3")
@@ -60,10 +71,15 @@ class ElectricalSeriesStreamingFsspecBase:
     "Base class for basic benchmarks for streaming raw ecephys data.
 
     Needs separate setup per class to only time slicing operation.
+
+     Child classes must set:
+    - s3_url on the class to an S3 asset, e.g.,"
+      'https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319'
     """
 
+    s3_url : str
+
     def setup(self):
-        self.s3_url = "https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
         self.acquisition_path = "ElectricalSeriesAp"
         self.slice_range = (slice(0, 30_000), slice(0, 384))  # ~23 MB
 
@@ -86,10 +102,14 @@ class ElectricalSeriesStreamingRemfileBase:
     "Base class for basic benchmarks for streaming raw ecephys data.
 
     Needs separate setup per class to only time slicing operation.
+     Child classes must set:
+    - s3_url on the class to an S3 asset, e.g.,"
+      'https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319'
     """
 
+    s3_url : str
+
     def setup(self):
-        self.s3_url = "https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
         self.acquisition_path = "ElectricalSeriesAp"
         self.slice_range = (slice(0, 30_000), slice(0, 384))  # ~23 MB
         self.byte_stream = remfile.File(url=self.s3_url)
