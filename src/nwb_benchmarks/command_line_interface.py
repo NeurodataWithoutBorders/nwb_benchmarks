@@ -12,6 +12,9 @@ def main():
         return
 
     command = sys.argv[1]
+    flags_list = sys.argv[2:]
+
+    debug_mode = "--debug" in flags_list
 
     if command == "run":
         commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
@@ -24,6 +27,8 @@ def main():
             "--set-commit-hash",
             commit_hash,
         ]
+        if debug_mode:
+            cmd.extend(["--verbose", "--show-std-err"])
 
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE)  # , bufsize=1)
         encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
