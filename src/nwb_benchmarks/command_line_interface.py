@@ -15,6 +15,9 @@ def main():
     flags_list = sys.argv[2:]
 
     debug_mode = "--debug" in flags_list
+    bench_mode = "--bench" in flags_list
+    if bench_mode:
+        specific_benchmark_pattern = flags_list[flags_list.index("--bench")+1]
 
     if command == "run":
         commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
