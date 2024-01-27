@@ -30,7 +30,7 @@ class CaptureConnections(Thread):
         return self.__connection_to_pid
 
     def get_connections_for_pid(self, pid):
-        return [k for k, v in connections_thread.connection_to_pid.items() if v == pid]
+        return [k for k, v in self.connection_to_pid.items() if v == pid]
 
     def start(self):
         self.__run_capture_connections = True

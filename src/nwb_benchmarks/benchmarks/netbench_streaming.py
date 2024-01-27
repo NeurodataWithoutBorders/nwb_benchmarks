@@ -17,10 +17,8 @@ warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 class FileReadStreamingNetworkBenchmark:
 
     repeat = 1
-    unit = 'kB'
+    unit = 'Bytes'
 
-    def setup(self):
-        pass
     def start_net_capture(self):
         # start the capture_connections() function to update the current connections of this machine
         self.connections_thread = CaptureConnections()
@@ -44,7 +42,7 @@ class FileReadStreamingNetworkBenchmark:
         self.net_stats = NetStats.get_stats(packets=self.pid_packets)
 
     def track_network_bytes_downloaded_ros3(self):
-        self.stop_netcapture()
+        self.start_net_capture()
         s3_path = 'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'
         with pynwb.NWBHDF5IO(s3_path, mode='r', driver='ros3') as io:
             nwbfile = io.read()
