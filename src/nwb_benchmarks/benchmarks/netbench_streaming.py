@@ -1,19 +1,20 @@
 """Basic benchmarks for network performance metrics for streaming read of NWB files."""
-import pynwb
-import remfile
-import h5py
-import fsspec
-from fsspec.asyn import reset_lock
-from .netperf.benchmarks import NetworkBenchmarkBase
-
 # Useful if running in verbose mode
 import warnings
+
+import fsspec
+import h5py
+import pynwb
+import remfile
+from fsspec.asyn import reset_lock
+
+from .netperf.benchmarks import NetworkBenchmarkBase
+
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
 warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
 
 class NetworkBenchmarkRos3Read(NetworkBenchmarkBase):
-
     s3_url = "https://dandiarchive.s3.amazonaws.com/ros3test.nwb"
     repeat = 1
     unit = "Bytes"
@@ -22,7 +23,6 @@ class NetworkBenchmarkRos3Read(NetworkBenchmarkBase):
         return self.compute_test_case_metrics()
 
     def test_case(self):
-
         with pynwb.NWBHDF5IO(self.s3_url, mode="r", driver="ros3") as io:
             nwbfile = io.read()
             # test_data = nwbfile.acquisition["ts_name"].data[:]
@@ -47,7 +47,6 @@ class NetworkBenchmarkRos3Read(NetworkBenchmarkBase):
 
 
 class NetworkBenchmarkRemFileRead(NetworkBenchmarkBase):
-
     s3_url = "https://dandiarchive.s3.amazonaws.com/ros3test.nwb"
     repeat = 1
     unit = "Bytes"
@@ -82,7 +81,6 @@ class NetworkBenchmarkRemFileRead(NetworkBenchmarkBase):
 
 
 class NetworkBenchmarkFsspecFileRead(NetworkBenchmarkBase):
-
     s3_url = "https://dandiarchive.s3.amazonaws.com/ros3test.nwb"
     repeat = 1
     unit = "Bytes"
