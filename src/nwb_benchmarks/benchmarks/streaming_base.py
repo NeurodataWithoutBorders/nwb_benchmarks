@@ -15,7 +15,10 @@ class FileReadStreamingBase:
       'https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319'
     """
 
-    s3_url: str
+    s3_url: str = None
+
+    def setup(self):
+        assert self.s3_url is not None, "Test must set s3_url class variable"
 
     def fsspec_no_cache(self):
         reset_lock()
@@ -53,6 +56,7 @@ class ElectricalSeriesStreamingROS3Base:
     s3_url: str
 
     def setup(self):
+        assert self.s3_url is not None, "Test must set s3_url class variable"
         self.acquisition_path = "ElectricalSeriesAp"
         self.slice_range = (slice(0, 30_000), slice(0, 384))  # ~23 MB
         self.io = pynwb.NWBHDF5IO(path=self.s3_url, mode="r", load_namespaces=True, driver="ros3")
@@ -76,6 +80,7 @@ class ElectricalSeriesStreamingFsspecBase:
     s3_url: str
 
     def setup(self):
+        assert self.s3_url is not None, "Test must set s3_url class variable"
         self.acquisition_path = "ElectricalSeriesAp"
         self.slice_range = (slice(0, 30_000), slice(0, 384))  # ~23 MB
 
@@ -105,6 +110,7 @@ class ElectricalSeriesStreamingRemfileBase:
     s3_url: str
 
     def setup(self):
+        assert self.s3_url is not None, "Test must set s3_url class variable"
         self.acquisition_path = "ElectricalSeriesAp"
         self.slice_range = (slice(0, 30_000), slice(0, 384))  # ~23 MB
         self.byte_stream = remfile.File(url=self.s3_url)
