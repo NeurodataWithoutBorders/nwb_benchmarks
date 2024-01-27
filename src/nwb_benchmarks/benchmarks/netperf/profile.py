@@ -152,7 +152,7 @@ class NetStats:
             for packet in packets  # check all packets
             if packet.ip.src not in local_addresses  # the source address is not ours so it's download
         ]
-        return len(downloaded)
+        return int(len(downloaded))
 
     @staticmethod
     def num_packets_uploaded(packets: list, local_addresses: list = None):
@@ -163,12 +163,12 @@ class NetStats:
             for packet in packets  # check all packets
             if packet.ip.src in local_addresses  # the source address is ours so it's upload
         ]
-        return len(uploaded)
+        return int(len(uploaded))
 
     @staticmethod
     def total_bytes(packets: list):
         total_bytes = np.sum([len(packet) for packet in packets])
-        return total_bytes
+        return int(total_bytes)
 
     @staticmethod
     def bytes_downloaded(packets: list, local_addresses: list = None):
@@ -181,7 +181,7 @@ class NetStats:
                 if packet.ip.src not in local_addresses  # the source address is not ours so it's download
             ]
         )
-        return bytes_downloaded
+        return int(bytes_downloaded)
 
     @staticmethod
     def bytes_uploaded(packets: list, local_addresses: list = None):
@@ -194,7 +194,7 @@ class NetStats:
                 if packet.ip.src in local_addresses  # the source address is ours so it's upload
             ]
         )
-        return bytes_uploaded
+        return int(bytes_uploaded)
 
     @staticmethod
     def bytes_to_str(bytes: int) -> str:
