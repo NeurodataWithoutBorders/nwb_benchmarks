@@ -44,7 +44,7 @@ To run only a single benchmark, use the `--bench <benchmark file stem or module+
 To install the additional packages required to build the docs execute the command ...
 
 ```
-pip install -r requirements-doc.txt
+pip install -r docs/requirements-rtd.txt
 ```
 
 To build the docs execute the command ...
