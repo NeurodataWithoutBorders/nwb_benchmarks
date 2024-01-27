@@ -4,22 +4,23 @@ Example script to test capturing network traffic for remote data reads for NWB
 NOTE:  This requires sudo/root access on  macOS and AIX
 """
 import os
-import tempfile
 import subprocess
+import tempfile
 import time
 from threading import Thread
 
-
-from pynwb import NWBHDF5IO
-import pyshark
-import psutil
 import numpy as np
+import psutil
+import pyshark
+from pynwb import NWBHDF5IO
+
 
 class CaptureConnections(Thread):
     """
     Thread class used to  listen for connections on this machine
     and collecting the mapping of connections to process pid's
     """
+
     def __init__(self):
         super(CaptureConnections, self).__init__()
         self.__connection_to_pid = {}  # map each pair of connection ports to the corresponding process ID (PID)
@@ -61,26 +62,28 @@ class CaptureConnections(Thread):
         ]
         return addresses
 
+
 class NetProfiler:
     """
     Use TShark command line interface in a subprocess to capture network traffic packets
     in the background.
     """
+
     def __init__(self, capture_filename=None):
         self.__capture_filename = capture_filename
         self.__tshark_process = None
         self.__capture = None
         self.__packets = None
         if self.__capture_filename is None:
-            self.__capture_filename = tempfile.NamedTemporaryFile(mode='w', delete=False)
+            self.__capture_filename = tempfile.NamedTemporaryFile(mode="w", delete=False)
 
     def __del__(self):
         self.stop_capture()
         try:
             del self.__capture
-        except Exception: # pyshark.capture.capture.TSharkCrashException:
+        except Exception:  # pyshark.capture.capture.TSharkCrashException:
             pass
-        #if isinstance(self.__capture_filename, tempfile.NamedTemporaryFile):
+        # if isinstance(self.__capture_filename, tempfile.NamedTemporaryFile):
         #    self.__capture_filename.close()
         if os.path.exists(self.capture_filename):
             os.remove(self.capture_filename)
@@ -95,6 +98,7 @@ class NetProfiler:
             except:
                 pass
         return self.__packets
+
     @property
     def capture_filename(self):
         if isinstance(self.__capture_filename, str):
@@ -108,10 +112,10 @@ class NetProfiler:
 
     def start_capture(self):
         tsharkCall = ["tshark", "-w", self.capture_filename]
-        self.__tshark_process = subprocess.Popen(tsharkCall, stderr=subprocess.DEVNULL) #,
-                                                 # stdout=subprocess.PIPE, shell=True,
-                                                 # start_new_session=True)#,
-                                                # preexec_fn=os.setsid)
+        self.__tshark_process = subprocess.Popen(tsharkCall, stderr=subprocess.DEVNULL)  # ,
+        # stdout=subprocess.PIPE, shell=True,
+        # start_new_session=True)#,
+        # preexec_fn=os.setsid)
         time.sleep(0.2)  # not sure if this is needed but just to be safe
 
     def stop_capture(self):
@@ -125,7 +129,7 @@ class NetProfiler:
         pid_packets = []
         try:
             for packet in self.packets:
-                if hasattr(packet, 'tcp'):
+                if hasattr(packet, "tcp"):
                     ports = int(str(packet.tcp.srcport)), int(str(packet.tcp.dstport))
                     if ports in pid_connections:
                         pid_packets.append(packet)
@@ -135,26 +139,23 @@ class NetProfiler:
 
 
 class NetStats:
-
     @staticmethod
     def num_packets(packets: list):
         return len(packets)
 
     @staticmethod
-    def num_packets_downloaded(packets: list,
-                         local_addresses: list = None):
+    def num_packets_downloaded(packets: list, local_addresses: list = None):
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
         downloaded = [
-                packet
-                for packet in packets  # check all packets
-                if packet.ip.src not in local_addresses  # the source address is not ours so it's download
-            ]
+            packet
+            for packet in packets  # check all packets
+            if packet.ip.src not in local_addresses  # the source address is not ours so it's download
+        ]
         return len(downloaded)
 
     @staticmethod
-    def num_packets_uploaded(packets: list,
-                               local_addresses: list = None):
+    def num_packets_uploaded(packets: list, local_addresses: list = None):
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
         uploaded = [
@@ -170,8 +171,7 @@ class NetStats:
         return total_bytes
 
     @staticmethod
-    def bytes_downloaded(packets: list,
-                         local_addresses: list = None):
+    def bytes_downloaded(packets: list, local_addresses: list = None):
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
         bytes_downloaded = np.sum(
@@ -184,8 +184,7 @@ class NetStats:
         return bytes_downloaded
 
     @staticmethod
-    def bytes_uploaded(packets: list,
-                       local_addresses: list = None):
+    def bytes_uploaded(packets: list, local_addresses: list = None):
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
         bytes_uploaded = np.sum(
@@ -202,7 +201,7 @@ class NetStats:
         """
         Format the size in bytes as a human-readable string
         """
-        for unit in ['', 'K', 'M', 'G', 'T', 'P']:
+        for unit in ["", "K", "M", "G", "T", "P"]:
             if bytes < 1024:
                 return f"{bytes:.2f}{unit}B"
             bytes /= 1024
@@ -212,33 +211,32 @@ class NetStats:
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
         stats = {
-            'bytes_downloaded': cls.bytes_downloaded(packets=packets, local_addresses=local_addresses),
-            'bytes_uploaded': cls.bytes_uploaded(packets=packets, local_addresses=local_addresses),
-            'bytes_total': cls.total_bytes(packets=packets),
-            'num_packets': cls.num_packets(packets=packets),
-            'num_packets_downloaded': cls.num_packets_downloaded(packets=packets, local_addresses=local_addresses),
-            'num_packets_uploaded': cls.num_packets_uploaded(packets=packets, local_addresses=local_addresses)
+            "bytes_downloaded": cls.bytes_downloaded(packets=packets, local_addresses=local_addresses),
+            "bytes_uploaded": cls.bytes_uploaded(packets=packets, local_addresses=local_addresses),
+            "bytes_total": cls.total_bytes(packets=packets),
+            "num_packets": cls.num_packets(packets=packets),
+            "num_packets_downloaded": cls.num_packets_downloaded(packets=packets, local_addresses=local_addresses),
+            "num_packets_uploaded": cls.num_packets_uploaded(packets=packets, local_addresses=local_addresses),
         }
         return stats
 
     @classmethod
     def print_stats(cls, packets: list, local_addresses: list = None):
         stats = cls.get_stats(packets=packets, local_addresses=local_addresses)
-        for k in ['num_packets', 'num_packets_downloaded', 'num_packets_uploaded']:
+        for k in ["num_packets", "num_packets_downloaded", "num_packets_uploaded"]:
             print(f"{k}: {stats[k]}")
-        for k in ['bytes_total', 'bytes_downloaded', 'bytes_uploaded']:
+        for k in ["bytes_total", "bytes_downloaded", "bytes_uploaded"]:
             print(f"{k}: {cls.bytes_to_str(stats[k])}")
 
 
 if __name__ == "__main__":
-
     ###
     # This would be part of the setUp() of a test
     ##
     # start the capture_connections() function to update the current connections of this machine
     connections_thread = CaptureConnections()
     connections_thread.start()
-    time.sleep(0.2) # not sure if this is needed but just to be safe
+    time.sleep(0.2)  # not sure if this is needed but just to be safe
 
     # start capturing the raw packets by running the tshark commandline tool in a subprocess
     netprofiler = NetProfiler()
@@ -248,10 +246,10 @@ if __name__ == "__main__":
     # This would be the unit test
     ###
     # Read the NWB data file from DANDI
-    s3_path = 'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'
-    with NWBHDF5IO(s3_path, mode='r', driver='ros3') as io:
+    s3_path = "https://dandiarchive.s3.amazonaws.com/ros3test.nwb"
+    with NWBHDF5IO(s3_path, mode="r", driver="ros3") as io:
         nwbfile = io.read()
-        test_data = nwbfile.acquisition['ts_name'].data[:]
+        test_data = nwbfile.acquisition["ts_name"].data[:]
 
     ###
     # This part would go into tearDown to stop the capture and compute statistics
@@ -269,4 +267,3 @@ if __name__ == "__main__":
     # Print basic connection statistics
     print("num_connections:", int(len(pid_connections) / 2.0))
     NetStats.print_stats(packets=pid_packets)
-
