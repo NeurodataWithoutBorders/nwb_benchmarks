@@ -38,9 +38,12 @@ class ElectricalSeriesStreamingROS3(ElectricalSeriesStreamingROS3Base):
 
     repeat = 1
     s3_url = "s3://dandiarchive/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
+    acquisition_path = "ElectricalSeriesAp"
+    slice_range = (slice(0, 30_000), slice(0, 384))  # ~23 MB
 
-    def time_ros3(self):
-        self.ros3()
+    def time_slice_request(self):
+        """Time for the slice_request test case"""
+        self.slice_request()
 
 
 class ElectricalSeriesStreamingFsspec(ElectricalSeriesStreamingFsspecBase):
@@ -52,9 +55,12 @@ class ElectricalSeriesStreamingFsspec(ElectricalSeriesStreamingFsspecBase):
 
     repeat = 1
     s3_url = "https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
+    acquisition_path = "ElectricalSeriesAp"
+    slice_range = (slice(0, 30_000), slice(0, 384))  # ~23 MB
 
-    def time_fsspec_no_cache(self):
-        self.fsspec_no_cache()
+    def time_slice_request(self):
+        """Time for the slice_request test case"""
+        self.slice_request()
 
 
 class ElectricalSeriesStreamingRemfile(ElectricalSeriesStreamingRemfileBase):
@@ -66,6 +72,10 @@ class ElectricalSeriesStreamingRemfile(ElectricalSeriesStreamingRemfileBase):
 
     repeat = 1
     s3_url = "https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
+    acquisition_path = "ElectricalSeriesAp"
+    slice_range = (slice(0, 30_000), slice(0, 384))  # ~23 MB
 
-    def time_remfile(self):
-        self.remfile()
+    def time_slice_request(self):
+        """Time for the slice_request test case"""
+        self.slice_request()
+
