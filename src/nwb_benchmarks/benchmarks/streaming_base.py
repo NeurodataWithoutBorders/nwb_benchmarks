@@ -15,7 +15,7 @@ class FileReadStreamingBase:
     - specify the performance metrics to use for the test cases by specifying benchmark functions
     """
 
-    s3_url: str = None   # S3 URL of the NWB asset
+    s3_url: str = None  # S3 URL of the NWB asset
 
     def setup(self):
         assert self.s3_url is not None, "Test must set s3_url class variable"
@@ -100,7 +100,7 @@ class ElectricalSeriesStreamingFsspecBase(ElectricalSeriesStreamingSliceTestMixi
     - See ElectricalSeriesStreamingSliceTestMixin for additional requirements
     """
 
-    s3_url: str = None   # S3 URL of the NWB asset
+    s3_url: str = None  # S3 URL of the NWB asset
 
     def setup(self):
         assert self.s3_url is not None, "Test must set s3_url class variable"
@@ -139,4 +139,3 @@ class ElectricalSeriesStreamingRemfileBase(ElectricalSeriesStreamingSliceTestMix
         self.file = h5py.File(name=self.byte_stream)
         self.io = pynwb.NWBHDF5IO(file=self.file, mode="r", load_namespaces=True)
         self.nwbfile = self.io.read()
-

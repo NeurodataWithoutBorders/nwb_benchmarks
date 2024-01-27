@@ -78,4 +78,3 @@ class ElectricalSeriesStreamingRemfile(ElectricalSeriesStreamingRemfileBase):
     def time_slice_request(self):
         """Time for the slice_request test case"""
         self.slice_request()
-
