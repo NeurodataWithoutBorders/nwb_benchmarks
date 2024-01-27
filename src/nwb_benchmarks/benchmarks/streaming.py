@@ -1,9 +1,12 @@
 """Basic benchmarks for NWB."""
-from .streaming_base import (FileReadStreamingBase,
-                             ElectricalSeriesStreamingROS3Base,
-                             ElectricalSeriesStreamingFsspecBase,
-                             ElectricalSeriesStreamingRemfileBase)
 import warnings
+
+from .streaming_base import (
+    ElectricalSeriesStreamingFsspecBase,
+    ElectricalSeriesStreamingRemfileBase,
+    ElectricalSeriesStreamingROS3Base,
+    FileReadStreamingBase,
+)
 
 # Useful if running in verbose mode
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
@@ -32,6 +35,7 @@ class ElectricalSeriesStreamingROS3(ElectricalSeriesStreamingROS3Base):
 
     Needs separate setup per class to only time slicing operation.
     """
+
     repeat = 1
     s3_url = "s3://dandiarchive/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
 
@@ -59,6 +63,7 @@ class ElectricalSeriesStreamingRemfile(ElectricalSeriesStreamingRemfileBase):
 
     Needs separate setup per class to only time slicing operation.
     """
+
     repeat = 1
     s3_url = "https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
 

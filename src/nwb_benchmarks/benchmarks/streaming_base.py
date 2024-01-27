@@ -27,7 +27,6 @@ class FileReadStreamingBase:
                 with pynwb.NWBHDF5IO(file=file, load_namespaces=True) as io:
                     nwbfile = io.read()
 
-
     def ros3(self):
         ros3_form = self.s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
         with pynwb.NWBHDF5IO(path=ros3_form, mode="r", load_namespaces=True, driver="ros3") as io:
@@ -51,7 +50,7 @@ class ElectricalSeriesStreamingROS3Base:
       'https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319'
     """
 
-    s3_url : str
+    s3_url: str
 
     def setup(self):
         self.acquisition_path = "ElectricalSeriesAp"
@@ -74,7 +73,7 @@ class ElectricalSeriesStreamingFsspecBase:
       'https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319'
     """
 
-    s3_url : str
+    s3_url: str
 
     def setup(self):
         self.acquisition_path = "ElectricalSeriesAp"
@@ -93,7 +92,6 @@ class ElectricalSeriesStreamingFsspecBase:
         self.nwbfile.acquisition[self.acquisition_path].data[self.slice_range]
 
 
-
 class ElectricalSeriesStreamingRemfileBase:
     """
     "Base class for basic benchmarks for streaming raw ecephys data.
@@ -104,7 +102,7 @@ class ElectricalSeriesStreamingRemfileBase:
       'https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319'
     """
 
-    s3_url : str
+    s3_url: str
 
     def setup(self):
         self.acquisition_path = "ElectricalSeriesAp"

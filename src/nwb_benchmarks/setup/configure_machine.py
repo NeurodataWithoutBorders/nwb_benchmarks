@@ -7,8 +7,8 @@ import platform
 import sys
 import warnings
 
-from numba import cuda
 import psutil
+from numba import cuda
 
 
 def customize_asv_machine_file(file_path: pathlib.Path) -> None:
