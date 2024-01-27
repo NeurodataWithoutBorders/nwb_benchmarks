@@ -27,9 +27,6 @@ class FileReadStreamingBase:
                 with pynwb.NWBHDF5IO(file=file, load_namespaces=True) as io:
                     nwbfile = io.read()
 
-        # Must be done at this level since teardown occurs outside of repetitions
-        # reset_lock()
-        # fsspec.get_filesystem_class("https").clear_instance_cache()
 
     def ros3(self):
         ros3_form = self.s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
