@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 
-def main():
+def _asv_wrapper():
     """Simple wrapper around `asv run` for conveneience."""
     # TODO: swap to click
     if len(sys.argv) <= 1:
@@ -46,4 +46,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    _asv_wrapper()

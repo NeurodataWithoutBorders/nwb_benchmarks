@@ -35,7 +35,7 @@ classifiers = [
 ]
 
 [project.scripts]
-nwb_benchmarks = "nwb_benchmarks.command_line_interface:main"
+nwb_benchmarks = "nwb_benchmarks._command_line_interface:_asv_wrapper"
 
 [tool.black]
 line-length = 120
