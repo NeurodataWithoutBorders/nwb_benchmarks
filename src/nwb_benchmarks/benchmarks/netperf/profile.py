@@ -144,6 +144,24 @@ class NetStats:
         return len(packets)
 
     @staticmethod
+    def get_web_traffic_packets(packets):
+        """
+        Get all HTTP and HTTPS packets from the packets captured.
+
+        :param packet: raw packet from a pcap file.
+        :return: specific packet details
+        """
+        web_packets = [packet
+                       for packet in packets
+                       if hasattr(packet, 'tcp') and  packet[packet.transport_layer].dstport in ['80', '443']]
+        return web_packets
+
+    @staticmethod
+    def transfer_time(packets):
+        """Sum of all time_delta's between packets"""
+        return float(np.sum([float(p.tcp.time_delta) for p in packets]))
+
+    @staticmethod
     def num_packets_downloaded(packets: list, local_addresses: list = None):
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
@@ -217,16 +235,16 @@ class NetStats:
             "num_packets": cls.num_packets(packets=packets),
             "num_packets_downloaded": cls.num_packets_downloaded(packets=packets, local_addresses=local_addresses),
             "num_packets_uploaded": cls.num_packets_uploaded(packets=packets, local_addresses=local_addresses),
+            "num_web_packets": len(cls.get_web_traffic_packets(packets)),
+            "total_transfer_time": cls.transfer_time(packets=packets)
         }
         return stats
 
     @classmethod
     def print_stats(cls, packets: list, local_addresses: list = None):
         stats = cls.get_stats(packets=packets, local_addresses=local_addresses)
-        for k in ["num_packets", "num_packets_downloaded", "num_packets_uploaded"]:
-            print(f"{k}: {stats[k]}")
-        for k in ["bytes_total", "bytes_downloaded", "bytes_uploaded"]:
-            print(f"{k}: {cls.bytes_to_str(stats[k])}")
+        for k, v in stats.items():
+            print(f"{k}: {v}")
 
 
 if __name__ == "__main__":
@@ -246,10 +264,13 @@ if __name__ == "__main__":
     # This would be the unit test
     ###
     # Read the NWB data file from DANDI
+    t0 = time.time()
     s3_path = "https://dandiarchive.s3.amazonaws.com/ros3test.nwb"
     with NWBHDF5IO(s3_path, mode="r", driver="ros3") as io:
         nwbfile = io.read()
         test_data = nwbfile.acquisition["ts_name"].data[:]
+    t1 = time.time()
+    total_time = t1 - t0
 
     ###
     # This part would go into tearDown to stop the capture and compute statistics
@@ -267,3 +288,5 @@ if __name__ == "__main__":
     # Print basic connection statistics
     print("num_connections:", int(len(pid_connections) / 2.0))
     NetStats.print_stats(packets=pid_packets)
+    print("total_time:", total_time)
+
