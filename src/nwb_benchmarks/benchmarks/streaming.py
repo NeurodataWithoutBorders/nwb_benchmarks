@@ -1,4 +1,5 @@
 """Basic benchmarks for NWB."""
+
 import warnings
 
 import fsspec
