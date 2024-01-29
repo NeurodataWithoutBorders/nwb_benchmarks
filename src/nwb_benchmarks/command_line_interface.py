@@ -1,4 +1,5 @@
 """Simple wrapper around `asv run` for conveneience."""
+
 import locale
 import subprocess
 import sys
