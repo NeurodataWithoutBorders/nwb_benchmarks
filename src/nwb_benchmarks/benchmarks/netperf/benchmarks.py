@@ -50,8 +50,12 @@ class NetworkBenchmarkBase:
 
     def compute_test_case_metrics(self):
         self.start_net_capture()
+        t0 = time.time()
         self.test_case()
+        t1 = time.time()
+        total_time = t1 - t0
         self.stop_netcapture()
+        self.net_stats['total_time'] = total_time
         return self.net_stats
 
     def start_net_capture(self):
