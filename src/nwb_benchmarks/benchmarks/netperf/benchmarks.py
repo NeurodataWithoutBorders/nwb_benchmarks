@@ -4,6 +4,7 @@ network performance metrics for streaming read of NWB files.
 """
 import os
 import time
+
 from asv_runner.benchmarks.mark import SkipNotImplemented
 
 from .profile import CaptureConnections, NetProfiler, NetStats
@@ -43,7 +44,8 @@ class NetworkBenchmarkBase:
             return cache["num_packets_uploaded"]
 
     """
-    s3_url : str = None
+
+    s3_url: str = None
 
     def test_case(self):
         raise SkipNotImplemented()
