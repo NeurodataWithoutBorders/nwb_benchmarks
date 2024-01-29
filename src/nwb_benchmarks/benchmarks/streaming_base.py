@@ -1,4 +1,5 @@
 """Base template classes for basic benchmarks for NWB streaming read."""
+
 import fsspec
 import h5py
 import pynwb
