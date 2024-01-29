@@ -1,4 +1,5 @@
 """Basic benchmarks for NWB."""
+
 import warnings
 
 from .streaming_base import (
