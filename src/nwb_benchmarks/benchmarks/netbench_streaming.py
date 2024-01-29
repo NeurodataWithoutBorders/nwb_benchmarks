@@ -1,5 +1,4 @@
 """Basic benchmarks for network performance metrics for streaming read of NWB files."""
-# Useful if running in verbose mode
 import tempfile
 import warnings
 
@@ -12,6 +11,7 @@ from fsspec.implementations.cached import CachingFileSystem
 
 from .netperf.benchmarks import NetworkBenchmarkBase
 
+# Useful if running in verbose mode
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
 warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
@@ -22,6 +22,7 @@ S3_NWB = "https://dandiarchive.s3.amazonaws.com/ros3test.nwb"  # Small test NWB 
 
 
 class NetworkBenchmarkRos3Read(NetworkBenchmarkBase):
+    """Benchmark NWB file read with Ros3"""
     s3_url = S3_NWB
     repeat = 1
     unit = "Bytes"
@@ -61,6 +62,7 @@ class NetworkBenchmarkRos3Read(NetworkBenchmarkBase):
 
 
 class NetworkBenchmarkRemFileRead(NetworkBenchmarkBase):
+    """Benchmark NWB file read with RemFile"""
     s3_url = S3_NWB
     repeat = 1
     unit = "Bytes"
@@ -102,6 +104,7 @@ class NetworkBenchmarkRemFileRead(NetworkBenchmarkBase):
 
 
 class NetworkBenchmarkRemFileWithCacheRead(NetworkBenchmarkBase):
+    """Benchmark NWB file read with RemFile using a remfile.DiskCache as a temporary cache"""
     s3_url = S3_NWB
     repeat = 1
     unit = "Bytes"
@@ -145,6 +148,7 @@ class NetworkBenchmarkRemFileWithCacheRead(NetworkBenchmarkBase):
 
 
 class NetworkBenchmarkFsspecWithCacheFileRead(NetworkBenchmarkBase):
+    """Benchmark NWB file read with fsspec using CachingFileSystem"""
     s3_url = S3_NWB
     repeat = 1
     unit = "Bytes"
@@ -192,6 +196,7 @@ class NetworkBenchmarkFsspecWithCacheFileRead(NetworkBenchmarkBase):
 
 
 class NetworkBenchmarkFsspecFileRead(NetworkBenchmarkBase):
+    """Benchmark NWB file read with fsspec (no extra cache)"""
     s3_url = S3_NWB
     repeat = 1
     unit = "Bytes"

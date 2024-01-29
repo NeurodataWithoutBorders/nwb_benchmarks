@@ -28,19 +28,29 @@ class CaptureConnections(Thread):
 
     @property
     def connection_to_pid(self):
+        """
+        Dict mapping of connections to process pid's.
+        The keys are tuples of 2 ports, and the values are the process id
+        """
         return self.__connection_to_pid
 
     def get_connections_for_pid(self, pid):
+        """
+        Get list of all the connection for a given pid from `self.connection_to_pid`
+        """
         return [k for k, v in self.connection_to_pid.items() if v == pid]
 
     def start(self):
+        """Start the capture thread"""
         self.__run_capture_connections = True
         super(CaptureConnections, self).start()
 
     def stop(self):
+        """Stop the capture thread"""
         self.__run_capture_connections = False
 
     def run(self):
+        """Run the capture thread"""
         while self.__run_capture_connections:
             # using psutil, we can grab each connection's source and destination ports
             # and their process ID
@@ -55,6 +65,7 @@ class CaptureConnections(Thread):
 
     @staticmethod
     def get_local_addresses():
+        """Get list of all local addresses"""
         addresses = [
             psutil.net_if_addrs()[interface][0].address  # get the address of the interface
             for interface in psutil.net_if_addrs()  # for all network interfaces
@@ -72,24 +83,18 @@ class NetProfiler:
     def __init__(self, capture_filename=None):
         self.__capture_filename = capture_filename
         self.__tshark_process = None
-        self.__capture = None
         self.__packets = None
         if self.__capture_filename is None:
             self.__capture_filename = tempfile.NamedTemporaryFile(mode="w", delete=False)
 
     def __del__(self):
         self.stop_capture()
-        try:
-            del self.__capture
-        except Exception:  # pyshark.capture.capture.TSharkCrashException:
-            pass
-        # if isinstance(self.__capture_filename, tempfile.NamedTemporaryFile):
-        #    self.__capture_filename.close()
         if os.path.exists(self.capture_filename):
             os.remove(self.capture_filename)
 
     @property
     def packets(self):
+        """List of all packets captured"""
         if self.__packets is None:
             try:
                 cap = pyshark.FileCapture(self.capture_filename)
@@ -101,24 +106,20 @@ class NetProfiler:
 
     @property
     def capture_filename(self):
+        """Filename of the capture file"""
         if isinstance(self.__capture_filename, str):
             return self.__capture_filename
         else:
             return self.__capture_filename.name
 
-    @property
-    def capture(self):
-        return self.__capture
-
     def start_capture(self):
+        """Start the capture with tshark in a subprocess"""
         tsharkCall = ["tshark", "-w", self.capture_filename]
         self.__tshark_process = subprocess.Popen(tsharkCall, stderr=subprocess.DEVNULL)  # ,
-        # stdout=subprocess.PIPE, shell=True,
-        # start_new_session=True)#,
-        # preexec_fn=os.setsid)
         time.sleep(0.2)  # not sure if this is needed but just to be safe
 
     def stop_capture(self):
+        """Stop the capture with tshark in a subprocess"""
         if self.__tshark_process is not None:
             self.__tshark_process.terminate()
             self.__tshark_process.kill()
@@ -126,6 +127,13 @@ class NetProfiler:
             self.__tshark_process = None
 
     def get_packets_for_connections(self, pid_connections: list):
+        """
+        Get packets for all connections in the given pid_connections list.
+        To get the local connection we can use CaptureConntections to
+        simultaneously capture all connections with psutils and then use
+        `connections_thread.get_connections_for_pid(os.getpid())` to get
+        the local connections.
+        """
         pid_packets = []
         try:
             for packet in self.packets:
@@ -139,8 +147,10 @@ class NetProfiler:
 
 
 class NetStats:
+    """Compute basic statistics about network packets captures with tshark/pyshark"""
     @staticmethod
     def num_packets(packets: list):
+        """Total number of packets"""
         return len(packets)
 
     @staticmethod
@@ -165,6 +175,7 @@ class NetStats:
 
     @staticmethod
     def num_packets_downloaded(packets: list, local_addresses: list = None):
+        """Total number of packets downloaded"""
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
         downloaded = [
@@ -176,6 +187,7 @@ class NetStats:
 
     @staticmethod
     def num_packets_uploaded(packets: list, local_addresses: list = None):
+        """Total number of packets uploaded (e.g., HTTP requests)"""
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
         uploaded = [
@@ -187,11 +199,13 @@ class NetStats:
 
     @staticmethod
     def total_bytes(packets: list):
+        """Total number of bytes in the packets"""
         total_bytes = np.sum([len(packet) for packet in packets])
         return int(total_bytes)
 
     @staticmethod
     def bytes_downloaded(packets: list, local_addresses: list = None):
+        """Total number of bytes from downloaded packets"""
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
         bytes_downloaded = np.sum(
@@ -205,6 +219,7 @@ class NetStats:
 
     @staticmethod
     def bytes_uploaded(packets: list, local_addresses: list = None):
+        """Total number of bytes from uploaded packets"""
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
         bytes_uploaded = np.sum(
@@ -218,9 +233,7 @@ class NetStats:
 
     @staticmethod
     def bytes_to_str(bytes: int) -> str:
-        """
-        Format the size in bytes as a human-readable string
-        """
+        """Format the size in bytes as a human-readable string"""
         for unit in ["", "K", "M", "G", "T", "P"]:
             if bytes < 1024:
                 return f"{bytes:.2f}{unit}B"
@@ -228,6 +241,9 @@ class NetStats:
 
     @classmethod
     def get_stats(cls, packets: list, local_addresses: list = None):
+        """
+        Calculate all the statistics and return them as a dictionary
+        """
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
         stats = {
@@ -244,6 +260,7 @@ class NetStats:
 
     @classmethod
     def print_stats(cls, packets: list, local_addresses: list = None):
+        """Print all the statistics"""
         stats = cls.get_stats(packets=packets, local_addresses=local_addresses)
         for k, v in stats.items():
             print(f"{k}: {v}")
