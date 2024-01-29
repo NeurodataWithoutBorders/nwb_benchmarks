@@ -151,9 +151,11 @@ class NetStats:
         :param packet: raw packet from a pcap file.
         :return: specific packet details
         """
-        web_packets = [packet
-                       for packet in packets
-                       if hasattr(packet, 'tcp') and  packet[packet.transport_layer].dstport in ['80', '443']]
+        web_packets = [
+            packet
+            for packet in packets
+            if hasattr(packet, "tcp") and packet[packet.transport_layer].dstport in ["80", "443"]
+        ]
         return web_packets
 
     @staticmethod
@@ -236,7 +238,7 @@ class NetStats:
             "num_packets_downloaded": cls.num_packets_downloaded(packets=packets, local_addresses=local_addresses),
             "num_packets_uploaded": cls.num_packets_uploaded(packets=packets, local_addresses=local_addresses),
             "num_web_packets": len(cls.get_web_traffic_packets(packets)),
-            "total_transfer_time": cls.transfer_time(packets=packets)
+            "total_transfer_time": cls.transfer_time(packets=packets),
         }
         return stats
 
@@ -289,4 +291,3 @@ if __name__ == "__main__":
     print("num_connections:", int(len(pid_connections) / 2.0))
     NetStats.print_stats(packets=pid_packets)
     print("total_time:", total_time)
-

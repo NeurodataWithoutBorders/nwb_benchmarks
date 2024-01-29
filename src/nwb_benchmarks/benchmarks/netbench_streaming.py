@@ -1,7 +1,7 @@
 """Basic benchmarks for network performance metrics for streaming read of NWB files."""
 # Useful if running in verbose mode
-import warnings
 import tempfile
+import warnings
 
 import fsspec
 import h5py
@@ -10,19 +10,18 @@ import remfile
 from fsspec.asyn import reset_lock
 from fsspec.implementations.cached import CachingFileSystem
 
-
 from .netperf.benchmarks import NetworkBenchmarkBase
 
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
 warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
 S3_NWB = "https://dandiarchive.s3.amazonaws.com/ros3test.nwb"  # Small test NWB file
-#S3_NWB = "https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29"  # ECephy+Behavior
-#S3_NWB = "https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541"  # Ophys
-#S3_NWB = "https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a"   # ICEphys
+# S3_NWB = "https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29"  # ECephy+Behavior
+# S3_NWB = "https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541"  # Ophys
+# S3_NWB = "https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a"   # ICEphys
+
 
 class NetworkBenchmarkRos3Read(NetworkBenchmarkBase):
-
     s3_url = S3_NWB
     repeat = 1
     unit = "Bytes"
@@ -62,7 +61,6 @@ class NetworkBenchmarkRos3Read(NetworkBenchmarkBase):
 
 
 class NetworkBenchmarkRemFileRead(NetworkBenchmarkBase):
-
     s3_url = S3_NWB
     repeat = 1
     unit = "Bytes"
@@ -104,7 +102,6 @@ class NetworkBenchmarkRemFileRead(NetworkBenchmarkBase):
 
 
 class NetworkBenchmarkRemFileWithCacheRead(NetworkBenchmarkBase):
-
     s3_url = S3_NWB
     repeat = 1
     unit = "Bytes"
@@ -148,7 +145,6 @@ class NetworkBenchmarkRemFileWithCacheRead(NetworkBenchmarkBase):
 
 
 class NetworkBenchmarkFsspecWithCacheFileRead(NetworkBenchmarkBase):
-
     s3_url = S3_NWB
     repeat = 1
     unit = "Bytes"
@@ -196,7 +192,6 @@ class NetworkBenchmarkFsspecWithCacheFileRead(NetworkBenchmarkBase):
 
 
 class NetworkBenchmarkFsspecFileRead(NetworkBenchmarkBase):
-
     s3_url = S3_NWB
     repeat = 1
     unit = "Bytes"
