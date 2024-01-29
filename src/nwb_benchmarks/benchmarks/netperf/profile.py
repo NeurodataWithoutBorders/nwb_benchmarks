@@ -148,6 +148,7 @@ class NetProfiler:
 
 class NetStats:
     """Compute basic statistics about network packets captures with tshark/pyshark"""
+
     @staticmethod
     def num_packets(packets: list):
         """Total number of packets"""
