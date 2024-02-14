@@ -2,6 +2,9 @@
 from ..core.common import read_nwbfile_fsspec, read_nwbfile_remfile, read_nwbfile_ros3
 
 
+def slice_dataset(nwbfile, acquisition_path, slice_range):
+    return nwbfile.acquisition[self.acquisition_path].data[self.slice_range]
+
 class FsspecNoCacheFileReadBenchmark:
     repeat = 1
     s3_url = "https://dandiarchive.s3.amazonaws.com/blobs/8c5/65f/8c565f28-e5fc-43fe-8fb7-318ad2081319"
@@ -37,7 +40,7 @@ class FsspecNoCacheSliceBenchmark:
 
     def time_slice(self):
         # Store as self._temp to avoid tracking garbage collection as well
-        self._temp = self.nwbfile.acquisition[self.acquisition_path].data[self.slice_range]
+        self._temp = slice_dataset(nwbfile=self.nwbfile, ...)
 
 
 class Ros3SliceBenchmark:
@@ -51,7 +54,7 @@ class Ros3SliceBenchmark:
 
     def time_slice(self):
         # Store as self._temp to avoid tracking garbage collection as well
-        self._temp = self.nwbfile.acquisition[self.acquisition_path].data[self.slice_range]
+        self._temp = slice_dataset(nwbfile=self.nwbfile, ...)
 
 
 class RemfileSliceBenchmark:
@@ -65,4 +68,4 @@ class RemfileSliceBenchmark:
 
     def time_slice(self):
         # Store as self._temp to avoid tracking garbage collection as well
-        self._temp = self.nwbfile.acquisition[self.acquisition_path].data[self.slice_range]
+        self._temp = slice_dataset(nwbfile=self.nwbfile, ...)
