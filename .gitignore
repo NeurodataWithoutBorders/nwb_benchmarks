@@ -1,5 +1,5 @@
 # ASV
-.asv/*
+.asv/intermediate_results
 
 # Dataset file / log file types:
 /**/*.log

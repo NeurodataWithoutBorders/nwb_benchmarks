@@ -1,11 +1,11 @@
-"""Simple wrapper around `asv run` for conveneience."""
+"""Simple wrapper around `asv run` for convenience."""
 import locale
 import subprocess
 import sys
 
 
 def main():
-    """Simple wrapper around `asv run` for conveneience."""
+    """Simple wrapper around `asv run` for convenience."""
     # TODO: swap to click
     if len(sys.argv) <= 1:
         print("No command provided. Please specify a command (e.g. 'run').")

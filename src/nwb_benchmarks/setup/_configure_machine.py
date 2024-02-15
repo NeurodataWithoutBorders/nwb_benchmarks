@@ -1,4 +1,5 @@
 """Add information to the ASV machine parameters."""
+
 import hashlib
 import json
 import os
@@ -6,29 +7,16 @@ import pathlib
 import platform
 import sys
 import warnings
+from typing import Any, Dict
 
 import psutil
 from numba import cuda
 
 
-def customize_asv_machine_file(file_path: pathlib.Path) -> None:
-    """Modify ASV machine file in-place with additional values."""
-    with open(file=default_asv_machine_file_path, mode="r") as io:
-        machine_file_info = json.load(fp=io)
+def collect_machine_info() -> Dict[str, Dict[str, Any]]:
+    """Collect attributes for uniquely identifying a system and providing metadata associated with performance."""
+    custom_machine_info = dict()
 
-    # Assume there's only one machine configured per installation
-    default_machine_name = next(key for key in machine_file_info.keys() if key != "version")
-
-    # Add flag for detecting if this modification script has been run on the file already
-    if machine_file_info[default_machine_name].get("custom", False):
-        return
-
-    default_machine_info = machine_file_info[default_machine_name]
-    custom_machine_info = dict(custom=True)
-
-    # Add additional tracking parameters from each library
-    # Availability and values can different from system to system so best to simply store all info possible
-    custom_machine_info["defaults"] = default_machine_info  # Defaults tends to have blanks
     custom_machine_info["os"] = dict(cpu_count=os.cpu_count())
     custom_machine_info["sys"] = dict(platform=sys.platform)
     custom_machine_info["platform"] = dict(
@@ -62,9 +50,28 @@ def customize_asv_machine_file(file_path: pathlib.Path) -> None:
     except Exception as exception:
         raise exception
 
-    # Required key at the outer level
-    # This is really the 'ID' of the machines logs
+
+def customize_asv_machine_file(file_path: pathlib.Path) -> None:
+    """Modify ASV machine file in-place with additional values."""
+    with open(file=default_asv_machine_file_path, mode="r") as io:
+        machine_file_info = json.load(fp=io)
+
+    # Assume there's only one machine configured per installation
+    default_machine_name = next(key for key in machine_file_info.keys() if key != "version")
+
+    # Add flag for detecting if this modification script has been run on the file already
+    if machine_file_info[default_machine_name].get("custom", False):
+        return
+
+    default_machine_info = machine_file_info[default_machine_name]
+    custom_machine_info = collect_machine_info()
+
+    custom_machine_info["defaults"] = default_machine_info  # Defaults tends to have blanks
+
+    # Required keys at the outer level
+    # The 'machine' key is really the 'ID' of the machines logs
     # Needs to be unique for a combined results database
+    custom_machine_info.update(custom=True)
     custom_machine_hash = hashlib.sha1(
         string=bytes(json.dumps(obj=custom_machine_info, sort_keys=True), "utf-8")
     ).hexdigest()

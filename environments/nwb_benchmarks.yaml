@@ -10,9 +10,11 @@ dependencies:
   - pip:
       - setuptools
       - asv
+      - parameterized
       - numba>=0.58.1  # Pin to specific version for cuda import
       - psutil
       - pynwb
+      - dandi
       - fsspec
       - requests
       - aiohttp
