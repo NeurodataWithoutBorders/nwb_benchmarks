@@ -1,17 +1,16 @@
-"""
-Base classes for implementing benchmarks for evaluating
-network performance metrics for streaming read of NWB files.
-"""
+"""Base class for implementing benchmarks for evaluating network performance metrics for streaming read of NWB files."""
 
 import os
 import time
 
 from asv_runner.benchmarks.mark import SkipNotImplemented
 
-from .profile import CaptureConnections, NetProfiler, NetStats
+from ._capture_connections import CaptureConnections
+from ._network_profiler import NetworkProfiler
+from ._network_statistics import NetworkStatistics
 
 
-class NetworkBenchmarkBase:
+class BaseNetworkBenchmark:
     """
     Base class for network performance metrics for streaming data access.
 
@@ -68,7 +67,7 @@ class NetworkBenchmarkBase:
         time.sleep(0.2)  # not sure if this is needed but just to be safe
 
         # start capturing the raw packets by running the tshark commandline tool in a subprocess
-        self.netprofiler = NetProfiler()
+        self.netprofiler = NetworkProfiler()
         self.netprofiler.start_capture()
 
     def stop_netcapture(self):
@@ -81,4 +80,4 @@ class NetworkBenchmarkBase:
         # Parse packets and filter out all the packets for this process pid by matching with the pid_connections
         self.pid_packets = self.netprofiler.get_packets_for_connections(self.pid_connections)
         # Compute all the network statistics
-        self.net_stats = NetStats.get_stats(packets=self.pid_packets)
+        self.net_stats = NetworkStatistics.get_stats(packets=self.pid_packets)

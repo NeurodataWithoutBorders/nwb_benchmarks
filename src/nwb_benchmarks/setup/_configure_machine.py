@@ -6,7 +6,6 @@ import os
 import pathlib
 import platform
 import sys
-import unittest
 import warnings
 from typing import Any, Dict
 
@@ -120,18 +119,11 @@ def ensure_machine_info_current(file_path: pathlib.Path):
         return
 
     # If debugging is ever necessary in the future, best way I found to summarize differences was
+    # import unittest
+    #
     # test = unittest.TestCase()
     # test.maxDiff = None
     # test.assertDictEqual(d1=machine_info_from_file, d2=current_machine_info)
 
     warnings.warn("The current machine info is out of date! Automatically updating the file.", stacklevel=2)
     customize_asv_machine_file(file_path=file_path, overwrite=True)
-
-
-if __name__ == "__main__":
-    home_directory = pathlib.Path.home()
-
-    # This should theoretically always be the location across systems
-    default_asv_machine_file_path = home_directory / ".asv-machine.json"
-
-    customize_asv_machine_file(file_path=default_asv_machine_file_path)

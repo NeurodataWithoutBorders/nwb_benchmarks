@@ -10,7 +10,7 @@ import remfile
 from fsspec.asyn import reset_lock
 from fsspec.implementations.cached import CachingFileSystem
 
-from .netperf.benchmarks import NetworkBenchmarkBase
+from nwb_benchmarks.core import BaseNetworkBenchmark
 
 # Useful if running in verbose mode
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
@@ -22,8 +22,8 @@ S3_NWB = "https://dandiarchive.s3.amazonaws.com/ros3test.nwb"  # Small test NWB 
 # S3_NWB = "https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a"   # ICEphys
 
 
-class NetworkBenchmarkRos3Read(NetworkBenchmarkBase):
-    """Benchmark NWB file read with Ros3"""
+class NetworkBenchmarkRos3Read(BaseNetworkBenchmark):
+    """Benchmark NWB file read with ROS3."""
 
     s3_url = S3_NWB
     repeat = 1
@@ -63,12 +63,11 @@ class NetworkBenchmarkRos3Read(NetworkBenchmarkBase):
         return cache["total_time"]
 
 
-class NetworkBenchmarkRemFileRead(NetworkBenchmarkBase):
-    """Benchmark NWB file read with RemFile"""
+class NetworkBenchmarkRemFileRead(BaseNetworkBenchmark):
+    """Benchmark NWB file read with RemFile."""
 
     s3_url = S3_NWB
     repeat = 1
-    unit = "Bytes"
     timeout = 1200
 
     def setup_cache(self):
@@ -84,30 +83,46 @@ class NetworkBenchmarkRemFileRead(NetworkBenchmarkBase):
     def track_bytes_downloaded(self, cache):
         return cache["bytes_downloaded"]
 
+    track_bytes_downloaded.unit = "bytes"
+
     def track_bytes_uploaded(self, cache):
         return cache["bytes_uploaded"]
+
+    track_bytes_uploaded.unit = "bytes"
 
     def track_bytes_total(self, cache):
         return cache["bytes_total"]
 
+    track_bytes_total.unit = "bytes"
+
     def track_num_packets(self, cache):
         return cache["num_packets"]
+
+    track_num_packets.unit = "count"
 
     def track_num_packets_downloaded(self, cache):
         return cache["num_packets_downloaded"]
 
+    track_num_packets_downloaded.unit = "count"
+
     def track_num_packets_uploaded(self, cache):
         return cache["num_packets_uploaded"]
+
+    track_num_packets_uploaded.unit = "count"
 
     def track_total_transfer_time(self, cache):
         return cache["total_transfer_time"]
 
+    track_total_transfer_time.unit = "seconds"
+
     def track_total_time(self, cache):
         return cache["total_time"]
 
+    track_total_time.unit = "seconds"
 
-class NetworkBenchmarkRemFileWithCacheRead(NetworkBenchmarkBase):
-    """Benchmark NWB file read with RemFile using a remfile.DiskCache as a temporary cache"""
+
+class NetworkBenchmarkRemFileWithCacheRead(BaseNetworkBenchmark):
+    """Benchmark NWB file read with RemFile using a remfile.DiskCache as a temporary cache."""
 
     s3_url = S3_NWB
     repeat = 1
@@ -151,8 +166,8 @@ class NetworkBenchmarkRemFileWithCacheRead(NetworkBenchmarkBase):
         return cache["total_time"]
 
 
-class NetworkBenchmarkFsspecWithCacheFileRead(NetworkBenchmarkBase):
-    """Benchmark NWB file read with fsspec using CachingFileSystem"""
+class NetworkBenchmarkFsspecWithCacheFileRead(BaseNetworkBenchmark):
+    """Benchmark NWB file read with fsspec using CachingFileSystem."""
 
     s3_url = S3_NWB
     repeat = 1
@@ -200,8 +215,8 @@ class NetworkBenchmarkFsspecWithCacheFileRead(NetworkBenchmarkBase):
         return cache["total_time"]
 
 
-class NetworkBenchmarkFsspecFileRead(NetworkBenchmarkBase):
-    """Benchmark NWB file read with fsspec (no extra cache)"""
+class NetworkBenchmarkFsspecFileRead(BaseNetworkBenchmark):
+    """Benchmark NWB file read with fsspec (no extra cache)."""
 
     s3_url = S3_NWB
     repeat = 1
