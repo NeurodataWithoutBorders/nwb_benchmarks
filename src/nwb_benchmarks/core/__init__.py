@@ -9,6 +9,7 @@ from ._streaming import (
     read_hdf5_nwbfile_ros3,
     read_hdf5_remfile,
     read_hdf5_ros3,
+    robust_ros3_read,
 )
 
 __all__ = [
@@ -20,4 +21,5 @@ __all__ = [
     "read_hdf5_nwbfile_remfile",
     "get_s3_url",
     "get_object_by_name",
+    "robust_ros3_read",
 ]

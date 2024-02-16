@@ -8,6 +8,7 @@ from nwb_benchmarks.core import (
     read_hdf5_nwbfile_fsspec_no_cache,
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_ros3,
+    robust_ros3_read,
 )
 
 # TODO: add the others
@@ -62,4 +63,4 @@ class Ros3ContinuousSliceBenchmark:
 
     def time_slice(self):
         """Note: store as self._temp to avoid tracking garbage collection as well."""
-        self._temp = self.data[self.slice_range]
+        self._temp = robust_ros3_read(command=self.data.__getitem__, command_args=(self.slice_range,))

@@ -52,7 +52,7 @@ def read_hdf5_nwbfile_remfile(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5
     return (nwbfile, io, file, byte_stream)
 
 
-def robust_s3_read(
+def robust_ros3_read(
     command: Callable,
     max_retries: int = 10,
     command_args: Union[list, None] = None,
