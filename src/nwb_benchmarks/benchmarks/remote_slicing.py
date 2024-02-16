@@ -3,6 +3,7 @@
 from typing import Tuple
 
 from nwb_benchmarks.core import (
+    BaseNetworkBenchmark,
     get_object_by_name,
     get_s3_url,
     read_hdf5_nwbfile_fsspec_no_cache,
@@ -26,7 +27,7 @@ params = (
 )
 
 
-class FsspecNoCacheContinuousSliceBenchmark:
+class FsspecNoCacheContinuousSliceBenchmark(BaseNetworkBenchmark):
     repeat = 1
     param_names = param_names
     params = params
@@ -40,8 +41,11 @@ class FsspecNoCacheContinuousSliceBenchmark:
         """Note: store as self._temp to avoid tracking garbage collection as well."""
         self._temp = self.data_to_slice[slice_range]
 
+    def operation_to_track_network_activity_of(self, s3_url: str, slice_range: Tuple[slice]):
+        self.time_slice(s3_url=s3_url, slice_range=slice_range)
 
-class RemfileContinuousSliceBenchmark:
+
+class RemfileContinuousSliceBenchmark(BaseNetworkBenchmark):
     repeat = 1
     param_names = param_names
     params = params
@@ -55,8 +59,11 @@ class RemfileContinuousSliceBenchmark:
         """Note: store as self._temp to avoid tracking garbage collection as well."""
         self._temp = self.data_to_slice[slice_range]
 
+    def operation_to_track_network_activity_of(self, s3_url: str, slice_range: Tuple[slice]):
+        self.time_slice(s3_url=s3_url, slice_range=slice_range)
 
-class Ros3ContinuousSliceBenchmark:
+
+class Ros3ContinuousSliceBenchmark(BaseNetworkBenchmark):
     repeat = 1
     param_names = param_names
     params = params
@@ -69,3 +76,6 @@ class Ros3ContinuousSliceBenchmark:
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         """Note: store as self._temp to avoid tracking garbage collection as well."""
         self._temp = robust_ros3_read(command=self.data_to_slice.__getitem__, command_args=(slice_range,))
+
+    def operation_to_track_network_activity_of(self, s3_url: str, slice_range: Tuple[slice]):
+        self.time_slice(s3_url=s3_url, slice_range=slice_range)

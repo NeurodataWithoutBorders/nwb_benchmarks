@@ -12,43 +12,17 @@ from ._network_statistics import NetworkStatistics
 
 class BaseNetworkBenchmark:
     """
-    Base class for network performance metrics for streaming data access.
+    Base class for ASV Benchmark network performance metrics for streaming data access.
 
-    Child classes must implement:
-    - test_case : implementing the test case to be run
-    - setup_cache: when implemented here in the base class, asv will run the setup_cache function
-                   only once for all child classes. As such, each child class must implement its
-                   own setup_cache, which should typically just consists of a call to
-                   ``return self.compute_test_case_metrics()``.
-    - track_...: methods defining the metrics to be tracked. These functions usually just retrieve
-                 the corresponding metric from the cache and return the result. For example:
-
-    .. code-block:: python
-
-        def track_bytes_downloaded(self, cache): # unit is Bytes
-            return cache["bytes_downloaded"]
-
-        def track_bytes_uploaded(self, cache): # unit is Bytes
-            return cache["bytes_uploaded"]
-
-        def track_bytes_total(self, cache): # unit is Bytes
-            return cache["bytes_total"]
-
-        def track_num_packets(self, cache): # unit is Count
-            return cache["num_packets"]
-
-        def track_num_packets_downloaded(self, cache): # unit is Count
-            return cache["num_packets_downloaded"]
-
-        def track_num_packets_uploaded(self, cache):  # unit is Count
-            return cache["num_packets_uploaded"]
-
+    Child classes must implement the `operation_to_track_network_activity_of`,
+    which replaces the usual time_ or mem_ operation being tracked.
     """
 
-    s3_url: str = None
-
-    def test_case(self):
+    def operation_to_track_network_activity_of(self):
         raise SkipNotImplemented()
+
+    def setup_cache(self):
+        return self.compute_test_case_metrics()
 
     def compute_test_case_metrics(self):
         self.start_net_capture()
@@ -57,7 +31,7 @@ class BaseNetworkBenchmark:
         t1 = time.time()
         total_time = t1 - t0
         self.stop_netcapture()
-        self.net_stats["total_time"] = total_time
+        self.net_stats["network_total_time"] = total_time
         return self.net_stats
 
     def start_net_capture(self):
@@ -81,3 +55,44 @@ class BaseNetworkBenchmark:
         self.pid_packets = self.netprofiler.get_packets_for_connections(self.pid_connections)
         # Compute all the network statistics
         self.net_stats = NetworkStatistics.get_stats(packets=self.pid_packets)
+
+    def track_bytes_downloaded(self, cache):
+        return cache["bytes_downloaded"]
+
+    track_bytes_downloaded.unit = "bytes"
+
+    def track_bytes_uploaded(self, cache):
+        return cache["bytes_uploaded"]
+
+    track_bytes_uploaded.unit = "bytes"
+
+    def track_bytes_total(self, cache):
+        return cache["bytes_total"]
+
+    track_bytes_total.unit = "bytes"
+
+    def track_num_packets(self, cache):
+        return cache["num_packets"]
+
+    track_num_packets.unit = "count"
+
+    def track_num_packets_downloaded(self, cache):
+        return cache["num_packets_downloaded"]
+
+    track_num_packets_downloaded.unit = "count"
+
+    def track_num_packets_uploaded(self, cache):
+        return cache["num_packets_uploaded"]
+
+    track_num_packets_uploaded.unit = "count"
+
+    def track_total_transfer_time(self, cache):
+        return cache["total_transfer_time"]
+
+    track_total_transfer_time.unit = "seconds"
+
+    def track_network_total_time(self, cache):
+        """Technically different from the official time_ approach."""
+        return cache["network_total_time"]
+
+    track_network_total_time.unit = "seconds"
