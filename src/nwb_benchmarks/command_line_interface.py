@@ -1,7 +1,11 @@
 """Simple wrapper around `asv run` for convenience."""
+
 import locale
+import pathlib
 import subprocess
 import sys
+
+from .setup import customize_asv_machine_file, ensure_machine_info_current
 
 
 def main():
@@ -21,6 +25,12 @@ def main():
 
     if command == "run":
         commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
+
+        default_asv_machine_file_path = pathlib.Path.home() / ".asv-machine.json"
+        if default_asv_machine_file_path.exists():
+            ensure_machine_info_current(file_path=default_asv_machine_file_path)
+        else:
+            customize_asv_machine_file(file_path=default_asv_machine_file_path)
 
         cmd = [
             "asv",

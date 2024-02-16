@@ -2,7 +2,7 @@
 
 import parameterized
 
-from ..core import (
+from nwb_benchmarks.core import (
     get_s3_url,
     read_hdf5_fsspec_no_cache,
     read_hdf5_nwbfile_fsspec_no_cache,

@@ -7,6 +7,7 @@ import h5py
 import pynwb
 import remfile
 from fsspec.asyn import reset_lock
+from fsspec.implementations.http import HTTPFile
 
 # Useful if running in verbose mode
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
@@ -15,7 +16,7 @@ warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
 def read_hdf5_fsspec_no_cache(
     s3_url: str,
-) -> Tuple[h5py.File, fsspec.implementations.http.HTTPFile]:
+) -> Tuple[h5py.File, HTTPFile]:
     """Load the raw HDF5 file from an S3 URL using fsspec without a cache; does not formally read the NWB file."""
     reset_lock()
     fsspec.get_filesystem_class("https").clear_instance_cache()
@@ -28,9 +29,24 @@ def read_hdf5_fsspec_no_cache(
 
 def read_hdf5_nwbfile_fsspec_no_cache(
     s3_url: str,
-) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, fsspec.implementations.http.HTTPFile]:
+) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, HTTPFile]:
     """Read an HDF5 NWB file from an S3 URL using fsspec without a cache."""
     (file, byte_stream) = read_hdf5_fsspec_no_cache(s3_url=s3_url)
+    io = pynwb.NWBHDF5IO(file=file, load_namespaces=True)
+    nwbfile = io.read()
+    return (nwbfile, io, file, byte_stream)
+
+
+def read_hdf5_remfile(s3_url: str) -> Tuple[h5py.File, remfile.File]:
+    """Load the raw HDF5 file from an S3 URL using remfile; does not formally read the NWB file."""
+    byte_stream = remfile.File(url=s3_url)
+    file = h5py.File(name=byte_stream)
+    return (file, byte_stream)
+
+
+def read_hdf5_nwbfile_remfile(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File]:
+    """Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py."""
+    (file, byte_stream) = read_hdf5_remfile(s3_url=s3_url)
     io = pynwb.NWBHDF5IO(file=file, load_namespaces=True)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream)
@@ -73,18 +89,3 @@ def read_hdf5_nwbfile_ros3(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO]
     io = pynwb.NWBHDF5IO(path=ros3_form, mode="r", load_namespaces=True, driver="ros3")
     nwbfile = robust_s3_read(command=io.read)
     return (nwbfile, io)
-
-
-def read_hdf5_remfile(s3_url: str) -> Tuple[h5py.File, remfile.File]:
-    """Load the raw HDF5 file from an S3 URL using remfile; does not formally read the NWB file."""
-    byte_stream = remfile.File(url=s3_url)
-    file = h5py.File(name=byte_stream)
-    return (file, byte_stream)
-
-
-def read_nwbfile_remfile(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File]:
-    """Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py."""
-    (file, byte_stream) = read_hdf5_remfile(s3_url=s3_url)
-    io = pynwb.NWBHDF5IO(file=file, load_namespaces=True)
-    nwbfile = io.read()
-    return (nwbfile, io, file, byte_stream)
