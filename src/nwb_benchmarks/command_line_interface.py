@@ -32,7 +32,7 @@ def main():
             commit_hash,
         ]
         if debug_mode:
-            cmd.extend(["--verbose", "--show-std-err"])
+            cmd.extend(["--verbose", "--show-stderr"])
         if bench_mode:
             cmd.extend(["--bench", specific_benchmark_pattern])
 
