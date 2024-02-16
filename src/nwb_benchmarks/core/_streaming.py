@@ -79,7 +79,7 @@ def robust_ros3_read(
 def read_hdf5_ros3(s3_url: str) -> h5py.File:
     """Load the raw HDF5 file from an S3 URL using ROS3 driver; does not formally read the NWB file."""
     ros3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
-    file = robust_s3_read(command=h5py.File, command_kwargs=dict(name=ros3_form, driver="ros3"))
+    file = robust_ros3_read(command=h5py.File, command_kwargs=dict(name=ros3_form, driver="ros3"))
     return file
 
 
@@ -87,5 +87,5 @@ def read_hdf5_nwbfile_ros3(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO]
     """Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py."""
     ros3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
     io = pynwb.NWBHDF5IO(path=ros3_form, mode="r", load_namespaces=True, driver="ros3")
-    nwbfile = robust_s3_read(command=io.read)
+    nwbfile = robust_ros3_read(command=io.read)
     return (nwbfile, io)

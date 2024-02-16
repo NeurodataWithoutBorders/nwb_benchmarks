@@ -14,7 +14,7 @@ cd nwb_benchmarks
 Setup the environment...
 
 ```
-conda env create -f environments/nwb_benchmarks.yaml
+conda env create --file environments/nwb_benchmarks.yaml --no-default-packages
 conda activate nwb_benchmarks
 ```
 
