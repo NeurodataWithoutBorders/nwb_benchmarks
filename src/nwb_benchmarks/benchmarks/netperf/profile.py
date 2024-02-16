@@ -3,6 +3,7 @@ Example script to test capturing network traffic for remote data reads for NWB
 
 NOTE:  This requires sudo/root access on  macOS and AIX
 """
+
 import os
 import subprocess
 import tempfile

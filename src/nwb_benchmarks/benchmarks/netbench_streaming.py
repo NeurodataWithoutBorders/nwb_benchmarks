@@ -1,4 +1,5 @@
 """Basic benchmarks for network performance metrics for streaming read of NWB files."""
+
 import tempfile
 import warnings
 
