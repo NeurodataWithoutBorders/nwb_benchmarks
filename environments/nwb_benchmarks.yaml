@@ -15,5 +15,6 @@ dependencies:
       - requests
       - aiohttp
       - remfile
+      - pyshark
       - hdmf @ git+https://github.com/hdmf-dev/hdmf.git@expose_aws_region  # required until region fix is released
       - -e ..
