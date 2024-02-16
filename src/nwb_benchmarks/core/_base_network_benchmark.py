@@ -21,13 +21,15 @@ class BaseNetworkBenchmark:
     def operation_to_track_network_activity_of(self):
         raise SkipNotImplemented()
 
-    def setup_cache(self):
-        return self.compute_test_case_metrics()
+    def setup_cache(self, **keyword_arguments):
+        return self.compute_test_case_metrics(**keyword_arguments)
 
-    def compute_test_case_metrics(self):
+    def compute_test_case_metrics(self, **keyword_arguments):
+        """Strategy essentially mimics a single benchmark execution (setup + run), but only once (ignores `repeat`)."""
         self.start_net_capture()
         t0 = time.time()
-        self.test_case()
+        self.setup(**keyword_arguments)
+        self.operation_to_track_network_activity_of(**keyword_arguments)
         t1 = time.time()
         total_time = t1 - t0
         self.stop_netcapture()
