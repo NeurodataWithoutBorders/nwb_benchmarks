@@ -31,7 +31,7 @@ class FsspecNoCacheDirectFileReadBenchmark(BaseNetworkBenchmark):
         self.file, self.bytestream = read_hdf5_fsspec_no_cache(s3_url=s3_url)
 
     def operation_to_track_network_activity_of(self, s3_url: str):
-        self.time_file_read(s3_url=s3_url)
+        self.file, self.bytestream = read_hdf5_fsspec_no_cache(s3_url=s3_url)
 
 
 class RemfileDirectFileReadBenchmark(BaseNetworkBenchmark):
@@ -43,7 +43,7 @@ class RemfileDirectFileReadBenchmark(BaseNetworkBenchmark):
         self.file, self.bytestream = read_hdf5_remfile(s3_url=s3_url)
 
     def operation_to_track_network_activity_of(self, s3_url: str):
-        self.time_file_read(s3_url=s3_url)
+        self.file, self.bytestream = read_hdf5_remfile(s3_url=s3_url)
 
 
 class Ros3DirectFileReadBenchmark(BaseNetworkBenchmark):
@@ -55,7 +55,7 @@ class Ros3DirectFileReadBenchmark(BaseNetworkBenchmark):
         self.file = read_hdf5_ros3(s3_url=s3_url)
 
     def operation_to_track_network_activity_of(self, s3_url: str):
-        self.time_file_read(s3_url=s3_url)
+        self.file = read_hdf5_ros3(s3_url=s3_url)
 
 
 class FsspecNoCacheNWBFileReadBenchmark(BaseNetworkBenchmark):
@@ -67,7 +67,7 @@ class FsspecNoCacheNWBFileReadBenchmark(BaseNetworkBenchmark):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
 
     def operation_to_track_network_activity_of(self, s3_url: str):
-        self.time_file_read(s3_url=s3_url)
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
 
 
 class RemfileNWBFileReadBenchmark(BaseNetworkBenchmark):
@@ -79,7 +79,7 @@ class RemfileNWBFileReadBenchmark(BaseNetworkBenchmark):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
 
     def operation_to_track_network_activity_of(self, s3_url: str):
-        self.time_file_read(s3_url=s3_url)
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
 
 
 class Ros3NWBFileReadBenchmark(BaseNetworkBenchmark):
@@ -91,4 +91,4 @@ class Ros3NWBFileReadBenchmark(BaseNetworkBenchmark):
         self.nwbfile, self.io = read_hdf5_nwbfile_ros3(s3_url=s3_url)
 
     def operation_to_track_network_activity_of(self, s3_url: str):
-        self.time_file_read(s3_url=s3_url)
+        self.nwbfile, self.io = read_hdf5_nwbfile_ros3(s3_url=s3_url)

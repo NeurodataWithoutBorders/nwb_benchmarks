@@ -41,8 +41,8 @@ class FsspecNoCacheContinuousSliceBenchmark(BaseNetworkBenchmark):
         """Note: store as self._temp to avoid tracking garbage collection as well."""
         self._temp = self.data_to_slice[slice_range]
 
-    def operation_to_track_network_activity_of(self, s3_url: str, slice_range: Tuple[slice]):
-        self.time_slice(s3_url=s3_url, slice_range=slice_range)
+    def operation_to_track_network_activity_of(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self._temp = self.data_to_slice[slice_range]
 
 
 class RemfileContinuousSliceBenchmark(BaseNetworkBenchmark):
@@ -59,8 +59,8 @@ class RemfileContinuousSliceBenchmark(BaseNetworkBenchmark):
         """Note: store as self._temp to avoid tracking garbage collection as well."""
         self._temp = self.data_to_slice[slice_range]
 
-    def operation_to_track_network_activity_of(self, s3_url: str, slice_range: Tuple[slice]):
-        self.time_slice(s3_url=s3_url, slice_range=slice_range)
+    def operation_to_track_network_activity_of(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self._temp = self.data_to_slice[slice_range]
 
 
 class Ros3ContinuousSliceBenchmark(BaseNetworkBenchmark):
@@ -77,5 +77,5 @@ class Ros3ContinuousSliceBenchmark(BaseNetworkBenchmark):
         """Note: store as self._temp to avoid tracking garbage collection as well."""
         self._temp = robust_ros3_read(command=self.data_to_slice.__getitem__, command_args=(slice_range,))
 
-    def operation_to_track_network_activity_of(self, s3_url: str, slice_range: Tuple[slice]):
-        self.time_slice(s3_url=s3_url, slice_range=slice_range)
+    def operation_to_track_network_activity_of(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self._temp = self.data_to_slice[slice_range]
