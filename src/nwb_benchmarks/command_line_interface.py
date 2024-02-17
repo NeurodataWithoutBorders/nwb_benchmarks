@@ -48,7 +48,7 @@ def main():
             "asv",
             "run",
             "--python=same",
-            "--append-samples",
+            "--record-samples",
             "--set-commit-hash",
             commit_hash,
         ]
