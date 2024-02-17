@@ -30,6 +30,7 @@ class DirectFileReadBenchmark:
     Note: in all cases, store the in-memory objects to avoid timing garbage collection steps.
     """
 
+    rounds = 1
     repeat = 3
     param_names = param_names
     params = params
@@ -51,6 +52,7 @@ class NWBFileReadBenchmark:
     Note: in all cases, store the in-memory objects to avoid timing garbage collection steps.
     """
 
+    rounds = 1
     repeat = 3
     param_names = param_names
     params = params

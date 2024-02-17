@@ -27,6 +27,7 @@ params = (
 
 
 class FsspecNoCacheContinuousSliceBenchmark:
+    rounds = 1
     repeat = 3
     param_names = param_names
     params = params
@@ -42,6 +43,7 @@ class FsspecNoCacheContinuousSliceBenchmark:
 
 
 class RemfileContinuousSliceBenchmark:
+    rounds = 1
     repeat = 3
     param_names = param_names
     params = params
@@ -57,6 +59,7 @@ class RemfileContinuousSliceBenchmark:
 
 
 class Ros3ContinuousSliceBenchmark:
+    rounds = 1
     repeat = 3
     param_names = param_names
     params = params
