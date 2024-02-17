@@ -1,0 +1,30 @@
+{
+    "version": 2,
+    "timestamp": "2024_02_17_16_57_19",
+    "commit_hash": "232e0a0b3c078721ababa4d5092f5004218be429",
+    "environment_hash": "509c211421a12aeede580b602fde9cda8143b0aa",
+    "machine_hash": "9d805e6bc6fe1582a6a348d5cfddde3e86882815",
+    "results": {
+        "time_remote_slicing.FsspecNoCacheContinuousSliceBenchmark.time_slice": {
+            "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": [
+                14.818761999951676,
+                0.5790009999764152,
+                0.5698381999973208
+            ]
+        },
+        "time_remote_slicing.RemfileContinuousSliceBenchmark.time_slice": {
+            "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": [
+                0.5136904999963008,
+                6.672003800049424,
+                0.5568801999907009
+            ]
+        },
+        "time_remote_slicing.Ros3ContinuousSliceBenchmark.time_slice": {
+            "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": [
+                0.008511899970471859,
+                0.007832199975382537,
+                0.007379399961791933
+            ]
+        }
+    }
+}
