@@ -70,8 +70,8 @@ def main():
             if not any(path.stem == skip_stems for skip_stems in ["benchmarks", "machine"])
         ]
         assert len(globbed_json_file_paths) == 1, (
-            "More than one intermediate result found, likely as a result of a previous failure to reduce the results! "
-            "Please manually remove these."
+            "A single intermediate result was not found, likely as a result of a previous failure to reduce "
+            "the results! Please manually remove these."
         )
         raw_results_file_path = globbed_json_file_paths[0]
         reduce_results(

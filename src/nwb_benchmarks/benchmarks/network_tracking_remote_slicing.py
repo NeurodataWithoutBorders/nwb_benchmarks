@@ -1,8 +1,9 @@
 """Basic benchmarks for stream NWB files and their contents."""
 
-from typing import Tuple
+from typing import Any, Dict, Tuple
 
 from nwb_benchmarks.core import (
+    BaseNetworkBenchmark,
     TrackNetworkStatistics,
     get_object_by_name,
     get_s3_url,
@@ -43,10 +44,20 @@ class FsspecNoCacheContinuousSliceBenchmark(BaseNetworkBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_statistics(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with TrackNetworkStatistics as network_statistics:
+    def track_network_statistics_context_proposal(
+        self, s3_url: str, object_name: str, slice_range: Tuple[slice]
+    ) -> Dict[str, Any]:
+        with TrackNetworkStatistics() as network_statistics:
             self._temp = self.data_to_slice[slice_range]
-        return network_statistics.serialize()
+        return network_statistics
+
+    def track_network_statistics_manual_proposal(
+        self, s3_url: str, object_name: str, slice_range: Tuple[slice]
+    ) -> Dict[str, Any]:
+        self.start_net_capture()
+        self._temp = self.data_to_slice[slice_range]
+        self.stop_netcapture()
+        return self.network_statistics
 
 
 class RemfileContinuousSliceBenchmark(BaseNetworkBenchmark):
