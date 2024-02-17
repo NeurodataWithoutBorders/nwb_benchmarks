@@ -39,6 +39,10 @@ Many of the current tests can take several minutes to complete; the entire suite
 
 To run only a single benchmark, use the `--bench <benchmark file stem or module+class+test function names>` flag.
 
+To contribute your results back to the project, just be sure to `git add` and `commit` the results in the main `results` folder.
+
+Note: Each result file should be single to double-digit KB in size; if we ever reach the point where this is prohibitive to store on GitHub itself, then we will investigate other upload strategies and purge the folder from the repository history.
+
 ## Building the documentation
 
 To install the additional packages required to build the docs execute the command ...
