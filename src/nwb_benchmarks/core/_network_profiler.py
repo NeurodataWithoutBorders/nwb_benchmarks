@@ -60,8 +60,8 @@ class NetworkProfiler:
             self.__tshark_process.kill()
             del self.__tshark_process
             self.__tshark_process = None
-        if hasattr(self, "capture_file"):
-            del self.capture_file
+        # if hasattr(self, "capture_file"):
+        #     del self.capture_file
 
     def get_packets_for_connections(self, pid_connections: list):
         """
