@@ -3,7 +3,6 @@
 from typing import Tuple
 
 from nwb_benchmarks.core import (
-    BaseNetworkBenchmark,
     get_object_by_name,
     get_s3_url,
     read_hdf5_nwbfile_fsspec_no_cache,
@@ -27,8 +26,8 @@ params = (
 )
 
 
-class FsspecNoCacheContinuousSliceBenchmark(BaseNetworkBenchmark):
-    repeat = 1
+class FsspecNoCacheContinuousSliceBenchmark:
+    repeat = 3
     param_names = param_names
     params = params
 
@@ -41,12 +40,9 @@ class FsspecNoCacheContinuousSliceBenchmark(BaseNetworkBenchmark):
         """Note: store as self._temp to avoid tracking garbage collection as well."""
         self._temp = self.data_to_slice[slice_range]
 
-    def operation_to_track_network_activity_of(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self._temp = self.data_to_slice[slice_range]
 
-
-class RemfileContinuousSliceBenchmark(BaseNetworkBenchmark):
-    repeat = 1
+class RemfileContinuousSliceBenchmark:
+    repeat = 3
     param_names = param_names
     params = params
 
@@ -59,12 +55,9 @@ class RemfileContinuousSliceBenchmark(BaseNetworkBenchmark):
         """Note: store as self._temp to avoid tracking garbage collection as well."""
         self._temp = self.data_to_slice[slice_range]
 
-    def operation_to_track_network_activity_of(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self._temp = self.data_to_slice[slice_range]
 
-
-class Ros3ContinuousSliceBenchmark(BaseNetworkBenchmark):
-    repeat = 1
+class Ros3ContinuousSliceBenchmark:
+    repeat = 3
     param_names = param_names
     params = params
 
@@ -76,6 +69,3 @@ class Ros3ContinuousSliceBenchmark(BaseNetworkBenchmark):
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         """Note: store as self._temp to avoid tracking garbage collection as well."""
         self._temp = robust_ros3_read(command=self.data_to_slice.__getitem__, command_args=(slice_range,))
-
-    def operation_to_track_network_activity_of(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self._temp = self.data_to_slice[slice_range]

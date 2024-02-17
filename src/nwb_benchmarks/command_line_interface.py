@@ -35,8 +35,9 @@ def main():
         cmd = [
             "asv",
             "run",
+            "-a rounds=1",
             "--python=same",
-            "--record-samples",
+            "--append-samples",
             "--set-commit-hash",
             commit_hash,
         ]

@@ -79,7 +79,9 @@ def robust_ros3_read(
 def read_hdf5_ros3(s3_url: str) -> h5py.File:
     """Load the raw HDF5 file from an S3 URL using ROS3 driver; does not formally read the NWB file."""
     ros3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
-    file = robust_ros3_read(command=h5py.File, command_kwargs=dict(name=ros3_form, driver="ros3"))
+    file = robust_ros3_read(
+        command=h5py.File, command_kwargs=dict(name=ros3_form, driver="ros3", aws_region=bytes("us-east-2", "ascii"))
+    )
     return file
 
 

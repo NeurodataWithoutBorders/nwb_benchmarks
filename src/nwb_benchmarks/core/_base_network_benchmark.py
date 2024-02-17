@@ -14,18 +14,20 @@ class BaseNetworkBenchmark:
     """
     Base class for ASV Benchmark network performance metrics for streaming data access.
 
-    Child classes must implement the `operation_to_track_network_activity_of`,
-    which replaces the usual time_ or mem_ operation being tracked.
+    Child classes must implement:
+        1) The `operation_to_track_network_activity_of`, which replaces the usual time_ or mem_ operation being tracked.
+        2) The `setup_cache` method to explicitly recieve the necessary keyword arguments to be passed to the operation.
     """
 
-    def operation_to_track_network_activity_of(self):
+    def operation_to_track_network_activity_of(self, **keyword_arguments):
         raise SkipNotImplemented()
 
-    def setup_cache(self, **keyword_arguments):
-        return self.compute_test_case_metrics(**keyword_arguments)
+    def setup_cache(self, **keyword_arguments) -> dict:
+        """
+        Strategy essentially mimics a single benchmark execution (setup + run).
 
-    def compute_test_case_metrics(self, **keyword_arguments):
-        """Strategy essentially mimics a single benchmark execution (setup + run), but only once (ignores `repeat`)."""
+        Only supports single operations (ignores `repeat` and prohibits `params`).
+        """
         self.start_net_capture()
         t0 = time.time()
         self.setup(**keyword_arguments)
@@ -58,43 +60,43 @@ class BaseNetworkBenchmark:
         # Compute all the network statistics
         self.net_stats = NetworkStatistics.get_stats(packets=self.pid_packets)
 
-    def track_bytes_downloaded(self, cache):
-        return cache["bytes_downloaded"]
+    def track_bytes_downloaded(self, net_stats: dict):
+        return net_stats["bytes_downloaded"]
 
     track_bytes_downloaded.unit = "bytes"
 
-    def track_bytes_uploaded(self, cache):
-        return cache["bytes_uploaded"]
+    def track_bytes_uploaded(self, net_stats: dict):
+        return net_stats["bytes_uploaded"]
 
     track_bytes_uploaded.unit = "bytes"
 
-    def track_bytes_total(self, cache):
-        return cache["bytes_total"]
+    def track_bytes_total(self, net_stats: dict):
+        return net_stats["bytes_total"]
 
     track_bytes_total.unit = "bytes"
 
-    def track_num_packets(self, cache):
-        return cache["num_packets"]
+    def track_num_packets(self, net_stats: dict):
+        return net_stats["num_packets"]
 
     track_num_packets.unit = "count"
 
-    def track_num_packets_downloaded(self, cache):
-        return cache["num_packets_downloaded"]
+    def track_num_packets_downloaded(self, net_stats: dict):
+        return net_stats["num_packets_downloaded"]
 
     track_num_packets_downloaded.unit = "count"
 
-    def track_num_packets_uploaded(self, cache):
-        return cache["num_packets_uploaded"]
+    def track_num_packets_uploaded(self, net_stats: dict):
+        return net_stats["num_packets_uploaded"]
 
     track_num_packets_uploaded.unit = "count"
 
-    def track_total_transfer_time(self, cache):
-        return cache["total_transfer_time"]
+    def track_total_transfer_time(self, net_stats: dict):
+        return net_stats["total_transfer_time"]
 
     track_total_transfer_time.unit = "seconds"
 
-    def track_network_total_time(self, cache):
+    def track_network_total_time(self, net_stats: dict):
         """Technically different from the official time_ approach."""
-        return cache["network_total_time"]
+        return net_stats["network_total_time"]
 
     track_network_total_time.unit = "seconds"

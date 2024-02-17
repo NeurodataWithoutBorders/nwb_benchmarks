@@ -20,6 +20,11 @@ time.sleep(0.2)  # not sure if this is needed but just to be safe
 netprofiler = NetworkProfiler()
 
 # If `tshark` is not available as a global command, specify the pathlib.Path pointing to the .exe
+# Otherwise, set to None or do not pass into `.start_capture`
+
+# tshark_exe_path=pathlib.Path("D:/Wireshark/tshark.exe")
+tshark_exe_path = None
+
 netprofiler.start_capture(tshark_exe_path=pathlib.Path("D:/Wireshark/tshark.exe"))
 
 ###
