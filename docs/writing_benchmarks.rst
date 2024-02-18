@@ -48,6 +48,7 @@ To reduce duplicated code, it is suggested to write standalone helper functions 
 An example of this philosophy in practice would be as follows. In this example we wish to test how long it takes to both read a small remote NWB file (from the ``s3_url``) using the ``remfile`` method as well as how long it takes to slice ~20 MB of data from the contents of a remote NWB file that has a large amount of series data.
 
 .. code-block:: python
+
     from nwb_benchmarks.core import read_hdf5_nwbfile_remfile
 
     class NWBFileReadBenchmark:
@@ -89,6 +90,7 @@ An example of this philosophy in practice would be as follows. In this example w
 Notice how the ``read_hdf5_nwbfile_remfile`` method was used as both the main operating being timed in the first case, then reused in the ``setup`` of the of the second. By following the redirection of the function to its definition, we find it is itself a compound of another helper function for ``remfile`` usage...
 
 .. code-block:: python
+
     # In nwb_benchmarks/core/_streaming.py
 
     def read_hdf5_remfile(s3_url: str) -> Tuple[h5py.File, remfile.File]:
