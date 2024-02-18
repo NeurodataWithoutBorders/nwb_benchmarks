@@ -34,3 +34,75 @@ Finally, you can leverage ``params`` and ``param_names`` to perform a structured
     This structure for ``params`` can be very inconvenient to specify; if you desire a helper function that would instead take a flat list of dictionaries to serve as keyword arguments for all the iteration cases, please request it on our issues board.
 
 For more advanced details, refer to the `primary AirSpeed Velocity documentation <https://asv.readthedocs.io/en/stable/index.html>`_.
+
+
+Philosophy
+----------
+
+In the spirit of PEP8, it was decided from PRs 12, 19, 20, and 21 and ensuing meetings that we should adopt an explicit functionally-based approach to structuring these classes and their methods. This will help make the project  much easier to understand for people outside the team and will even reduce the amount of time it takes our main developers to read benchmarks they have not seen before or have forgotten about over an extended period of time.
+
+This approach means relying as little on inheritance and mixins as possible to reduce the amount of implicit knowledge required to understand a benchmark just by looking at it - instead, all instance methods of the benchmark class should be explicitly defined.
+
+To reduce duplicated code, it is suggested to write standalone helper functions in the ``core`` submodule and then call those functions within the benchmarks. This does mean that some redirection is still required to understand exactly how a given helper function operates, but this was deemed worth it to keep the actual size of benchmarks from inflating.
+
+An example of this philosophy in practice would be as follows. In this example we wish to test how long it takes to both read a small remote NWB file (from the ``s3_url``) using the ``remfile`` method as well as how long it takes to slice ~20 MB of data from the contents of a remote NWB file that has a large amount of series data.
+
+.. code-block:: python
+    from nwb_benchmarks.core import read_hdf5_nwbfile_remfile
+
+    class NWBFileReadBenchmark:
+        param_names = ["s3_url"]
+        params = [
+            "https://dandiarchive.s3.amazonaws.com/ros3test.nwb",  # The original small test NWB file
+        ]
+
+        def time_read_hdf5_nwbfile_remfile(self, s3_url: str):
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
+
+
+.. code-block:: python
+
+    from nwb_benchmarks.core import get_s3_url, read_hdf5_nwbfile_remfile
+
+    class RemfileContinuousSliceBenchmark:
+        param_names = ["s3_url", "object_name", "slice_range"]
+        params = (
+            [
+                get_s3_url(  # Yet another helper function for making the NWB file input easier to read
+                    dandiset_id="000717",
+                    dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
+                )
+            ],
+            ["ElectricalSeriesAp"],
+            [(slice(0, 30_000), slice(0, 384))],  # ~23 MB
+        )
+
+        def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
+            self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name="ElectricalSeriesAp")
+            self.data_to_slice = self.neurodata_object.data
+
+        def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+            """Note: store as self._temp to avoid tracking garbage collection as well."""
+            self._temp = self.data_to_slice[slice_range]
+
+Notice how the ``read_hdf5_nwbfile_remfile`` method was used as both the main operating being timed in the first case, then reused in the ``setup`` of the of the second. By following the redirection of the function to its definition, we find it is itself a compound of another helper function for ``remfile`` usage...
+
+.. code-block:: python
+    # In nwb_benchmarks/core/_streaming.py
+
+    def read_hdf5_remfile(s3_url: str) -> Tuple[h5py.File, remfile.File]:
+        """Load the raw HDF5 file from an S3 URL using remfile; does not formally read the NWB file."""
+        byte_stream = remfile.File(url=s3_url)
+        file = h5py.File(name=byte_stream)
+        return (file, byte_stream)
+
+
+    def read_hdf5_nwbfile_remfile(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File]:
+        """Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py."""
+        (file, byte_stream) = read_hdf5_remfile(s3_url=s3_url)
+        io = pynwb.NWBHDF5IO(file=file, load_namespaces=True)
+        nwbfile = io.read()
+        return (nwbfile, io, file, byte_stream)
+
+and so we managed to save ~5 lines of code for every occurence of this logic in the benchmarks. Good choices of function names are critical to effectively communicating the actions being undertaken. Thorough annotation of signatures is likewise critical to understanding input/output relationships for these functions.

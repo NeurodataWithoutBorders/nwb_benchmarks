@@ -1,18 +1,20 @@
-# nwb_benchmarks
+# NWB Benchmarks
 
 Benchmark suite for NWB performances using a customization of [airspeed velocity](https://asv.readthedocs.io/en/stable/).
 
 
 
-## Building the documentation
+## Building the Documentation
 
-To install the additional packages required to build the docs execute the command ...
+Public documentation can be found via `readthedocs`: https://nwb-benchmarks.readthedocs.io/en/latest/
+
+To generate them locally, first install the additional packages required by executing the command...
 
 ```
 pip install -r docs/requirements-rtd.txt
 ```
 
-To build the docs execute the command ...
+then build the docs by executing the command...
 
 ```
 mkdir -p docs/build/html

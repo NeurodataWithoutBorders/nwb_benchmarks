@@ -1,4 +1,4 @@
-nwb_benchmarks
+NWB Benchmarks
 ==============
 
 This project is an effort to understand, in a robust and reproducible manner, the principles underlying optimized file storage patterns for reading and writing NWB files from both local filesystems and remotely from the cloud (in particular, AWS S3 buckets).
