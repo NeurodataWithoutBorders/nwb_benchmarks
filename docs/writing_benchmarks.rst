@@ -45,7 +45,7 @@ This approach means relying as little on inheritance and mixins as possible to r
 
 To reduce duplicated code, it is suggested to write standalone helper functions in the ``core`` submodule and then call those functions within the benchmarks. This does mean that some redirection is still required to understand exactly how a given helper function operates, but this was deemed worth it to keep the actual size of benchmarks from inflating.
 
-An example of this philosophy in practice would be as follows. In this example we wish to test how long it takes to both read a small remote NWB file (from the ``s3_url``) using the ``remfile`` method as well as how long it takes to slice ~20 MB of data from the contents of a remote NWB file that has a large amount of series data.
+An example of this philosophy in practice would be as follows. In this example we wish to test how long it takes to both read a small remote NWB file (from the ``s3_url``) using the ``remfile`` method...
 
 .. code-block:: python
 
@@ -60,6 +60,7 @@ An example of this philosophy in practice would be as follows. In this example w
         def time_read_hdf5_nwbfile_remfile(self, s3_url: str):
             self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
 
+as well as how long it takes to slice ~20 MB of data from the contents of a remote NWB file that has a large amount of series data...
 
 .. code-block:: python
 
@@ -87,7 +88,7 @@ An example of this philosophy in practice would be as follows. In this example w
             """Note: store as self._temp to avoid tracking garbage collection as well."""
             self._temp = self.data_to_slice[slice_range]
 
-Notice how the ``read_hdf5_nwbfile_remfile`` method was used as both the main operating being timed in the first case, then reused in the ``setup`` of the of the second. By following the redirection of the function to its definition, we find it is itself a compound of another helper function for ``remfile`` usage...
+Notice how the ``read_hdf5_nwbfile_remfile`` function (which reads an HDF5-backend ``pynwb.NWBFile`` object into memory using the ``remfile`` method) was used as both the main operation being timed in the first case, then reused in the ``setup`` of the of the second. By following the redirection of the function to its definition, we find it is itself a compound of another helper function for ``remfile`` usage...
 
 .. code-block:: python
 
