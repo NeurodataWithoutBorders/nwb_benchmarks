@@ -13,7 +13,7 @@ from .setup import (
 )
 
 
-def main():
+def main() -> None:
     """Simple wrapper around `asv run` for convenience."""
     # TODO: swap to click
     if len(sys.argv) <= 1:
@@ -28,10 +28,19 @@ def main():
     if bench_mode:
         specific_benchmark_pattern = flags_list[flags_list.index("--bench") + 1]
 
-    if command == "run":
+    default_asv_machine_file_path = pathlib.Path.home() / ".asv-machine.json"
+    if command == "setup":
+        if default_asv_machine_file_path.exists():
+            ensure_machine_info_current(file_path=default_asv_machine_file_path)
+            return
+
+        process = subprocess.Popen(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
+        process.wait()
+
+        customize_asv_machine_file(file_path=default_asv_machine_file_path)
+    elif command == "run":
         commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
 
-        default_asv_machine_file_path = pathlib.Path.home() / ".asv-machine.json"
         if default_asv_machine_file_path.exists():
             ensure_machine_info_current(file_path=default_asv_machine_file_path)
         else:

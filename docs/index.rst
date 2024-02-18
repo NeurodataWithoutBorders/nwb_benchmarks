@@ -1,7 +1,7 @@
 nwb_benchmarks
 ==============
 
-This project is an effort to establish and understand, in a robust and reproducible manner, the principles underlying optimized file storage patterns for reading and writing NWB files from both local filesystems and the cloud (in particular, AWS S3).
+This project is an effort to understand, in a robust and reproducible manner, the principles underlying optimized file storage patterns for reading and writing NWB files from both local filesystems and remotely from the cloud (in particular, AWS S3 buckets).
 
 Funding is provided by NOSI ...
 
@@ -10,7 +10,7 @@ Funding is provided by NOSI ...
   :caption: Contents
 
   setup
-  using_asv
+  running_benchmarks
   writing_benchmarks
   development
 

@@ -112,9 +112,6 @@ def ensure_machine_info_current(file_path: pathlib.Path):
     machine_info_from_file.pop("machine")
     machine_info_from_file.pop("custom")
 
-    with open(file=file_path.parent / "test.json", mode="w") as io:
-        json.dump(fp=io, obj=current_machine_info, indent=4)
-
     if machine_info_from_file == current_machine_info:
         return
 
