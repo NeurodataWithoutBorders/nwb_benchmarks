@@ -1,57 +1,20 @@
-# nwb_benchmarks
+# NWB Benchmarks
 
-Benchmark suite for NWB performances using [airspeed velocity](https://asv.readthedocs.io/en/stable/).
+Benchmark suite for NWB performances using a customization of [airspeed velocity](https://asv.readthedocs.io/en/stable/).
 
-## Getting Started
 
-To get started, clone this repo...
 
-```
-git clone https://github.com/neurodatawithoutborders/nwb_benchmarks.git
-cd nwb_benchmarks
-```
+## Building the Documentation
 
-Setup the environment...
+Public documentation can be found via `readthedocs`: https://nwb-benchmarks.readthedocs.io/en/latest/
 
-```
-conda env create --file environments/nwb_benchmarks.yaml --no-default-packages
-conda activate nwb_benchmarks
-```
-
-Configure tracking of our custom machine-dependent parameters by calling...
-
-```
-asv machine --yes
-python src/nwb_benchmarks/setup/configure_machine.py
-```
-
-Please note that we do not currently distinguish any configurations based on your internet; as such there may be difference observed from the same machine in the results database if that machine is a laptop that runs the testing suite on a wide variety of internet qualities.
-
-## Running Benchmarks
-
-To run the full benchmark suite, please ensure you are not running any additional heavy processes in the background to avoid interference or bottlenecks, then execute the command...
-
-```
-nwb_benchmarks run
-```
-
-Many of the current tests can take several minutes to complete; the entire suite can take 10 or more minutes. Grab some coffee, read a book, or better yet (when the suite becomes larger) just leave it to run overnight.
-
-To run only a single benchmark, use the `--bench <benchmark file stem or module+class+test function names>` flag.
-
-To contribute your results back to the project, just be sure to `git add` and `commit` the results in the main `results` folder.
-
-Note: Each result file should be single to double-digit KB in size; if we ever reach the point where this is prohibitive to store on GitHub itself, then we will investigate other upload strategies and purge the folder from the repository history.
-
-## Building the documentation
-
-To install the additional packages required to build the docs execute the command ...
+To generate them locally, first install the additional packages required by executing the command...
 
 ```
 pip install -r docs/requirements-rtd.txt
 ```
 
-To build the docs execute the command ...
+then build the docs by executing the command...
 
 ```
 mkdir -p docs/build/html
