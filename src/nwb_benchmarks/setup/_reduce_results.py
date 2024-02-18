@@ -35,7 +35,7 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
 
     # In timestamp, replace separators with underscores for file path
     unix_time_to_datetime = str(datetime.datetime.fromtimestamp(raw_results_info["date"] / 1e3))
-    timestamp = unix_time_to_datetime.replace(" ", "_").replace("-", "_").replace(":", "_")
+    timestamp = unix_time_to_datetime.replace(" ", "-").replace(":", "-")
 
     environment_hash = hashlib.sha1(string=bytes(json.dumps(obj=parsed_environment_info), "utf-8")).hexdigest()
     machine_hash = raw_results_info["params"]["machine"]
@@ -80,7 +80,8 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
     # 'processed' results go to nwb_benchmarks/results
     main_results_folder = raw_results_file_path.parent.parent.parent.parent / "results"
     parsed_results_file = (
-        main_results_folder / f"timestamp-{timestamp}_machine-{machine_hash}_environment-{environment_hash}.json"
+        main_results_folder
+        / f"results_timestamp-{timestamp}_machine-{machine_hash}_environment-{environment_hash}.json"
     )
     main_results_folder.mkdir(parents=True, exist_ok=True)
 
@@ -89,12 +90,12 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
 
     # Copy machine file to main results
     machine_info_file_path = raw_results_file_path.parent / "machine.json"
-    machine_info_copy_file_path = main_results_folder / f"machine-{machine_hash}.json"
+    machine_info_copy_file_path = main_results_folder / f"info_machine-{machine_hash}.json"
     if not machine_info_copy_file_path.exists():
         shutil.copyfile(src=machine_info_file_path, dst=machine_info_copy_file_path)
 
     # Save parsed environment info within machine subdirectory of .asv
-    parsed_environment_file_path = main_results_folder / f"environment-{environment_hash}.json"
+    parsed_environment_file_path = main_results_folder / f"info_environment-{environment_hash}.json"
     if not parsed_environment_file_path.exists():
         with open(file=parsed_environment_file_path, mode="w") as io:
             json.dump(obj=parsed_environment_info, fp=io, indent=4)
