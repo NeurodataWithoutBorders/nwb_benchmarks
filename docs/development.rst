@@ -77,4 +77,4 @@ Since all we're really after here is the raw tracking output, some custom reduct
 Network Tracking
 ----------------
 
-Please contact Oliver Ruebel for details.
+Stay tuned https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues/24
