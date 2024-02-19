@@ -46,10 +46,10 @@ class NetworkProfiler:
                 pass
         return self.__packets
 
-    def start_capture(self, tshark_exe_path: Union[pathlib.Path, None] = None):
+    def start_capture(self, tshark_path: Union[pathlib.Path, None] = None):
         """Start the capture with tshark in a subprocess."""
-        tshark_exe_path = tshark_exe_path or "tshark"
-        tsharkCall = [str(tshark_exe_path), "-w", str(self.capture_file_path)]
+        tshark_path = tshark_path or "tshark"
+        tsharkCall = [str(tshark_path), "-w", str(self.capture_file_path)]
         self.__tshark_process = subprocess.Popen(tsharkCall, stderr=subprocess.DEVNULL)
         time.sleep(0.2)  # not sure if this is needed but just to be safe
 

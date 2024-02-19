@@ -78,6 +78,9 @@ def main() -> None:
             for path in pathlib.Path(asv_root / "intermediate_results").rglob("*.json")
             if not any(path.stem == skip_stems for skip_stems in ["benchmarks", "machine"])
         ]
+        assert (
+            len(globbed_json_file_paths) > 0
+        ), "No intermediate result was found, likely as a result of a failure in the benchmarks."
         assert len(globbed_json_file_paths) == 1, (
             "A single intermediate result was not found, likely as a result of a previous failure to reduce "
             "the results! Please manually remove these."

@@ -3,11 +3,13 @@ Running the Benchmarks
 
 Before running the benchmark suite, please ensure you are not running any additional heavy processes in the background to avoid interference or bottlenecks.
 
-To run the full benchmark suite, simply call...
+To run the full benchmark suite, including network tracking tests (which require ``sudo`` on Mac or Linux), simply call...
 
 .. code-block::
 
-    nwb_benchmarks run
+    sudo nwb_benchmarks run
+
+Or drop the ``sudo`` if on Windows. Running on Windows may also require you to set the ``TSHARK_PATH`` environment variable beforehand.
 
 Many of the current tests can take several minutes to complete; the entire suite will take many times that. Grab some coffee, read a book, or better yet (when the suite becomes larger) just leave it to run overnight.
 

@@ -4,14 +4,13 @@ import os
 from typing import Tuple
 
 from nwb_benchmarks.core import (
-    BaseNetworkBenchmark,
     get_object_by_name,
     get_s3_url,
+    network_activity_tracker,
     read_hdf5_nwbfile_fsspec_no_cache,
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_ros3,
     robust_ros3_read,
-    track_network_activity,
 )
 
 TSHARK_PATH = os.environ.get("TSHARK_PATH", None)
@@ -30,36 +29,51 @@ params = (
 
 
 class FsspecNoCacheContinuousSliceBenchmark:
+    rounds = 1
+    repeat = 3
+    param_names = param_names
+    params = params
+
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with track_network_activity(tshark_path=TSHARK_PATH) as network_tracker:
+    def network_activity_tracker_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp = self.data_to_slice[slice_range]
         return network_tracker.network_statistics
 
 
 class RemfileContinuousSliceBenchmark:
+    rounds = 1
+    repeat = 3
+    param_names = param_names
+    params = params
+
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with track_network_activity(tshark_path=TSHARK_PATH) as network_tracker:
+    def network_activity_tracker_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp = self.data_to_slice[slice_range]
         return network_tracker.network_statistics
 
 
 class Ros3ContinuousSliceBenchmark:
+    rounds = 1
+    repeat = 3
+    param_names = param_names
+    params = params
+
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io = read_hdf5_nwbfile_ros3(s3_url=s3_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with track_network_activity(tshark_path=TSHARK_PATH) as network_tracker:
+    def network_activity_tracker_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp = robust_ros3_read(command=self.data_to_slice.__getitem__, command_args=slice_range)
         return network_tracker.network_statistics

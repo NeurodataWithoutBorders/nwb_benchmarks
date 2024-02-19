@@ -4,7 +4,7 @@ from ._capture_connections import CaptureConnections
 from ._dandi import get_s3_url
 from ._network_profiler import NetworkProfiler
 from ._network_statistics import NetworkStatistics
-from ._network_tracker import track_network_activity
+from ._network_tracker import network_activity_tracker
 from ._nwb_helpers import get_object_by_name
 from ._streaming import (
     read_hdf5_fsspec_no_cache,
@@ -20,7 +20,7 @@ __all__ = [
     "CaptureConnections",
     "NetworkProfiler",
     "NetworkStatistics",
-    "track_network_activity",
+    "network_activity_tracker",
     "read_hdf5_fsspec_no_cache",
     "read_hdf5_nwbfile_fsspec_no_cache",
     "read_hdf5_ros3",

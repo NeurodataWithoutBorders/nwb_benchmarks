@@ -66,6 +66,13 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
                 }
             }
         )
+
+    if len(reduced_results) == 0:
+        raise ValueError(
+            "The results parser failed to find any succesful results! "
+            "Please raise an issue and share your intermediate results file."
+        )
+
     reduced_results_info = dict(
         version=raw_results_info["version"],
         timestamp=timestamp,

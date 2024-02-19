@@ -12,11 +12,11 @@ from ._network_statistics import NetworkStatistics
 
 
 @contextlib.contextmanager
-def track_network_activity(tshark_exe_path: Union[pathlib.Path, None] = None):
+def network_activity_tracker(tshark_path: Union[pathlib.Path, None] = None):
     network_tracker = NetworkTracker()
 
     try:
-        network_tracker.start_network_capture(tshark_exe_path=tshark_exe_path)
+        network_tracker.start_network_capture(tshark_path=tshark_path)
         time.sleep(0.3)
 
         t0 = time.time()
@@ -30,7 +30,7 @@ def track_network_activity(tshark_exe_path: Union[pathlib.Path, None] = None):
 
 
 class NetworkTracker:
-    def start_network_capture(self, tshark_exe_path: Union[pathlib.Path, None] = None):
+    def start_network_capture(self, tshark_path: Union[pathlib.Path, None] = None):
         # start the capture_connections() function to update the current connections of this machine
         self.connections_thread = CaptureConnections()
         self.connections_thread.start()
@@ -38,7 +38,7 @@ class NetworkTracker:
 
         # start capturing the raw packets by running the tshark commandline tool in a subprocess
         self.network_profiler = NetworkProfiler()
-        self.network_profiler.start_capture(tshark_exe_path=tshark_exe_path)
+        self.network_profiler.start_capture(tshark_path=tshark_path)
 
     def stop_network_capture(self):
         # Stop capturing packets and connections
