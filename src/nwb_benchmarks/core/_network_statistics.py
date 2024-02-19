@@ -1,5 +1,7 @@
 """Class for summary and display of basic network statistics."""
 
+from typing import Dict, Literal, Union
+
 import numpy as np
 
 from ._capture_connections import CaptureConnections
@@ -9,7 +11,7 @@ class NetworkStatistics:
     """Compute basic statistics about network packets captures with tshark/pyshark."""
 
     @staticmethod
-    def num_packets(packets: list):
+    def num_packets(packets: list) -> int:
         """Total number of packets."""
         return len(packets)
 
@@ -37,10 +39,10 @@ class NetworkStatistics:
     @staticmethod
     def transfer_time(packets: list) -> float:
         """Sum of all time_delta's between packets."""
-        return float(np.sum([float(p.tcp.time_delta) for p in packets]))
+        return float(np.sum([float(packet.tcp.time_delta) for packet in packets]))
 
     @staticmethod
-    def num_packets_downloaded(packets: list, local_addresses: list = None):
+    def number_of_packets_downloaded(packets: list, local_addresses: list = None) -> int:
         """Total number of packets downloaded."""
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
@@ -49,10 +51,10 @@ class NetworkStatistics:
             for packet in packets  # check all packets
             if packet.ip.src not in local_addresses  # the source address is not ours so it's download
         ]
-        return int(len(downloaded))
+        return len(downloaded)
 
     @staticmethod
-    def num_packets_uploaded(packets: list, local_addresses: list = None):
+    def num_packets_uploaded(packets: list, local_addresses: list = None) -> int:
         """Total number of packets uploaded (e.g., HTTP requests)."""
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
@@ -61,16 +63,16 @@ class NetworkStatistics:
             for packet in packets  # check all packets
             if packet.ip.src in local_addresses  # the source address is ours so it's upload
         ]
-        return int(len(uploaded))
+        return len(uploaded)
 
     @staticmethod
-    def total_bytes(packets: list):
+    def total_bytes(packets: list) -> int:
         """Total number of bytes in the packets."""
         total_bytes = np.sum([len(packet) for packet in packets])
         return int(total_bytes)
 
     @staticmethod
-    def bytes_downloaded(packets: list, local_addresses: list = None):
+    def bytes_downloaded(packets: list, local_addresses: list = None) -> int:
         """Total number of bytes from downloaded packets."""
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
@@ -84,7 +86,7 @@ class NetworkStatistics:
         return int(bytes_downloaded)
 
     @staticmethod
-    def bytes_uploaded(packets: list, local_addresses: list = None):
+    def bytes_uploaded(packets: list, local_addresses: list = None) -> int:
         """Total number of bytes from uploaded packets."""
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
@@ -98,33 +100,38 @@ class NetworkStatistics:
         return int(bytes_uploaded)
 
     @staticmethod
-    def bytes_to_str(size_in_bytes: int) -> str:
+    def bytes_to_str(size_in_bytes: int, convention: Literal["B", "iB"] = "iB") -> str:
         """Format the size in bytes as a human-readable string."""
+        factor = 1024 if convention == "iB" else 1000
         for unit in ["", "K", "M", "G", "T", "P"]:
-            if size_in_bytes < 1024:
-                return f"{bytes:.2f}{unit}B"
-            size_in_bytes /= 1024
+            if size_in_bytes < factor:
+                return f"{bytes:.2f}{unit}{convention}"
+            size_in_bytes /= factor
 
     @classmethod
-    def get_stats(cls, packets: list, local_addresses: list = None):
+    def get_statistics(cls, packets: list, local_addresses: list = None) -> Dict[str, Union[int, float]]:
         """Calculate all the statistics and return them as a dictionary."""
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
-        stats = {
+        statistics = {
             "bytes_downloaded": cls.bytes_downloaded(packets=packets, local_addresses=local_addresses),
             "bytes_uploaded": cls.bytes_uploaded(packets=packets, local_addresses=local_addresses),
             "bytes_total": cls.total_bytes(packets=packets),
-            "num_packets": cls.num_packets(packets=packets),
-            "num_packets_downloaded": cls.num_packets_downloaded(packets=packets, local_addresses=local_addresses),
-            "num_packets_uploaded": cls.num_packets_uploaded(packets=packets, local_addresses=local_addresses),
-            "num_web_packets": len(cls.get_web_traffic_packets(packets)),
+            "number_of_packets": cls.num_packets(packets=packets),
+            "number_of_packets_downloaded": cls.number_of_packets_downloaded(
+                packets=packets, local_addresses=local_addresses
+            ),
+            "number_of_packets_uploaded": cls.number_of_packets_uploaded(
+                packets=packets, local_addresses=local_addresses
+            ),
+            "number_of_web_packets": len(cls.get_web_traffic_packets(packets)),
             "total_transfer_time": cls.transfer_time(packets=packets),
         }
-        return stats
+        return statistics
 
     @classmethod
-    def print_stats(cls, packets: list, local_addresses: list = None):
+    def print_statistics(cls, packets: list, local_addresses: list = None):
         """Print all the statistics."""
-        stats = cls.get_stats(packets=packets, local_addresses=local_addresses)
-        for k, v in stats.items():
-            print(f"{k}: {v}")
+        statistics = cls.Calculate(packets=packets, local_addresses=local_addresses)
+        for key, value in statistics.items():
+            print(f"{key}: {value}")

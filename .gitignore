@@ -157,3 +157,6 @@ fabric.properties
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Spyder
+.spyproject/*

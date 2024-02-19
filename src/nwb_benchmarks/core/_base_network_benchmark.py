@@ -19,6 +19,9 @@ class BaseNetworkBenchmark:
         2) The `setup_cache` method to explicitly recieve the necessary keyword arguments to be passed to the operation.
     """
 
+    def setup_network_test(self, **keyword_arguments):
+        raise SkipNotImplemented()
+
     def operation_to_track_network_activity_of(self, **keyword_arguments):
         raise SkipNotImplemented()
 
@@ -28,15 +31,15 @@ class BaseNetworkBenchmark:
 
         Only supports single operations (ignores `repeat` and prohibits `params`).
         """
+        self.setup_network_test(**keyword_arguments)
         self.start_net_capture()
         t0 = time.time()
-        self.setup(**keyword_arguments)
         self.operation_to_track_network_activity_of(**keyword_arguments)
         t1 = time.time()
         total_time = t1 - t0
-        self.stop_netcapture()
-        self.net_stats["network_total_time"] = total_time
-        return self.net_stats
+        self.stop_net_capture()
+        self.network_statistics["network_total_time"] = total_time
+        return self.network_statistics
 
     def start_net_capture(self):
         # start the capture_connections() function to update the current connections of this machine
@@ -45,20 +48,20 @@ class BaseNetworkBenchmark:
         time.sleep(0.2)  # not sure if this is needed but just to be safe
 
         # start capturing the raw packets by running the tshark commandline tool in a subprocess
-        self.netprofiler = NetworkProfiler()
-        self.netprofiler.start_capture()
+        self.network_profiler = NetworkProfiler()
+        self.network_profiler.start_capture()
 
-    def stop_netcapture(self):
+    def stop_net_capture(self):
         # Stop capturing packets and connections
-        self.netprofiler.stop_capture()
+        self.network_profiler.stop_capture()
         self.connections_thread.stop()
 
         # get the connections for the PID of this process
         self.pid_connections = self.connections_thread.get_connections_for_pid(os.getpid())
         # Parse packets and filter out all the packets for this process pid by matching with the pid_connections
-        self.pid_packets = self.netprofiler.get_packets_for_connections(self.pid_connections)
+        self.pid_packets = self.network_profiler.get_packets_for_connections(self.pid_connections)
         # Compute all the network statistics
-        self.net_stats = NetworkStatistics.get_stats(packets=self.pid_packets)
+        self.network_statistics = NetworkStatistics.get_statistics(packets=self.pid_packets)
 
     def track_bytes_downloaded(self, net_stats: dict):
         return net_stats["bytes_downloaded"]
@@ -75,20 +78,20 @@ class BaseNetworkBenchmark:
 
     track_bytes_total.unit = "bytes"
 
-    def track_num_packets(self, net_stats: dict):
-        return net_stats["num_packets"]
+    def track_number_of_packets(self, net_stats: dict):
+        return net_stats["number_of_packets"]
 
-    track_num_packets.unit = "count"
+    track_number_of_packets.unit = "count"
 
-    def track_num_packets_downloaded(self, net_stats: dict):
-        return net_stats["num_packets_downloaded"]
+    def track_number_of_packets_downloaded(self, net_stats: dict):
+        return net_stats["number_of_packets_downloaded"]
 
-    track_num_packets_downloaded.unit = "count"
+    track_number_of_packets_downloaded.unit = "count"
 
-    def track_num_packets_uploaded(self, net_stats: dict):
-        return net_stats["num_packets_uploaded"]
+    def track_number_of_packets_uploaded(self, net_stats: dict):
+        return net_stats["number_of_packets_uploaded"]
 
-    track_num_packets_uploaded.unit = "count"
+    track_number_of_packets_uploaded.unit = "count"
 
     def track_total_transfer_time(self, net_stats: dict):
         return net_stats["total_transfer_time"]
