@@ -35,7 +35,7 @@ For timing functions, ``setup`` and ``teardown`` will be called before and after
 
     Be careful to assign objects fetched by operations within the tracking functions; otherwise, you may unintentionally track the garbage collection step triggered when the reference count of the return value reaches zero in the namespace. For relatively heavy I/O operations this can be non-negligible.
 
-Finally, you can leverage ``params`` and ``param_names`` on all benchmark types to perform a structured iteration over many inputs to the operations. ``param_names`` is a list of length equal to the number of inputs you wish to pass to an operation. ``params`` is a list of lists; the outer list being of equal length to the number of inputs, and each inner list being equal in length to the number of different cases to iterate over. If defined at the global scope of a benchmark file, all classes in that file will inherit those ``param`` and ``param_names``.
+Finally, you can leverage ``params`` and ``param_names`` on all benchmark types to perform a structured iteration over many inputs to the operations. ``param_names`` is a list of length equal to the number of inputs you wish to pass to an operation. ``params`` is a list of lists; the outer list being of equal length to the number of inputs, and each inner list being equal in length to the number of different cases to iterate over.
 
 .. note::
 

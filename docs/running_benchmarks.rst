@@ -47,6 +47,8 @@ Contributing Results
 
 To contribute your results back to the project, all you have to do is `git add` and `commit` the results in the `results` folder.
 
+Due to the ``sudo`` requirement of the network tracking tests, if you ran ``sudo nwb_benchmarks run`` you will likely have to include ``sudo`` in the ``git commit`` as well; though this may also depend on whether or not you have ``pre-commit`` running locally.
+
 Then, open a PR to merge the results to the `main` branch.
 
 .. note::
