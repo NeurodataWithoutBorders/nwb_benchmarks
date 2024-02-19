@@ -54,7 +54,7 @@ class NetworkStatistics:
         return len(downloaded)
 
     @staticmethod
-    def num_packets_uploaded(packets: list, local_addresses: list = None) -> int:
+    def number_of_packets_uploaded(packets: list, local_addresses: list = None) -> int:
         """Total number of packets uploaded (e.g., HTTP requests)."""
         if local_addresses is None:
             local_addresses = CaptureConnections.get_local_addresses()
@@ -132,6 +132,6 @@ class NetworkStatistics:
     @classmethod
     def print_statistics(cls, packets: list, local_addresses: list = None):
         """Print all the statistics."""
-        statistics = cls.Calculate(packets=packets, local_addresses=local_addresses)
+        statistics = cls.get_statistics(packets=packets, local_addresses=local_addresses)
         for key, value in statistics.items():
             print(f"{key}: {value}")
