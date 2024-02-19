@@ -51,3 +51,6 @@ class NetworkTracker:
         self.pid_packets = self.network_profiler.get_packets_for_connections(self.pid_connections)
         # Compute all the network statistics
         self.network_statistics = NetworkStatistics.get_statistics(packets=self.pid_packets)
+
+        # Very special structure required by ASV
+        self.asv_network_statistics = dict(samples=self.network_statistics, number=None)

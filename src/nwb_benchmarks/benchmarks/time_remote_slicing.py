@@ -29,8 +29,6 @@ params = (
 class FsspecNoCacheContinuousSliceBenchmark:
     rounds = 1
     repeat = 3
-    param_names = param_names
-    params = params
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
@@ -45,8 +43,6 @@ class FsspecNoCacheContinuousSliceBenchmark:
 class RemfileContinuousSliceBenchmark:
     rounds = 1
     repeat = 3
-    param_names = param_names
-    params = params
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
@@ -61,8 +57,6 @@ class RemfileContinuousSliceBenchmark:
 class Ros3ContinuousSliceBenchmark:
     rounds = 1
     repeat = 3
-    param_names = param_names
-    params = params
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io = read_hdf5_nwbfile_ros3(s3_url=s3_url)

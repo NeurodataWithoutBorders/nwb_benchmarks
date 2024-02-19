@@ -42,7 +42,7 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
 
     reduced_results = dict()
     for test_case, raw_results_list in raw_results_info["results"].items():
-        if len(raw_results_list) != 12:  # Only successful runs results in this length
+        if len(raw_results_list) not in [5, 12]:  # Only successful runs results in these lengths
             continue
 
         flattened_joint_params = collections.defaultdict(list)
