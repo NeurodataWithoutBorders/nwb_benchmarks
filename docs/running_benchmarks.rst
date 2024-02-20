@@ -3,6 +3,10 @@ Running the Benchmarks
 
 Before running the benchmark suite, please ensure you are not running any additional heavy processes in the background to avoid interference or bottlenecks.
 
+Also, please ensure prior to running the benchmark that all code changes have been committed to your local branch.
+
+For the most stable results, only run the benchmarks on the ``main`` branch.
+
 To run the full benchmark suite, including network tracking tests (which require ``sudo`` on Mac or Linux), simply call...
 
 .. code-block::

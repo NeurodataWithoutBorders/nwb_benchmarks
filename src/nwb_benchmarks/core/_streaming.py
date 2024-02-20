@@ -1,6 +1,6 @@
 import time
 import warnings
-from typing import Callable, Tuple, Union
+from typing import Any, Callable, Tuple, Union
 
 import fsspec
 import h5py
@@ -54,10 +54,10 @@ def read_hdf5_nwbfile_remfile(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5
 
 def robust_ros3_read(
     command: Callable,
-    max_retries: int = 10,
+    max_retries: int = 20,
     command_args: Union[list, None] = None,
     command_kwargs: Union[dict, None] = None,
-):
+) -> Any:
     """
     Attempt the command (usually acting on an S3 IO) up to the number of max_retries using exponential backoff.
 
@@ -67,12 +67,14 @@ def robust_ros3_read(
     command_kwargs = command_kwargs or dict()
     for retry in range(max_retries):
         try:
-            return command(*command_args, **command_kwargs)
-        except Exception as exc:
-            if "curl" in str(exc):  # 'cannot curl request' can show up in potentially many different error types
-                time.sleep(0.1 * 2**retry)
-            else:
-                raise exc
+            result = command(*command_args, **command_kwargs)
+            return result
+        except Exception as exception:
+            #  'cannot curl request' can show up in potentially many different error types
+            if "curl" not in str(exception):
+                raise exception
+            time.sleep(0.1 * 2**retry)
+
     raise TimeoutError(f"Unable to complete the command ({command.__name__}) after {max_retries} attempts!")
 
 
