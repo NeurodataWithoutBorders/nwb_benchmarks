@@ -60,7 +60,7 @@ class FsspecNoCacheNWBFileReadBenchmark:
     param_names = param_names
     params = params
 
-    def network_activity_tracker_during_read(self, s3_url: str):
+    def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_activity:
             self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
         return network_activity.asv_network_statistics
