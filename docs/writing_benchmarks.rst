@@ -13,21 +13,29 @@ Just like how ``pytest`` automatically detects and runs any function or method l
 
 A single tracking function should perform only the minimal operations you wish to time. It is also capable of tracking only a single value. The philosophy for this is to avoid interference from cross-measurements; that is, the act of tracking memory of the operation may impact how much overall time it takes that process to complete, so you would not want to simultaneously measure both time and memory.
 
+.. note::
+
+    One caveat with using ``track_`` is that if you want it to return the custom values as ``samples`` similar to the timing tests, it must be wrapped in a dictionary with required outer keywords ``samples`` and ``number=None``.
+
 
 Class Structure
 ---------------
 
 A single benchmark suite is a file within the ``benchmarks`` folder. It contains one or more benchmark classes. It is not itself important that the word 'Benchmark' be in the name of the class; only the prefix on the function matters.
 
-The class has several attributes, the most important of which are ``round``, ``repeat``, and ``timeout``. All functions in a class can be repeated in round-robin fashion using ``round > 1``; the philsophy here is to 'average out' variation on the system over time and may not always be relevant to increase. Each function in a suite is repeated ``repeat`` number of times to get an estimate of the standard deviation of the operation. Every function in the suite has at most ``timout`` number of seconds to complete, otherwise it will count as a failure.
+Every benchmark function has an attribute ``timeout`` which specified the most number of seconds the process has to complete, otherwise it will count as a failure. The global value for this is set in the ``.asv.conf.json`` file.
 
-Similar to ``unittest.TestCase`` classes, these have a ``setup`` and ``teardown`` method which call before and after execution of every ``round`` and every ``repeat`` for every tracking function (such as timing) in the class. ``setup`` should therefore be as light as possible since it will be repeated so often, though sometimes even a minimal setup can still take time (such as reading a large remote NWB file using a suboptimal method). In some cases, ``setup_cache`` is a method that can be defined, and runs only once per class to precompute some operation, such as the creation of a fake dataset for testing on local disk.
+Similar to ``unittest.TestCase`` classes, all benchmark classes have ``setup`` and ``teardown`` methods. Set any values that need to be established before the main benchmark cases run as attributes on the instance during ``setup``; likewise, if you save anything to disk and you don't want it to persist, remove it in the ``teardown`` step.
+
+Timing benchmarks have several special attributes, the most important of which are ``rounds`` and ``repeat``. All timing functions in a class can be repeated in round-robin fashion using ``rounds > 1``; the philsophy here is to 'average out' variation on the system over time and may not always be relevant to increase. Each function in a suite is repeated ``repeat`` number of times to get an estimate of the standard deviation of the operation. Every function in the suite has at most ``timout`` number of seconds to complete, otherwise it will count as a failure.
+
+For timing functions, ``setup`` and ``teardown`` will be called before and after execution of every count of ``rounds`` and ``repeat`` for every tracking function (such as timing) in the class. ``setup`` should therefore be as light as possible since it will be repeated so often, though sometimes even a minimal setup can still take time (such as reading a large remote NWB file using a suboptimal method). In some cases, ``setup_cache`` is a method that can be defined, and runs only once per class to precompute some operation, such as the creation of a fake dataset for testing on local disk.
 
 .. note::
 
     Be careful to assign objects fetched by operations within the tracking functions; otherwise, you may unintentionally track the garbage collection step triggered when the reference count of the return value reaches zero in the namespace. For relatively heavy I/O operations this can be non-negligible.
 
-Finally, you can leverage ``params`` and ``param_names`` to perform a structured iteration over many inputs to the operations. ``param_names`` is a list of length equal to the number of inputs you wish to pass to an operation. ``params`` is a list of lists; the outer list being of equal length to the number of inputs, and each inner list being equal in length to the number of different cases to iterate over.
+Finally, you can leverage ``params`` and ``param_names`` on all benchmark types to perform a structured iteration over many inputs to the operations. ``param_names`` is a list of length equal to the number of inputs you wish to pass to an operation. ``params`` is a list of lists; the outer list being of equal length to the number of inputs, and each inner list being equal in length to the number of different cases to iterate over.
 
 .. note::
 

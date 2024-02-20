@@ -46,7 +46,8 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
         gpu_specifications = {gpu_attribute: getattr(device, gpu_attribute) for gpu_attribute in gpu_attributes}
         custom_machine_info["cuda"] = dict(gpu_name=device.name.decode("utf-8"), gpu_specifications=gpu_specifications)
     except cuda.cudadrv.error.CudaSupportError:
-        warnings.warn("No GPU detected by cuda; skipping section of custom machine info.")
+        # No GPU detected by cuda; skipping section of custom machine info
+        pass
     except Exception as exception:
         raise exception
 

@@ -3,11 +3,17 @@ Running the Benchmarks
 
 Before running the benchmark suite, please ensure you are not running any additional heavy processes in the background to avoid interference or bottlenecks.
 
-To run the full benchmark suite, simply call...
+Also, please ensure prior to running the benchmark that all code changes have been committed to your local branch.
+
+For the most stable results, only run the benchmarks on the ``main`` branch.
+
+To run the full benchmark suite, including network tracking tests (which require ``sudo`` on Mac or Linux), simply call...
 
 .. code-block::
 
-    nwb_benchmarks run
+    sudo nwb_benchmarks run
+
+Or drop the ``sudo`` if on Windows. Running on Windows may also require you to set the ``TSHARK_PATH`` environment variable beforehand.
 
 Many of the current tests can take several minutes to complete; the entire suite will take many times that. Grab some coffee, read a book, or better yet (when the suite becomes larger) just leave it to run overnight.
 
@@ -44,6 +50,8 @@ Contributing Results
 --------------------
 
 To contribute your results back to the project, all you have to do is `git add` and `commit` the results in the `results` folder.
+
+Due to the ``sudo`` requirement of the network tracking tests, if you ran ``sudo nwb_benchmarks run`` you will likely have to include ``sudo`` in the ``git commit`` as well; though this may also depend on whether or not you have ``pre-commit`` running locally.
 
 Then, open a PR to merge the results to the `main` branch.
 

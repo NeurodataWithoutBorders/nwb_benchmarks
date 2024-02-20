@@ -1,5 +1,6 @@
 """Basic benchmarks for stream NWB files and their contents."""
 
+import time
 from typing import Tuple
 
 from nwb_benchmarks.core import (
@@ -70,5 +71,39 @@ class Ros3ContinuousSliceBenchmark:
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        self._temp = robust_ros3_read(command=self.data_to_slice.__getitem__, command_args=(slice_range,))
+
+
+class Ros3ContinuousSliceBenchmarkProcessTime:
+    rounds = 1
+    repeat = 3
+    param_names = param_names
+    params = params
+    timer = time.process_time  # Default timer is timeit.default_timer
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io = read_hdf5_nwbfile_ros3(s3_url=s3_url)
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name="ElectricalSeriesAp")
+        self.data_to_slice = self.neurodata_object.data
+
+    def time_slice_clock(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        self._temp = robust_ros3_read(command=self.data_to_slice.__getitem__, command_args=(slice_range,))
+
+
+class Ros3ContinuousSliceBenchmarkRawTime:
+    rounds = 1
+    repeat = 3
+    param_names = param_names
+    params = params
+    timer = time.time
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io = read_hdf5_nwbfile_ros3(s3_url=s3_url)
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name="ElectricalSeriesAp")
+        self.data_to_slice = self.neurodata_object.data
+
+    def time_slice_raw_time(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         """Note: store as self._temp to avoid tracking garbage collection as well."""
         self._temp = robust_ros3_read(command=self.data_to_slice.__getitem__, command_args=(slice_range,))
