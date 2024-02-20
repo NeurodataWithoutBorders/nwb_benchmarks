@@ -7,7 +7,8 @@ Also, please ensure prior to running the benchmark that all code changes have be
 
 For the most stable results, only run the benchmarks on the ``main`` branch.
 
-To run the full benchmark suite, including network tracking tests (which require ``sudo`` on Mac or Linux), simply call...
+To run the full benchmark suite, including network tracking tests (which require ``sudo`` on Mac and AIX platforms due to the 
+use `psutil net_connections <https://psutil.readthedocs.io/en/latest/#psutil.net_connections>`_), simply call...
 
 .. code-block::
 
