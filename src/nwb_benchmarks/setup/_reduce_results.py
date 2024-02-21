@@ -4,11 +4,14 @@ import collections
 import datetime
 import hashlib
 import json
-import os
+
+# import os
 import pathlib
 import shutil
 import sys
-import stat
+
+# import stat
+import subprocess
 from typing import Dict, List
 
 
@@ -110,8 +113,11 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
             json.dump(obj=parsed_environment_info, fp=io, indent=4)
 
     # Network tests require admin permissions, which can alter write permissions of any files created
-    os.chmod(path=parsed_results_file, mode=stat.S_IROTH | stat.S_IWOTH)
-    os.chmod(path=machine_info_file_path, mode=stat.S_IROTH | stat.S_IWOTH)
-    os.chmod(path=parsed_environment_file_path, mode=stat.S_IROTH | stat.S_IWOTH)
+    # os.chmod(path=parsed_results_file, mode=stat.S_IROTH | stat.S_IWOTH)
+    # os.chmod(path=machine_info_file_path, mode=stat.S_IROTH | stat.S_IWOTH)
+    # os.chmod(path=parsed_environment_file_path, mode=stat.S_IROTH | stat.S_IWOTH)
+    subprocess.run(["chmod", "-R", "+rw", parsed_results_file])
+    subprocess.run(["chmod", "-R", "+rw", machine_info_file_path])
+    subprocess.run(["chmod", "-R", "+rw", parsed_environment_file_path])
 
     raw_results_file_path.unlink()
