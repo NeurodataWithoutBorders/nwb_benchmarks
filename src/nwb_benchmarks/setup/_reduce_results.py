@@ -43,7 +43,7 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
 
     reduced_results = dict()
     for test_case, raw_results_list in raw_results_info["results"].items():
-        if len(raw_results_list) not in [5, 12]:  # Only successful runs results in these lengths
+        if len(raw_results_list) != 12:  # Only successful runs results in this length
             continue
 
         flattened_joint_params = collections.defaultdict(list)
@@ -94,7 +94,7 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
     main_results_folder.mkdir(parents=True, exist_ok=True)
 
     with open(file=parsed_results_file, mode="w") as io:
-        json.dump(obj=reduced_results_info, fp=io, indent=4)
+        json.dump(obj=reduced_results_info, fp=io, indent=1)  # At least one level of indent makes it easier to read
 
     # Copy machine file to main results
     machine_info_file_path = raw_results_file_path.parent / "machine.json"
@@ -106,7 +106,7 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
     parsed_environment_file_path = main_results_folder / f"info_environment-{environment_hash}.json"
     if not parsed_environment_file_path.exists():
         with open(file=parsed_environment_file_path, mode="w") as io:
-            json.dump(obj=parsed_environment_info, fp=io, indent=4)
+            json.dump(obj=parsed_environment_info, fp=io, indent=1)
 
     # Network tests require admin permissions, which can alter write permissions of any files created
     if sys.platform in ["darwin", "linux"]:

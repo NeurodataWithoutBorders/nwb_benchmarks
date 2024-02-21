@@ -67,7 +67,43 @@ Customized Parsing of Results
 
 Since our first approach to simplifying the sharing of results is to just commit them to the common GitHub repo, it was noticed that the default results files stored a lot of extraneous information.
 
+For example, here is an abridged example of the raw ASV output file...
+
+.. code-block:: json
+
+    {"commit_hash": "ee3c985d8acf4539fb41b015e85c07ceb928c71d", "env_name": "existing-pyD__anaconda3_envs_nwb_benchmarks_3_11_created_on_2_17_2024_python.exe", "date": 1708536830000, "params": <copy of .asv.machine.json contents>, "python": "3.11", "requirements": {}, "env_vars": {}, "result_columns": ["result", "params", "version", "started_at", "duration", "stats_ci_99_a", "stats_ci_99_b", "stats_q_25", "stats_q_75", "stats_number", "stats_repeat", "samples", "profile"], "results": {"time_remote_slicing.FsspecNoCacheContinuousSliceBenchmark.time_slice": [[12.422975199995562], [["'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'"], ["'ElectricalSeriesAp'"], ["(slice(0, 30000, None), slice(0, 384, None))"]], "bb6fdd6142015840e188d19b7e06b38dfab294af60a25c67711404eeb0bc815f", 1708552612283, 59.726, [-22.415], [40.359], [6.5921], [13.078], [1], [3], [[0.8071024999953806, 0.9324163000565022, 0.5638924000086263]]], "time_remote_slicing.RemfileContinuousSliceBenchmark.time_slice": [[0.5849523999495432], [["'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'"], ["'ElectricalSeriesAp'"], ["(slice(0, 30000, None), slice(0, 384, None))"]], "f9c77e937b6e41c5a75803e962cc9a6f08cb830f97b04f7a68627a07fd324c11", 1708552672010, 10.689, [0.56549], [0.60256], [0.58225], [0.58626], [1], [3], [[0.5476778000593185, 8.321383600006811, 9.654714399948716]]]}, "durations": {}, "version": 2}
+
 Since all we're really after here is the raw tracking output, some custom reduction of the original results files is performed so that only the minimal amount of information needed is actually stored in the final results files. These parsed results follow the dandi-esque name pattern ``result_timestamp-%Y-%M-%D-%H-%M-%S_machine-<machine hash>_environment-<environment hash>.json`` and are stored in the outer level ``results`` folder along with some ``info_machine-<machine hash>`` and ``info_environment-<environment hash>`` header files that are not regenerated whenever the hashes are the same.
+
+The same file reduced then appears as...
+
+.. code-block:: json
+
+    {
+        "version": 2,
+        "timestamp": "2024-02-21-12-33-50",
+        "commit_hash": "ee3c985d8acf4539fb41b015e85c07ceb928c71d",
+        "environment_hash": "246cf6a886d9a66a9b593d52cb681998fab55adf",
+        "machine_hash": "e109d91eb8c6806274a5a7909c735869415384e9",
+        "results": {
+            "time_remote_slicing.FsspecNoCacheContinuousSliceBenchmark.time_slice": {
+                "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": [
+                    0.8071024999953806,
+                    0.9324163000565022,
+                    0.5638924000086263
+                ]
+            },
+            "time_remote_slicing.RemfileContinuousSliceBenchmark.time_slice": {
+                "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": [
+                    0.5476778000593185,
+                    8.321383600006811,
+                    9.654714399948716
+                ]
+            }
+        }
+    }
+
+which is also indented for improved human readability and line-by-line GitHub tracking. This indentation adds about 50 bytes per kilobyte compared to no indentation.
 
 .. note::
 

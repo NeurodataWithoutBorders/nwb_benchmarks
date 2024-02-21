@@ -89,7 +89,7 @@ def customize_asv_machine_file(file_path: pathlib.Path, overwrite: bool = False)
     }
 
     with open(file=file_path, mode="w") as io:
-        json.dump(fp=io, obj=custom_file_info, indent=4)
+        json.dump(fp=io, obj=custom_file_info, indent=1)
 
 
 def ensure_machine_info_current(file_path: pathlib.Path):
