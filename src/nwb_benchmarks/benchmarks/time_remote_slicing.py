@@ -1,4 +1,4 @@
-"""Basic benchmarks for stream NWB files and their contents."""
+"""Basic benchmarks for timing streaming access to slices of data stored in NWB files."""
 
 import time
 from typing import Tuple
