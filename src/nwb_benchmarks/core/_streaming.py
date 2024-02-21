@@ -75,7 +75,7 @@ def robust_ros3_read(
     for retries, retry in enumerate(range(max_retries)):
         try:
             result = command(*command_args, **command_kwargs)
-            return (retries, result)
+            return (result, retries)
         except Exception as exception:
             #  'cannot curl request' can show up in potentially many different error types
             if "curl" not in str(exception):
