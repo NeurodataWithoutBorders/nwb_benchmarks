@@ -50,7 +50,7 @@ If you want to get a full traceback to examine why a new test might be failing, 
 Contributing Results
 --------------------
 
-To contribute your results back to the project, please use the following workflow...AIX
+To contribute your results back to the project, please use the following workflow...
 
 .. code-block::
 
