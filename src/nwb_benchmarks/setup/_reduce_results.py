@@ -109,8 +109,9 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
             json.dump(obj=parsed_environment_info, fp=io, indent=4)
 
     # Network tests require admin permissions, which can alter write permissions of any files created
-    subprocess.run(["chmod", "-R", "+rw", parsed_results_file])
-    subprocess.run(["chmod", "-R", "+rw", machine_info_file_path])
-    subprocess.run(["chmod", "-R", "+rw", parsed_environment_file_path])
+    if sys.platform in ["darwin", "linux"]:
+        subprocess.run(["chmod", "-R", "+rw", parsed_results_file])
+        subprocess.run(["chmod", "-R", "+rw", machine_info_file_path])
+        subprocess.run(["chmod", "-R", "+rw", parsed_environment_file_path])
 
     raw_results_file_path.unlink()
