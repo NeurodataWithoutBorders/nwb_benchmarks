@@ -50,9 +50,14 @@ If you want to get a full traceback to examine why a new test might be failing, 
 Contributing Results
 --------------------
 
-To contribute your results back to the project, all you have to do is `git add` and `commit` the results in the `results` folder.
+To contribute your results back to the project, please use the following workflow...AIX
 
-Due to the ``sudo`` requirement of the network tracking tests, if you ran ``sudo nwb_benchmarks run`` you will likely have to include ``sudo`` in the ``git commit`` as well; though this may also depend on whether or not you have ``pre-commit`` running locally.
+.. code-block::
+
+    git checkout -b new_results_from_<...>
+    git add results/
+    git commit -m "New results from ...." .
+    git push
 
 Then, open a PR to merge the results to the `main` branch.
 

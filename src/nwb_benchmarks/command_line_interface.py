@@ -86,6 +86,7 @@ def main() -> None:
             "the results! Please manually remove these."
         )
         raw_results_file_path = globbed_json_file_paths[0]
+
         reduce_results(
             raw_results_file_path=raw_results_file_path, raw_environment_info_file_path=raw_environment_info_file_path
         )

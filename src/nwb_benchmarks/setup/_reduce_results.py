@@ -4,6 +4,7 @@ import collections
 import datetime
 import hashlib
 import json
+import os
 import pathlib
 import shutil
 import sys
@@ -106,5 +107,10 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
     if not parsed_environment_file_path.exists():
         with open(file=parsed_environment_file_path, mode="w") as io:
             json.dump(obj=parsed_environment_info, fp=io, indent=4)
+
+    # Network tests require admin permissions, which can alter write permissions of any files created
+    os.chmod(path=parsed_results_file, mode=os.W_OK)
+    os.chmod(path=machine_info_file_path, mode=os.W_OK)
+    os.chmod(path=parsed_environment_file_path, mode=os.W_OK)
 
     raw_results_file_path.unlink()
