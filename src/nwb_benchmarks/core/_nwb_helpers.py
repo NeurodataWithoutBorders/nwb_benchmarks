@@ -4,7 +4,11 @@ import pynwb
 
 
 def get_object_by_name(nwbfile: pynwb.NWBFile, object_name: str) -> Any:
-    """Simple helper function to retrieve a neurodata object by its name, if it is unique."""
+    """
+    Simple helper function to retrieve a neurodata object by its name, if it is unique.
+
+    This method should only be used in the `setup` method of a benchmark class.
+    """
     object_names = [neurodata_object.name for neurodata_object in nwbfile.objects.values()]
     assert len(object_names) == len(
         set(object_names)

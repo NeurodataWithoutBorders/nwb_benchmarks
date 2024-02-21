@@ -57,18 +57,25 @@ def robust_ros3_read(
     max_retries: int = 20,
     command_args: Union[list, None] = None,
     command_kwargs: Union[dict, None] = None,
-) -> Any:
+) -> Tuple[Any, int]:
     """
     Attempt the command (usually acting on an S3 IO) up to the number of max_retries using exponential backoff.
 
     Usually a good idea to use this to wrap any operations performed using the ROS3 driver.
+
+    Returns
+    -------
+    result : Any
+        The object returned by running the comand.
+    retries : int
+        The number of retries.
     """
     command_args = command_args or []
     command_kwargs = command_kwargs or dict()
-    for retry in range(max_retries):
+    for retries, retry in enumerate(range(max_retries)):
         try:
             result = command(*command_args, **command_kwargs)
-            return result
+            return (retries, result)
         except Exception as exception:
             #  'cannot curl request' can show up in potentially many different error types
             if "curl" not in str(exception):
@@ -78,19 +85,49 @@ def robust_ros3_read(
     raise TimeoutError(f"Unable to complete the command ({command.__name__}) after {max_retries} attempts!")
 
 
-def read_hdf5_ros3(s3_url: str) -> h5py.File:
-    """Load the raw HDF5 file from an S3 URL using ROS3 driver; does not formally read the NWB file."""
+def read_hdf5_ros3(s3_url: str, retry: bool = True) -> Tuple[h5py.File, Union[int, None]]:
+    """
+    Load the raw HDF5 file from an S3 URL using ROS3 driver; does not formally read the NWB file.
+
+    Returns
+    -------
+    file : h5py.File
+        The remote HDF5 file object.
+    retries : int
+        The number of retries, if `retry` is `True`.
+    """
     ros3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
     aws_region = bytes("us-east-2", "ascii")  # TODO: generalize this as an argument if necessary
-    file = robust_ros3_read(
-        command=h5py.File, command_kwargs=dict(name=ros3_form, driver="ros3", aws_region=aws_region)
-    )
-    return file
+    if retry:
+        file, retries = robust_ros3_read(
+            command=h5py.File, command_kwargs=dict(name=ros3_form, driver="ros3", aws_region=aws_region)
+        )
+    else:
+        retries = None
+        file = h5py.File(name=ros3_form, driver="ros3", aws_region=aws_region)
+    return (file, retries)
 
 
-def read_hdf5_nwbfile_ros3(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO]:
-    """Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py."""
+def read_hdf5_nwbfile_ros3(s3_url: str, retry: bool = True) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, Union[int, None]]:
+    """
+    Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py.
+
+    Returns
+    -------
+    NWBFile : pynwb.NWBFile
+        The remote NWBFile object.
+    NWBHDF5IO : pynwb.NWBHDF5IO
+        The open IO object used to open the file. Must be kept to ensure garbage collection does not prematurely close
+        the IO.
+    retries : int
+        The number of retries, if `retry` is `True`.
+    """
     ros3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
     io = pynwb.NWBHDF5IO(path=ros3_form, mode="r", load_namespaces=True, driver="ros3")
-    nwbfile = robust_ros3_read(command=io.read)
-    return (nwbfile, io)
+
+    if retry:
+        nwbfile, retries = robust_ros3_read(command=io.read)
+    else:
+        retries = None
+        nwbfile = io.read()
+    return (nwbfile, io, retries)
