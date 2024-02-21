@@ -1,4 +1,4 @@
-"""Basic benchmarks for stream NWB files and their contents."""
+"""Basic benchmarks for timing streaming access of NWB files and their contents."""
 
 from nwb_benchmarks.core import (
     get_s3_url,
