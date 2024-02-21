@@ -65,7 +65,7 @@ class Ros3ContinuousSliceBenchmark:
     params = params
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_hdf5_nwbfile_ros3(s3_url=s3_url)
+        self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(s3_url=s3_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name="ElectricalSeriesAp")
         self.data_to_slice = self.neurodata_object.data
 
