@@ -27,7 +27,7 @@ def network_activity_tracker(tshark_path: Union[pathlib.Path, None] = None):
 
         t1 = time.time()
         network_total_time = t1 - t0
-        network_tracker.network_statistics["network_total_time"] = network_total_time
+        network_tracker.network_statistics["network_total_time_in_seconds"] = network_total_time
 
 
 class NetworkTracker:
