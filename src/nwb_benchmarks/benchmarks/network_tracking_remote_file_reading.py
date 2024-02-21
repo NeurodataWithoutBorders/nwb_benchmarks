@@ -1,4 +1,4 @@
-"""Basic benchmarks for stream NWB files and their contents."""
+"""Basic benchmarks for profiling network statistics for streaming access to NWB files and their contents."""
 
 import os
 
