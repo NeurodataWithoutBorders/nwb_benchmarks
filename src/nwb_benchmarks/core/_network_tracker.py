@@ -1,4 +1,4 @@
-"""Network tracker for capturing traffic and performance metrics during the execution of methods or code snippets asdasdadad."""
+"""Network tracker for capturing traffic and performance metrics during the execution of methods or code snippets."""
 
 import contextlib
 import os
@@ -31,8 +31,36 @@ def network_activity_tracker(tshark_path: Union[pathlib.Path, None] = None):
 
 
 class NetworkTracker:
+    """
+    Track network traffic and compute network statistics for operations performed by the current
+    Python process during the active period of the tracker, which is started by `start_network_capture`
+    and ended by `stop_network_capture`.
+
+    :ivar connections_thread: Instance of `CaptureConnections` used to relate network connections to process IDs
+    :ivar network_profiler: Instance of `NetworkProfiler` used to capture network traffic with TShark
+    :ivar pid_connections: connections for the PID of this process
+    :ivar self.pid_packets: Network packets associated with this PID (i.e., `os.getpid()`)
+    :ivar self.network_statistics: Network statistics calculated via `NetworkStatistics.get_statistics`
+    :ivar self.asv_network_statistics: The network statistics wrapped in a dict for compliance with ASV
+
+    """
+
+    def __init__(self):
+        self.connections_thread = None
+        self.network_profiler = None
+        self.pid_connections = None
+        self.pid_packets = None
+        self.network_statistics = None
+        self.asv_network_statistics = None
+
     def start_network_capture(self, tshark_path: Union[pathlib.Path, None] = None):
-        # start the capture_connections() function to update the current connections of this machine
+        """
+        Start capturing the connections on this machine as well as all network packets
+
+        Side effects: This functions sets the following instance variables:
+        * self.connections_thread
+        * self.network_profile
+        """
         self.connections_thread = CaptureConnections()
         self.connections_thread.start()
         time.sleep(0.2)  # not sure if this is needed but just to be safe
@@ -42,7 +70,17 @@ class NetworkTracker:
         self.network_profiler.start_capture(tshark_path=tshark_path)
 
     def stop_network_capture(self):
-        # Stop capturing packets and connections
+        """
+        Stop capturing network packets and connections.
+
+        Note: This function will fail if `start_network_capture` was not called first.
+
+        Side effects: This functions sets the following instance variables:
+        * self.pid_connections
+        * self.pid_packets
+        * self.network_statistics
+        * self.asv_network_statistics
+        """
         self.network_profiler.stop_capture()
         self.connections_thread.stop()
 
