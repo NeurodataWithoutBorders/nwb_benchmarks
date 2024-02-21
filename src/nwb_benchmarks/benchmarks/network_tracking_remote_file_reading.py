@@ -2,6 +2,7 @@
 
 import os
 
+from nwb_benchmarks import TSHARK_PATH
 from nwb_benchmarks.core import (
     get_s3_url,
     network_activity_tracker,
@@ -12,8 +13,6 @@ from nwb_benchmarks.core import (
     read_hdf5_remfile,
     read_hdf5_ros3,
 )
-
-TSHARK_PATH = os.environ.get("TSHARK_PATH", None)
 
 param_names = ["s3_url"]
 params = [

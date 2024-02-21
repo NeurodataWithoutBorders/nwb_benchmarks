@@ -1,10 +1,8 @@
 """Basic benchmarks for profiling network statistics for streaming access to slices of data stored in NWB files."""
 
-import os
 from typing import Tuple
 
-from asv.runner import BenchmarkResult
-
+from nwb_benchmarks import TSHARK_PATH
 from nwb_benchmarks.core import (
     get_object_by_name,
     get_s3_url,
@@ -14,8 +12,6 @@ from nwb_benchmarks.core import (
     read_hdf5_nwbfile_ros3,
     robust_ros3_read,
 )
-
-TSHARK_PATH = os.environ.get("TSHARK_PATH", None)
 
 param_names = ["s3_url", "object_name", "slice_range"]
 params = (
