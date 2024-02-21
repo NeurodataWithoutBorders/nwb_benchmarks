@@ -6,7 +6,6 @@ import hashlib
 import json
 import pathlib
 import shutil
-import sys
 import subprocess
 import sys
 from typing import Dict, List
