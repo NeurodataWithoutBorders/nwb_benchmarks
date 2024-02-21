@@ -59,4 +59,4 @@ class NetworkTracker:
         # 'result' is the display value in console
         # 'samples' is the value tracked in our results
         # 'number' is simply required, but needs to be None for custom track_ functions
-        self.asv_network_statistics = dict(samples=self.network_statistics, number=None)
+        self.asv_network_statistics = dict(results="success", samples=self.network_statistics, number=None)
