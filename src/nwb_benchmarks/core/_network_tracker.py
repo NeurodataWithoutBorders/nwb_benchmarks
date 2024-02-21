@@ -13,6 +13,7 @@ from ._network_statistics import NetworkStatistics
 
 @contextlib.contextmanager
 def network_activity_tracker(tshark_path: Union[pathlib.Path, None] = None):
+    """Context manager for tracking network activity and statistics for the code executed in the context"""
     network_tracker = NetworkTracker()
 
     try:
