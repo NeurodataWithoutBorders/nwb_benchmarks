@@ -53,4 +53,7 @@ class NetworkTracker:
         self.network_statistics = NetworkStatistics.get_statistics(packets=self.pid_packets)
 
         # Very special structure required by ASV
+        # 'result' is the display value in console
+        # 'samples' is the value tracked in our results
+        # 'number' is simply required, but needs to be None for custom track_ functions
         self.asv_network_statistics = dict(samples=self.network_statistics, number=None)
