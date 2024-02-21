@@ -1,4 +1,7 @@
-"""Base class for implementing benchmarks for evaluating network performance metrics for streaming read of NWB files."""
+"""
+Network tracker for capturing network traffic and performance metrics during the execution of particular
+methods or code snippets.
+"""
 
 import contextlib
 import os
