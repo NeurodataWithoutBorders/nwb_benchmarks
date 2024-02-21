@@ -7,8 +7,8 @@ import json
 import os
 import pathlib
 import shutil
-import sys
 import stat
+import sys
 from typing import Dict, List
 
 
