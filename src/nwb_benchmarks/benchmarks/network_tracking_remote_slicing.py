@@ -1,4 +1,4 @@
-"""Basic benchmarks for streaming access to NWB files and their contents."""
+"""Basic benchmarks for profiling network statistics for streaming access to slices of data stored in NWB files."""
 
 import os
 from typing import Tuple
