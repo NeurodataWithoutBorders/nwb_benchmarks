@@ -1,5 +1,6 @@
-# ASV
-.asv/*
+# ASV and customization
+.asv/intermediate_results
+.asv/.raw_environment_info.txt
 
 # Dataset file / log file types:
 /**/*.log
@@ -156,3 +157,6 @@ fabric.properties
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Spyder
+.spyproject/*

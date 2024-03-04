@@ -1,0 +1,946 @@
+{
+    "3.11.7 | packaged by Anaconda, Inc. | (main, Dec 15 2023, 18:05:47) [MSC v.1916 64 bit (AMD64)]": [
+        {
+            "name": "aiobotocore",
+            "version": "2.11.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "aiohttp",
+            "version": "3.9.3",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "aioitertools",
+            "version": "0.11.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "aiosignal",
+            "version": "1.3.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "appdirs",
+            "version": "1.4.4",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "arrow",
+            "version": "1.3.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "asciitree",
+            "version": "0.3.3",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "asttokens",
+            "version": "2.4.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "asv",
+            "version": "0.6.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "asv-runner",
+            "version": "0.2.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "attrs",
+            "version": "23.2.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "bidsschematools",
+            "version": "0.7.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "blas",
+            "version": "1.0",
+            "build": "mkl"
+        },
+        {
+            "name": "botocore",
+            "version": "1.34.34",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "bzip2",
+            "version": "1.0.8",
+            "build": "he774522_0"
+        },
+        {
+            "name": "ca-certificates",
+            "version": "2023.12.12",
+            "build": "haa95532_0"
+        },
+        {
+            "name": "cached-property",
+            "version": "1.5.2",
+            "build": "py_0"
+        },
+        {
+            "name": "certifi",
+            "version": "2024.2.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "cfgv",
+            "version": "3.4.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "charset-normalizer",
+            "version": "3.3.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "ci-info",
+            "version": "0.3.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "click",
+            "version": "8.1.7",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "click-didyoumean",
+            "version": "0.3.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "cloudpickle",
+            "version": "3.0.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "colorama",
+            "version": "0.4.6",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "comm",
+            "version": "0.2.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "dandi",
+            "version": "0.59.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "dandischema",
+            "version": "0.8.4",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "debugpy",
+            "version": "1.8.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "decorator",
+            "version": "5.1.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "dill",
+            "version": "0.3.8",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "distlib",
+            "version": "0.3.8",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "dnspython",
+            "version": "2.5.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "email-validator",
+            "version": "2.1.0.post1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "etelemetry",
+            "version": "0.3.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "executing",
+            "version": "2.0.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "fasteners",
+            "version": "0.19",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "filelock",
+            "version": "3.13.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "fqdn",
+            "version": "1.5.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "frozenlist",
+            "version": "1.4.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "fscacher",
+            "version": "0.4.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "fsspec",
+            "version": "2024.2.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "git",
+            "version": "2.40.1",
+            "build": "haa95532_1"
+        },
+        {
+            "name": "h5py",
+            "version": "3.10.0",
+            "build": "nompi_py311h7195302_101",
+            "channel": "conda-forge"
+        },
+        {
+            "name": "hdf5",
+            "version": "1.14.3",
+            "build": "nompi_h73e8ff5_100",
+            "channel": "conda-forge"
+        },
+        {
+            "name": "hdmf",
+            "version": "3.12.1.dev7+g9b3282a",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "humanize",
+            "version": "4.9.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "identify",
+            "version": "2.5.34",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "idna",
+            "version": "3.6",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "importlib-metadata",
+            "version": "7.0.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "intel-openmp",
+            "version": "2023.1.0",
+            "build": "h59b6b97_46320"
+        },
+        {
+            "name": "interleave",
+            "version": "0.2.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "ipykernel",
+            "version": "6.29.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "ipython",
+            "version": "8.21.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "isodate",
+            "version": "0.6.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "isoduration",
+            "version": "20.11.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "jaraco-classes",
+            "version": "3.3.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "jedi",
+            "version": "0.19.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "jmespath",
+            "version": "1.0.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "joblib",
+            "version": "1.3.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "json5",
+            "version": "0.9.14",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "jsonpointer",
+            "version": "2.4",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "jsonschema",
+            "version": "4.21.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "jsonschema-specifications",
+            "version": "2023.12.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "jupyter-client",
+            "version": "8.6.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "jupyter-core",
+            "version": "5.7.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "keyring",
+            "version": "24.3.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "keyrings-alt",
+            "version": "5.0.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "libaec",
+            "version": "1.1.2",
+            "build": "h63175ca_1",
+            "channel": "conda-forge"
+        },
+        {
+            "name": "libcurl",
+            "version": "8.5.0",
+            "build": "h86230a5_0"
+        },
+        {
+            "name": "libffi",
+            "version": "3.4.4",
+            "build": "hd77b12b_0"
+        },
+        {
+            "name": "libssh2",
+            "version": "1.10.0",
+            "build": "he2ea4bf_2"
+        },
+        {
+            "name": "libzlib",
+            "version": "1.2.13",
+            "build": "hcfcfb64_5",
+            "channel": "conda-forge"
+        },
+        {
+            "name": "llvmlite",
+            "version": "0.42.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "lxml",
+            "version": "5.1.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "matplotlib-inline",
+            "version": "0.1.6",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "mkl",
+            "version": "2023.1.0",
+            "build": "h6b88ed4_46358"
+        },
+        {
+            "name": "mkl-service",
+            "version": "2.4.0",
+            "build": "py311h2bbff1b_1"
+        },
+        {
+            "name": "mkl_fft",
+            "version": "1.3.8",
+            "build": "py311h2bbff1b_0"
+        },
+        {
+            "name": "mkl_random",
+            "version": "1.2.4",
+            "build": "py311h59b6b97_0"
+        },
+        {
+            "name": "more-itertools",
+            "version": "10.2.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "multidict",
+            "version": "6.0.5",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "natsort",
+            "version": "8.4.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "nest-asyncio",
+            "version": "1.6.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "nodeenv",
+            "version": "1.8.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "numba",
+            "version": "0.59.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "numcodecs",
+            "version": "0.12.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "numpy",
+            "version": "1.26.3",
+            "build": "py311hdab7c0b_0"
+        },
+        {
+            "name": "numpy-base",
+            "version": "1.26.3",
+            "build": "py311hd01c5d8_0"
+        },
+        {
+            "name": "nwb-benchmarks",
+            "version": "0.1.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "nwbinspector",
+            "version": "0.4.33",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "openssl",
+            "version": "3.2.1",
+            "build": "hcfcfb64_0",
+            "channel": "conda-forge"
+        },
+        {
+            "name": "packaging",
+            "version": "23.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pandas",
+            "version": "2.2.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "parso",
+            "version": "0.8.3",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pip",
+            "version": "23.3.1",
+            "build": "py311haa95532_0"
+        },
+        {
+            "name": "platformdirs",
+            "version": "4.2.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pre-commit",
+            "version": "3.6.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "prompt-toolkit",
+            "version": "3.0.43",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "psutil",
+            "version": "5.9.8",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pure-eval",
+            "version": "0.2.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pycryptodomex",
+            "version": "3.20.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pydantic",
+            "version": "1.10.14",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pygments",
+            "version": "2.17.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pympler",
+            "version": "1.0.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pynwb",
+            "version": "2.5.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pyout",
+            "version": "0.7.3",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pyshark",
+            "version": "0.6",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "python",
+            "version": "3.11.7",
+            "build": "he1021f5_0"
+        },
+        {
+            "name": "python-dateutil",
+            "version": "2.8.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "python_abi",
+            "version": "3.11",
+            "build": "2_cp311",
+            "channel": "conda-forge"
+        },
+        {
+            "name": "pytz",
+            "version": "2024.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pywin32",
+            "version": "306",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pywin32-ctypes",
+            "version": "0.2.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pyyaml",
+            "version": "6.0.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "pyzmq",
+            "version": "25.1.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "referencing",
+            "version": "0.33.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "remfile",
+            "version": "0.1.10",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "requests",
+            "version": "2.31.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "rfc3339-validator",
+            "version": "0.1.4",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "rfc3987",
+            "version": "1.3.8",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "rpds-py",
+            "version": "0.18.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "ruamel-yaml",
+            "version": "0.18.6",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "ruamel-yaml-clib",
+            "version": "0.2.8",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "s3fs",
+            "version": "2024.2.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "scipy",
+            "version": "1.12.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "semantic-version",
+            "version": "2.10.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "setuptools",
+            "version": "69.1.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "six",
+            "version": "1.16.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "spyder-kernels",
+            "version": "2.5.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "sqlite",
+            "version": "3.41.2",
+            "build": "h2bbff1b_0"
+        },
+        {
+            "name": "stack-data",
+            "version": "0.6.3",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "tabulate",
+            "version": "0.9.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "tbb",
+            "version": "2021.8.0",
+            "build": "h59b6b97_0"
+        },
+        {
+            "name": "tenacity",
+            "version": "8.2.3",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "termcolor",
+            "version": "2.4.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "tk",
+            "version": "8.6.12",
+            "build": "h2bbff1b_0"
+        },
+        {
+            "name": "tomli",
+            "version": "2.0.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "tornado",
+            "version": "6.4",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "tqdm",
+            "version": "4.66.2",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "traitlets",
+            "version": "5.14.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "types-python-dateutil",
+            "version": "2.8.19.20240106",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "typing-extensions",
+            "version": "4.9.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "tzdata",
+            "version": "2024.1",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "ucrt",
+            "version": "10.0.20348.0",
+            "build": "haa95532_0"
+        },
+        {
+            "name": "uri-template",
+            "version": "1.3.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "urllib3",
+            "version": "2.0.7",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "vc",
+            "version": "14.2",
+            "build": "h21ff451_1"
+        },
+        {
+            "name": "vc14_runtime",
+            "version": "14.38.33130",
+            "build": "h82b7239_18",
+            "channel": "conda-forge"
+        },
+        {
+            "name": "virtualenv",
+            "version": "20.25.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "vs2015_runtime",
+            "version": "14.38.33130",
+            "build": "hcb4865c_18",
+            "channel": "conda-forge"
+        },
+        {
+            "name": "wcwidth",
+            "version": "0.2.13",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "webcolors",
+            "version": "1.13",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "wheel",
+            "version": "0.41.2",
+            "build": "py311haa95532_0"
+        },
+        {
+            "name": "wrapt",
+            "version": "1.16.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "xz",
+            "version": "5.4.5",
+            "build": "h8cc25b3_0"
+        },
+        {
+            "name": "yarl",
+            "version": "1.9.4",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "zarr",
+            "version": "2.17.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "zarr-checksum",
+            "version": "0.4.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "zipp",
+            "version": "3.17.0",
+            "build": "pypi_0",
+            "channel": "pypi"
+        },
+        {
+            "name": "zlib",
+            "version": "1.2.13",
+            "build": "hcfcfb64_5",
+            "channel": "conda-forge"
+        }
+    ]
+}

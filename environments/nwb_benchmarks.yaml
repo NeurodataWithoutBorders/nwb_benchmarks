@@ -1,7 +1,4 @@
 name: nwb_benchmarks
-#channels:
-#  - defaults
-#  - conda-forge
 dependencies:
   - python = 3.11.7
   - git = 2.40.1
@@ -9,14 +6,16 @@ dependencies:
   - pip
   - pip:
       - setuptools
-      - asv
+      - asv == 0.6.2
       - numba>=0.58.1  # Pin to specific version for cuda import
       - psutil
       - pynwb
+      - dandi
       - fsspec
       - requests
       - aiohttp
       - remfile
       - pyshark
-      - hdmf @ git+https://github.com/hdmf-dev/hdmf.git@expose_aws_region  # required until region fix is released
+      - hdmf @ git+https://github.com/hdmf-dev/hdmf.git@9b3282aa4999d2922f003f1b79ec7458ea3ddc5e  # required until PyNWB propagates changes
+      #- hdmf @ git+https://github.com/hdmf-dev/hdmf.git@expose_aws_region  # required until region fix is released
       - -e ..
