@@ -16,7 +16,7 @@ The network tracking is implemented as part of the `nwb_benchmarks.core` module 
 
 .. note::
 
-    Running the network tracking generates additional threads/processes in order to capture traffic while the main code is running: **1)** ``NetworkProfiler.start_capture`` generates a ``subprocess`` for running the `tshark` command line tool, which is then being terminated when ``NetworkProfiler.stop_capture`` is called and **2)** ``CaptureConnections`` implements a ``Thread`` that is being run in the background. The ``NetworkTracker`` automatically starts and terminates these processs/threads, so a user typically does not need to manage these processes/threads directly.
+    Running the network tracking generates additional threads/processes in order to capture traffic while the main code is running: **1)** ``NetworkProfiler.start_capture`` generates a ``subprocess`` for running the ``tshark`` command line tool, which is then being terminated when ``NetworkProfiler.stop_capture`` is called and **2)** ``CaptureConnections`` implements a ``Thread`` that is being run in the background. The ``NetworkTracker`` automatically starts and terminates these processs/threads, so a user typically does not need to manage these directly.
 
 Typical usage
 ^^^^^^^^^^^^^
