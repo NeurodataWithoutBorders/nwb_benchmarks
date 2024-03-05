@@ -142,7 +142,7 @@ To simplify the implementation of benchmarks for tracking network statistics, we
                 x = requests.get('https://nwb-benchmarks.readthedocs.io/en/latest/setup.html')
             return network_tracker.asv_network_statistics
 
-In cases where a context manager may not be sufficient, we can alternatively use the `NetworkTracker` class directly to explicitly control when to start and stop the tracking.
+In cases where a context manager may not be sufficient, we can alternatively use the ``NetworkTracker`` class directly to explicitly control when to start and stop the tracking.
 
 .. code-block:: python
 
