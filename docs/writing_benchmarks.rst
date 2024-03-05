@@ -159,4 +159,4 @@ In cases where a context manager may not be sufficient, we can alternatively use
             tracker.stop_network_capture()
             return tracker.asv_network_statistics
 
-By default, the `NetworkTracker` and `network_activity_tracker` track the network activity of the current process ID (i.e., ``os.getpid()``), but the PID to track can also be set explicitly if a different process needs to be monitored.
+By default, the ``NetworkTracker`` and ``network_activity_tracker`` track the network activity of the current process ID (i.e., ``os.getpid()``), but the PID to track can also be set explicitly if a different process needs to be monitored.
