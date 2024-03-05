@@ -17,6 +17,5 @@ pip install -r docs/requirements-rtd.txt
 then build the docs by executing the command...
 
 ```
-mkdir -p docs/build/html
-sphinx-build -M html docs docs/build/html
+sphinx-build -M html docs docs/build
 ```

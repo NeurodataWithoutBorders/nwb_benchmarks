@@ -112,7 +112,4 @@ which is also indented for improved human readability and line-by-line GitHub tr
     If this ``results`` folder eventually becomes too large for Git to reasonably handle, we will explore options to share via other data storage services.
 
 
-Network Tracking
-----------------
-
-Stay tuned https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues/24
+.. include:: network_tracking.rst
