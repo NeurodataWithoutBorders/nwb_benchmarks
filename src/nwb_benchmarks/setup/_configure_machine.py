@@ -108,20 +108,25 @@ def ensure_machine_info_current(file_path: pathlib.Path):
     default_machine_name = next(key for key in machine_file.keys() if key != "version")
     machine_info_from_file = machine_file[default_machine_name]
 
-    # Only asserting agains the custom stuff we grab
-    machine_info_from_file.pop("defaults")
-    machine_info_from_file.pop("machine")
-    machine_info_from_file.pop("custom")
+    try:
+        # Make sure all keys we expect are present
+        assert "defaults" in machine_info_from_file
+        assert "machine" in machine_info_from_file
+        assert "custom" in machine_info_from_file
 
-    if machine_info_from_file == current_machine_info:
-        return
+        # Remove keys to only assert against the custom stuff we grab
+        machine_info_from_file.pop("defaults")
+        machine_info_from_file.pop("machine")
+        machine_info_from_file.pop("custom")
 
-    # If debugging is ever necessary in the future, best way I found to summarize differences was
-    # import unittest
-    #
-    # test = unittest.TestCase()
-    # test.maxDiff = None
-    # test.assertDictEqual(d1=machine_info_from_file, d2=current_machine_info)
-
-    warnings.warn("The current machine info is out of date! Automatically updating the file.", stacklevel=2)
-    customize_asv_machine_file(file_path=file_path, overwrite=True)
+        # Assert that the machine info is current
+        # If debugging is ever necessary in the future, best way I found to summarize differences was
+        # import unittest
+        #
+        # test = unittest.TestCase()
+        # test.maxDiff = None
+        # test.assertDictEqual(d1=machine_info_from_file, d2=current_machine_info)
+        assert machine_info_from_file == current_machine_info
+    except AssertionError as e:
+        warnings.warn("The current machine info is out of date! Automatically updating the file.", stacklevel=2)
+        customize_asv_machine_file(file_path=file_path, overwrite=True)
