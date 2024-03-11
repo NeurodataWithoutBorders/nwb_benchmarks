@@ -15,10 +15,4 @@ Setup a completely fresh environment...
     conda env create --file environments/nwb_benchmarks.yaml --no-default-packages
     conda activate nwb_benchmarks
 
-Setup initial machine configuration values with
-
-.. code-block::
-
-    nwb_benchmarks setup
-
 You will also need to install the custom network tracking software ``tshark`` using `their instructions <https://tshark.dev/setup/install>`_.

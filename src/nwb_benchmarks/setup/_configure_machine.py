@@ -6,7 +6,6 @@ import os
 import pathlib
 import platform
 import sys
-import warnings
 from typing import Any, Dict
 
 import psutil
@@ -90,38 +89,3 @@ def customize_asv_machine_file(file_path: pathlib.Path, overwrite: bool = False)
 
     with open(file=file_path, mode="w") as io:
         json.dump(fp=io, obj=custom_file_info, indent=1)
-
-
-def ensure_machine_info_current(file_path: pathlib.Path):
-    """
-    Even something as simple as adjusting the disk partitions could affect performance.
-
-    If out of date, automatically trigger regeneration of machine info and hash.
-    Will also likely be affected by ipcfg.
-    """
-    current_machine_info = collect_machine_info()
-
-    # Assume there's only one machine configured per installation
-    with open(file=file_path, mode="r") as io:
-        machine_file = json.load(fp=io)
-
-    default_machine_name = next(key for key in machine_file.keys() if key != "version")
-    machine_info_from_file = machine_file[default_machine_name]
-
-    # Only asserting agains the custom stuff we grab
-    machine_info_from_file.pop("defaults")
-    machine_info_from_file.pop("machine")
-    machine_info_from_file.pop("custom")
-
-    if machine_info_from_file == current_machine_info:
-        return
-
-    # If debugging is ever necessary in the future, best way I found to summarize differences was
-    # import unittest
-    #
-    # test = unittest.TestCase()
-    # test.maxDiff = None
-    # test.assertDictEqual(d1=machine_info_from_file, d2=current_machine_info)
-
-    warnings.warn("The current machine info is out of date! Automatically updating the file.", stacklevel=2)
-    customize_asv_machine_file(file_path=file_path, overwrite=True)
