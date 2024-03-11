@@ -6,11 +6,7 @@ import pathlib
 import subprocess
 import sys
 
-from .setup import (
-    customize_asv_machine_file,
-    ensure_machine_info_current,
-    reduce_results,
-)
+from .setup import customize_asv_machine_file, reduce_results
 
 
 def main() -> None:
@@ -29,22 +25,12 @@ def main() -> None:
         specific_benchmark_pattern = flags_list[flags_list.index("--bench") + 1]
 
     default_asv_machine_file_path = pathlib.Path.home() / ".asv-machine.json"
-    if command == "setup":
-        if default_asv_machine_file_path.exists():
-            ensure_machine_info_current(file_path=default_asv_machine_file_path)
-            return
-
+    if command == "run":
         process = subprocess.Popen(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
         process.wait()
-
         customize_asv_machine_file(file_path=default_asv_machine_file_path)
-    elif command == "run":
-        commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
 
-        if default_asv_machine_file_path.exists():
-            ensure_machine_info_current(file_path=default_asv_machine_file_path)
-        else:
-            customize_asv_machine_file(file_path=default_asv_machine_file_path)
+        commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
 
         # Save latest environment list from conda (most thorough)
         # subprocess tends to have issues inheriting `conda` entrypoint
