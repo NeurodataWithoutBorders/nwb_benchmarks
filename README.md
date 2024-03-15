@@ -1,4 +1,4 @@
-![NWB Benchmark Logo.](/docs/assets/logo_nwb_benchmarks.png)
+![NWB Benchmark Logo.](/docs/assets/logo_nwb_benchmarks.png | width=300)
 
 # NWB Benchmarks
 
