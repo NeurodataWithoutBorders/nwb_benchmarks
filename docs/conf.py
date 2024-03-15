@@ -20,6 +20,7 @@ templates_path = ["_templates"]
 master_doc = "index"
 exclude_patterns = ["build", "_build", "Thumbs.db", ".DS_Store"]
 html_theme = "pydata_sphinx_theme"
+html_logo = "assets/logo_nwb_benchmarks.png"
 # html_static_path = ["_static"]
 
 # The name of an image file (within the static path) to use as favicon of the
