@@ -1,3 +1,5 @@
+![NWB Benchmark Logo.](/docs/assets/logo_nwb_benchmarks.png)
+
 # NWB Benchmarks
 
 Benchmark suite for NWB performances using a customization of [airspeed velocity](https://asv.readthedocs.io/en/stable/).
