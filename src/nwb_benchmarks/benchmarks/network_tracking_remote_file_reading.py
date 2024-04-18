@@ -12,6 +12,11 @@ from nwb_benchmarks.core import (
     read_hdf5_nwbfile_ros3,
     read_hdf5_remfile,
     read_hdf5_ros3,
+    read_hdf5_fsspec_with_cache,
+    read_hdf5_nwbfile_fsspec_with_cache,
+    read_hdf5_remfile_with_cache,
+    read_hdf5_nwbfile_remfile_with_cache,
+    
 )
 
 param_names = ["s3_url"]
@@ -34,6 +39,14 @@ class FsspecNoCacheDirectFileReadBenchmark:
             self.file, self.bytestream = read_hdf5_fsspec_no_cache(s3_url=s3_url)
         return network_tracker.asv_network_statistics
 
+class FsspecWithCacheDirectFileReadBenchmark:
+    param_names = param_names
+    params = params
+
+    def track_network_activity_during_read(self, s3_url: str):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_with_cache(s3_url=s3_url)
+        return network_tracker.asv_network_statistics
 
 class RemfileDirectFileReadBenchmark:
     param_names = param_names
@@ -44,6 +57,14 @@ class RemfileDirectFileReadBenchmark:
             self.file, self.bytestream = read_hdf5_remfile(s3_url=s3_url)
         return network_tracker.asv_network_statistics
 
+class RemfileDirectFileReadBenchmarkWithCache:
+    param_names = param_names
+    params = params
+
+    def track_network_activity_during_read(self, s3_url: str):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.file, self.bytestream, self.tmpdir = read_hdf5_remfile_with_cache(s3_url=s3_url)
+        return network_tracker.asv_network_statistics
 
 class Ros3DirectFileReadBenchmark:
     param_names = param_names
@@ -65,6 +86,14 @@ class FsspecNoCacheNWBFileReadBenchmark:
             self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
         return network_tracker.asv_network_statistics
 
+class FsspecWithCacheNWBFileReadBenchmark:
+    param_names = param_names
+    params = params
+
+    def track_network_activity_during_read(self, s3_url: str):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(s3_url=s3_url)
+        return network_tracker.asv_network_statistics
 
 class RemfileNWBFileReadBenchmark:
     param_names = param_names
@@ -74,6 +103,16 @@ class RemfileNWBFileReadBenchmark:
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
         return network_tracker.asv_network_statistics
+
+class RemfileNWBFileReadBenchmarkWithCache:
+    param_names = param_names
+    params = params
+
+    def track_network_activity_during_read(self, s3_url: str):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_remfile_with_cache(s3_url=s3_url)
+        return network_tracker.asv_network_statistics
+
 
 
 class Ros3NWBFileReadBenchmark:
