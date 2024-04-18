@@ -8,6 +8,11 @@ from nwb_benchmarks.core import (
     read_hdf5_nwbfile_ros3,
     read_hdf5_remfile,
     read_hdf5_ros3,
+    read_hdf5_fsspec_with_cache,
+    read_hdf5_nwbfile_fsspec_with_cache,
+    read_hdf5_remfile_with_cache,
+    read_hdf5_nwbfile_remfile_with_cache,
+    
 )
 
 param_names = ["s3_url"]
@@ -38,11 +43,18 @@ class DirectFileReadBenchmark:
     def time_read_hdf5_fsspec_no_cache(self, s3_url: str):
         self.file, self.bytestream = read_hdf5_fsspec_no_cache(s3_url=s3_url)
 
+	def time_read_hdf5_fsspec_with_cache(self, s3_url: str):
+        self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_with_cache(s3_url=s3_url)
+        
     def time_read_hdf5_remfile(self, s3_url: str):
         self.file, self.bytestream = read_hdf5_remfile(s3_url=s3_url)
 
+    def time_read_hdf5_remfile_with_cache(self, s3_url: str):
+        self.file, self.bytestream, self.tmpdir = read_hdf5_remfile_with_cache(s3_url=s3_url)
+
     def time_read_hdf5_ros3(self, s3_url: str):
         self.file, _ = read_hdf5_ros3(s3_url=s3_url, retry=False)
+
 
 
 class NWBFileReadBenchmark:
@@ -60,8 +72,14 @@ class NWBFileReadBenchmark:
     def time_read_hdf5_nwbfile_fsspec_no_cache(self, s3_url: str):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
 
+	def time_read_hdf5_nwbfile_fsspec_with_cache(self, s3_url: str):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(s3_url=s3_url)
+
     def time_read_hdf5_nwbfile_remfile(self, s3_url: str):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
+
+    def time_read_hdf5_nwbfile_remfile_with_cache(self, s3_url: str):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_remfile_with_cache(s3_url=s3_url)
 
     def time_read_hdf5_nwbfile_ros3(self, s3_url: str):
         self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(s3_url=s3_url, retry=False)
