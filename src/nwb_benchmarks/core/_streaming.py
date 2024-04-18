@@ -1,3 +1,4 @@
+import tempfile
 import time
 import warnings
 from typing import Any, Callable, Tuple, Union
@@ -5,11 +6,10 @@ from typing import Any, Callable, Tuple, Union
 import fsspec
 import h5py
 import pynwb
-import tempfile
 import remfile
 from fsspec.asyn import reset_lock
-from fsspec.implementations.http import HTTPFile
 from fsspec.implementations.cached import CachingFileSystem
+from fsspec.implementations.http import HTTPFile
 
 # Useful if running in verbose mode
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
@@ -67,7 +67,7 @@ def read_hdf5_nwbfile_fsspec_with_cache(
     cache_storage=tmpdir.name,  # Local folder for the cache
 		)
     return (nwbfile, io, file, byte_stream, tmpdir)
-	
+
 
 def read_hdf5_remfile(s3_url: str) -> Tuple[h5py.File, remfile.File]:
     """Load the raw HDF5 file from an S3 URL using remfile; does not formally read the NWB file."""
