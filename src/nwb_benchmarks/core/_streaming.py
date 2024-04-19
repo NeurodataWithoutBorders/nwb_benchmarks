@@ -86,7 +86,7 @@ def read_hdf5_nwbfile_remfile(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5
     return (nwbfile, io, file, byte_stream)
 
 
-def read_hdf5_remfile_with_cache(s3_url: str) -> Tuple[h5py.File, remfile.File]:
+def read_hdf5_remfile_with_cache(s3_url: str) -> Tuple[h5py.File, remfile.File, tempfile.TemporaryDirectory]:
     """Load the raw HDF5 file from an S3 URL using remfile; does not formally read the NWB file."""
     tmpdir = tempfile.TemporaryDirectory()
     disk_cache = remfile.DiskCache(tempdir.name)
