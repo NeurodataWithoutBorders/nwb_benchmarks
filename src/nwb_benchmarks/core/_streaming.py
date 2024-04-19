@@ -58,7 +58,7 @@ def read_hdf5_nwbfile_fsspec_no_cache(
 
 def read_hdf5_nwbfile_fsspec_with_cache(
     s3_url: str,
-) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, HTTPFile]:
+) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, HTTPFile, tempfile.TemporaryDirectory]:
     """Read an HDF5 NWB file from an S3 URL using fsspec without a cache."""
     (file, byte_stream) = read_hdf5_fsspec_no_cache(s3_url=s3_url)
     io = pynwb.NWBHDF5IO(file=file, load_namespaces=True)
