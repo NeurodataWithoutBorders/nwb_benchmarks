@@ -42,7 +42,7 @@ class DirectFileReadBenchmark:
     def time_read_hdf5_fsspec_no_cache(self, s3_url: str):
         self.file, self.bytestream = read_hdf5_fsspec_no_cache(s3_url=s3_url)
 
-	def time_read_hdf5_fsspec_with_cache(self, s3_url: str):
+    def time_read_hdf5_fsspec_with_cache(self, s3_url: str):
         self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_with_cache(s3_url=s3_url)
 
     def time_read_hdf5_remfile(self, s3_url: str):
