@@ -60,7 +60,7 @@ def read_hdf5_nwbfile_fsspec_with_cache(
     io = pynwb.NWBHDF5IO(file=file, load_namespaces=True)
     nwbfile = io.read()
     tmpdir= tempfile.TemporaryDirectory()
-	fs = CachingFileSystem(
+    fs = CachingFileSystem(
     fs=fs,
     cache_storage=tmpdir.name,  # Local folder for the cache
 		)
