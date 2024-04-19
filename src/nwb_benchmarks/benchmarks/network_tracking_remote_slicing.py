@@ -25,6 +25,17 @@ params = (
     [(slice(0, 30_000), slice(0, 384))],  # ~23 MB
 )
 
+parameter_cases = dict(
+    IBLTestCase1=dict(
+        s3_url=get_s3_url(
+            dandiset_id="000717",
+            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
+        ),
+        object_name="ElectricalSeriesAp",
+        slice_range=(slice(0, 30_000), slice(0, 384)),  #  ~23 MB
+    )
+)
+
 
 class FsspecNoCacheContinuousSliceBenchmark:
     param_names = param_names
