@@ -35,10 +35,8 @@ def read_hdf5_fsspec_with_cache(
     reset_lock()
     fsspec.get_filesystem_class("https").clear_instance_cache()
     filesystem = fsspec.filesystem("https")
-	tmpdir= tempfile.TemporaryDirectory()
-	fs = CachingFileSystem(
-    fs=fs,
-    cache_storage=tmpdir.name,  # Local folder for the cache
+    tmpdir= tempfile.TemporaryDirectory()
+    fs = CachingFileSystem(fs=fs, cache_storage=tmpdir.name,  # Local folder for the cache
 		)
     byte_stream = filesystem.open(path=s3_url, mode="rb")
     file = h5py.File(name=byte_stream)
