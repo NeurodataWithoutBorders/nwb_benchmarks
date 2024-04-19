@@ -31,7 +31,7 @@ def read_hdf5_fsspec_no_cache(
 
 def read_hdf5_fsspec_with_cache(
     s3_url: str,
-) -> Tuple[h5py.File, HTTPFile]:
+) -> Tuple[h5py.File, HTTPFile, tempfile.TemporaryDirectory]:
     """Load the raw HDF5 file from an S3 URL using fsspec without a cache; does not formally read the NWB file."""
     reset_lock()
     fsspec.get_filesystem_class("https").clear_instance_cache()
