@@ -95,7 +95,7 @@ def read_hdf5_remfile_with_cache(s3_url: str) -> Tuple[h5py.File, remfile.File]:
     return (file, byte_stream, tmpdir)
 
 
-def read_hdf5_nwbfile_remfile_with_cache(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File]:
+def read_hdf5_nwbfile_remfile_with_cache(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File, tempfile.TemporaryDirectory]:
     """Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py."""
     (file, byte_stream, tmpdir) = read_hdf5_remfile_with_cache(s3_url=s3_url)
     io = pynwb.NWBHDF5IO(file=file, load_namespaces=True)
