@@ -37,8 +37,7 @@ class DirectFileReadBenchmark(BaseBenchmark):
 
     rounds = 1
     repeat = 3
-    param_names = param_names
-    params = params
+    parameter_cases = parameter_cases
 
     def time_read_hdf5_fsspec_no_cache(self, s3_url: str):
         self.file, self.bytestream = read_hdf5_fsspec_no_cache(s3_url=s3_url)
@@ -59,8 +58,7 @@ class NWBFileReadBenchmark(BaseBenchmark):
 
     rounds = 1
     repeat = 3
-    param_names = param_names
-    params = params
+    parameter_cases = parameter_cases
 
     def time_read_hdf5_nwbfile_fsspec_no_cache(self, s3_url: str):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
