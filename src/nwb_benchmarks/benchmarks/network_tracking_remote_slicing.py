@@ -4,6 +4,7 @@ from typing import Tuple
 
 from nwb_benchmarks import TSHARK_PATH
 from nwb_benchmarks.core import (
+    BaseBenchmark,
     get_object_by_name,
     get_s3_url,
     network_activity_tracker,
@@ -11,18 +12,6 @@ from nwb_benchmarks.core import (
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_ros3,
     robust_ros3_read,
-)
-
-param_names = ["s3_url", "object_name", "slice_range"]
-params = (
-    [
-        get_s3_url(
-            dandiset_id="000717",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
-        )
-    ],
-    ["ElectricalSeriesAp"],
-    [(slice(0, 30_000), slice(0, 384))],  # ~23 MB
 )
 
 parameter_cases = dict(
@@ -37,7 +26,7 @@ parameter_cases = dict(
 )
 
 
-class FsspecNoCacheContinuousSliceBenchmark:
+class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
     param_names = param_names
     params = params
 
@@ -52,7 +41,7 @@ class FsspecNoCacheContinuousSliceBenchmark:
         return network_tracker.asv_network_statistics
 
 
-class RemfileContinuousSliceBenchmark:
+class RemfileContinuousSliceBenchmark(BaseBenchmark):
     param_names = param_names
     params = params
 
@@ -67,9 +56,8 @@ class RemfileContinuousSliceBenchmark:
         return network_tracker.asv_network_statistics
 
 
-class Ros3ContinuousSliceBenchmark:
-    param_names = param_names
-    params = params
+class Ros3ContinuousSliceBenchmark(BaseBenchmark):
+    parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(s3_url=s3_url)

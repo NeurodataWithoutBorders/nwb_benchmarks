@@ -1,6 +1,7 @@
 """Basic benchmarks for timing streaming access of NWB files and their contents."""
 
 from nwb_benchmarks.core import (
+    BaseBenchmark,
     get_s3_url,
     read_hdf5_fsspec_no_cache,
     read_hdf5_nwbfile_fsspec_no_cache,
@@ -10,18 +11,22 @@ from nwb_benchmarks.core import (
     read_hdf5_ros3,
 )
 
-param_names = ["s3_url"]
-params = [
-    get_s3_url(dandiset_id="000717", dandi_path="sub-mock/sub-mock_ses-ecephys1.nwb"),
-    get_s3_url(
-        dandiset_id="000717",
-        dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
-    ),  # Not the best example for testing a theory about file read; should probably replace with something simpler
-    "https://dandiarchive.s3.amazonaws.com/ros3test.nwb",  # The original small test NWB file
-]
+parameter_cases = dict(
+    IBLTestCase1=dict(
+        s3_url=get_s3_url(dandiset_id="000717", dandi_path="sub-mock/sub-mock_ses-ecephys1.nwb"),
+    ),
+    # IBLTestCase2 is not the best example for testing a theory about file read; should probably replace with simpler
+    IBLTestCase2=dict(
+        s3_url=get_s3_url(
+            dandiset_id="000717",
+            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
+        ),
+    ),
+    ClassicRos3TestCase=dict(s3_url="https://dandiarchive.s3.amazonaws.com/ros3test.nwb"),
+)
 
 
-class DirectFileReadBenchmark:
+class DirectFileReadBenchmark(BaseBenchmark):
     """
     Time the direct read of the HDF5-backend files with `h5py` using each streaming method.
 
@@ -45,7 +50,7 @@ class DirectFileReadBenchmark:
         self.file, _ = read_hdf5_ros3(s3_url=s3_url, retry=False)
 
 
-class NWBFileReadBenchmark:
+class NWBFileReadBenchmark(BaseBenchmark):
     """
     Time the read of the HDF5-backend files with `pynwb` using each streaming method.
 
