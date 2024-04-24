@@ -36,9 +36,9 @@ def read_hdf5_fsspec_with_cache(
     reset_lock()
     fsspec.get_filesystem_class("https").clear_instance_cache()
     filesystem = fsspec.filesystem("https")
-    tmpdir = tempfile.TemporaryDirectory()
-    fs = CachingFileSystem(
-        fs=fs,
+    tmpdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+    filesystem = CachingFileSystem(
+        fs=filesystem,
         cache_storage=tmpdir.name,  # Local folder for the cache
     )
     byte_stream = filesystem.open(path=s3_url, mode="rb")
@@ -60,14 +60,9 @@ def read_hdf5_nwbfile_fsspec_with_cache(
     s3_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, HTTPFile, tempfile.TemporaryDirectory]:
     """Read an HDF5 NWB file from an S3 URL using fsspec without a cache."""
-    (file, byte_stream) = read_hdf5_fsspec_no_cache(s3_url=s3_url)
+    (file, byte_stream, tmpdir) = read_hdf5_fsspec_with_cache(s3_url=s3_url)
     io = pynwb.NWBHDF5IO(file=file, load_namespaces=True)
     nwbfile = io.read()
-    tmpdir = tempfile.TemporaryDirectory()
-    fs = CachingFileSystem(
-        fs=fs,
-        cache_storage=tmpdir.name,  # Local folder for the cache
-    )
     return (nwbfile, io, file, byte_stream, tmpdir)
 
 
@@ -88,8 +83,8 @@ def read_hdf5_nwbfile_remfile(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5
 
 def read_hdf5_remfile_with_cache(s3_url: str) -> Tuple[h5py.File, remfile.File, tempfile.TemporaryDirectory]:
     """Load the raw HDF5 file from an S3 URL using remfile; does not formally read the NWB file."""
-    tmpdir = tempfile.TemporaryDirectory()
-    disk_cache = remfile.DiskCache(tempdir.name)
+    tmpdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+    disk_cache = remfile.DiskCache(tmpdir.name)
     byte_stream = remfile.File(url=s3_url, disk_cache=disk_cache)
     file = h5py.File(name=byte_stream)
     return (file, byte_stream, tmpdir)
