@@ -1,7 +1,5 @@
 """Basic benchmarks for profiling network statistics for streaming access to NWB files and their contents."""
 
-import os
-
 from nwb_benchmarks import TSHARK_PATH
 from nwb_benchmarks.core import (
     get_s3_url,
@@ -43,6 +41,9 @@ class FsspecWithCacheDirectFileReadBenchmark:
     param_names = param_names
     params = params
 
+    def teardown(self, s3_url: str):
+        self.tmpdir.cleanup()
+
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_with_cache(s3_url=s3_url)
@@ -62,6 +63,9 @@ class RemfileDirectFileReadBenchmark:
 class RemfileDirectFileReadBenchmarkWithCache:
     param_names = param_names
     params = params
+
+    def teardown(self, s3_url: str):
+        self.tmpdir.cleanup()
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
@@ -94,6 +98,9 @@ class FsspecWithCacheNWBFileReadBenchmark:
     param_names = param_names
     params = params
 
+    def teardown(self, s3_url: str):
+        self.tmpdir.cleanup()
+
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(
@@ -115,6 +122,9 @@ class RemfileNWBFileReadBenchmark:
 class RemfileNWBFileReadBenchmarkWithCache:
     param_names = param_names
     params = params
+
+    def teardown(self, s3_url: str):
+        self.tmpdir.cleanup()
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
