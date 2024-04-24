@@ -39,6 +39,11 @@ class DirectFileReadBenchmark:
     param_names = param_names
     params = params
 
+    def teardown(self, s3_url: str):
+        # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
+        if hasattr(self, "tmpdir"):
+            self.tmpdir.cleanup()
+
     def time_read_hdf5_fsspec_no_cache(self, s3_url: str):
         self.file, self.bytestream = read_hdf5_fsspec_no_cache(s3_url=s3_url)
 
@@ -66,6 +71,11 @@ class NWBFileReadBenchmark:
     repeat = 3
     param_names = param_names
     params = params
+
+    def teardown(self, s3_url: str):
+        # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
+        if hasattr(self, "tmpdir"):
+            self.tmpdir.cleanup()
 
     def time_read_hdf5_nwbfile_fsspec_no_cache(self, s3_url: str):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
