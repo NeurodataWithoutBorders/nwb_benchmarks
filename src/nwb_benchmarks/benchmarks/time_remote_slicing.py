@@ -52,6 +52,9 @@ class FsspecWithCacheContinuousSliceBenchmark:
     param_names = param_names
     params = params
 
+    def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.tmpdir.cleanup()
+
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(
             s3_url=s3_url
@@ -72,7 +75,7 @@ class RemfileContinuousSliceBenchmark:
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
-        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name="ElectricalSeriesAp")
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -86,11 +89,14 @@ class RemfileContinuousSliceBenchmarkWithCache:
     param_names = param_names
     params = params
 
+    def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.tmpdir.cleanup()
+
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_remfile_with_cache(
             s3_url=s3_url
         )
-        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name="ElectricalSeriesAp")
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -106,7 +112,7 @@ class Ros3ContinuousSliceBenchmark:
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(s3_url=s3_url)
-        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name="ElectricalSeriesAp")
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
