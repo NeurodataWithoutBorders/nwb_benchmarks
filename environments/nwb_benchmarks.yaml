@@ -16,6 +16,7 @@ dependencies:
       - aiohttp
       - remfile
       - pyshark
+      - lindi
       - hdmf @ git+https://github.com/hdmf-dev/hdmf.git@9b3282aa4999d2922f003f1b79ec7458ea3ddc5e  # required until PyNWB propagates changes
       #- hdmf @ git+https://github.com/hdmf-dev/hdmf.git@expose_aws_region  # required until region fix is released
       - -e ..

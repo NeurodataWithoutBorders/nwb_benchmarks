@@ -3,10 +3,14 @@
 from nwb_benchmarks.core import (
     get_s3_url,
     read_hdf5_fsspec_no_cache,
+    read_hdf5_fsspec_with_cache,
     read_hdf5_nwbfile_fsspec_no_cache,
+    read_hdf5_nwbfile_fsspec_with_cache,
     read_hdf5_nwbfile_remfile,
+    read_hdf5_nwbfile_remfile_with_cache,
     read_hdf5_nwbfile_ros3,
     read_hdf5_remfile,
+    read_hdf5_remfile_with_cache,
     read_hdf5_ros3,
 )
 
@@ -35,11 +39,22 @@ class DirectFileReadBenchmark:
     param_names = param_names
     params = params
 
+    def teardown(self, s3_url: str):
+        # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
+        if hasattr(self, "tmpdir"):
+            self.tmpdir.cleanup()
+
     def time_read_hdf5_fsspec_no_cache(self, s3_url: str):
         self.file, self.bytestream = read_hdf5_fsspec_no_cache(s3_url=s3_url)
 
+    def time_read_hdf5_fsspec_with_cache(self, s3_url: str):
+        self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_with_cache(s3_url=s3_url)
+
     def time_read_hdf5_remfile(self, s3_url: str):
         self.file, self.bytestream = read_hdf5_remfile(s3_url=s3_url)
+
+    def time_read_hdf5_remfile_with_cache(self, s3_url: str):
+        self.file, self.bytestream, self.tmpdir = read_hdf5_remfile_with_cache(s3_url=s3_url)
 
     def time_read_hdf5_ros3(self, s3_url: str):
         self.file, _ = read_hdf5_ros3(s3_url=s3_url, retry=False)
@@ -57,11 +72,26 @@ class NWBFileReadBenchmark:
     param_names = param_names
     params = params
 
+    def teardown(self, s3_url: str):
+        # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
+        if hasattr(self, "tmpdir"):
+            self.tmpdir.cleanup()
+
     def time_read_hdf5_nwbfile_fsspec_no_cache(self, s3_url: str):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
 
+    def time_read_hdf5_nwbfile_fsspec_with_cache(self, s3_url: str):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(
+            s3_url=s3_url
+        )
+
     def time_read_hdf5_nwbfile_remfile(self, s3_url: str):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
+
+    def time_read_hdf5_nwbfile_remfile_with_cache(self, s3_url: str):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_remfile_with_cache(
+            s3_url=s3_url
+        )
 
     def time_read_hdf5_nwbfile_ros3(self, s3_url: str):
         self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(s3_url=s3_url, retry=False)
