@@ -1,0 +1,629 @@
+{
+ "version": 2,
+ "timestamp": "2024-04-24-13-52-49",
+ "commit_hash": "3f5d60d2491053bca4dcf792c6231da3b3f5a350",
+ "environment_hash": "4a85d57591fe6e0e05654aa72b456df5dab8ecd5",
+ "machine_hash": "f0-2f-4b-15-53-89.dhcp.lbnl.us",
+ "results": {
+  "network_tracking_remote_file_reading.FsspecNoCacheDirectFileReadBenchmark.track_network_activity_during_read": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": {
+    "amount_downloaded_in_bytes": 0,
+    "amount_uploaded_in_bytes": 0,
+    "total_transfer_in_bytes": 0,
+    "amount_downloaded_in_number_of_packets": 0,
+    "amount_uploaded_in_number_of_packets": 0,
+    "total_transfer_in_number_of_packets": 0,
+    "total_traffic_in_number_of_web_packets": 0,
+    "total_transfer_time_in_seconds": 0.0,
+    "network_total_time_in_seconds": 0.7858572006225586
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": {
+    "amount_downloaded_in_bytes": 5646446,
+    "amount_uploaded_in_bytes": 27937,
+    "total_transfer_in_bytes": 5674383,
+    "amount_downloaded_in_number_of_packets": 3932,
+    "amount_uploaded_in_number_of_packets": 503,
+    "total_transfer_in_number_of_packets": 4435,
+    "total_traffic_in_number_of_web_packets": 503,
+    "total_transfer_time_in_seconds": 3.5246650000000006,
+    "network_total_time_in_seconds": 3.682455062866211
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": {
+    "amount_downloaded_in_bytes": 193059,
+    "amount_uploaded_in_bytes": 3134,
+    "total_transfer_in_bytes": 196193,
+    "amount_downloaded_in_number_of_packets": 146,
+    "amount_uploaded_in_number_of_packets": 40,
+    "total_transfer_in_number_of_packets": 186,
+    "total_traffic_in_number_of_web_packets": 40,
+    "total_transfer_time_in_seconds": 0.681826,
+    "network_total_time_in_seconds": 0.8387987613677979
+   }
+  },
+  "network_tracking_remote_file_reading.FsspecNoCacheNWBFileReadBenchmark.track_network_activity_during_read": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": {
+    "amount_downloaded_in_bytes": 214062,
+    "amount_uploaded_in_bytes": 3534,
+    "total_transfer_in_bytes": 217596,
+    "amount_downloaded_in_number_of_packets": 161,
+    "amount_uploaded_in_number_of_packets": 46,
+    "total_transfer_in_number_of_packets": 207,
+    "total_traffic_in_number_of_web_packets": 46,
+    "total_transfer_time_in_seconds": 0.670572,
+    "network_total_time_in_seconds": 0.8451797962188721
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": {
+    "amount_downloaded_in_bytes": 45000516,
+    "amount_uploaded_in_bytes": 223807,
+    "total_transfer_in_bytes": 45224323,
+    "amount_downloaded_in_number_of_packets": 31336,
+    "amount_uploaded_in_number_of_packets": 3960,
+    "total_transfer_in_number_of_packets": 35296,
+    "total_traffic_in_number_of_web_packets": 3960,
+    "total_transfer_time_in_seconds": 15.590137999999998,
+    "network_total_time_in_seconds": 15.690804958343506
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": {
+    "amount_downloaded_in_bytes": 192520,
+    "amount_uploaded_in_bytes": 3284,
+    "total_transfer_in_bytes": 195804,
+    "amount_downloaded_in_number_of_packets": 145,
+    "amount_uploaded_in_number_of_packets": 43,
+    "total_transfer_in_number_of_packets": 188,
+    "total_traffic_in_number_of_web_packets": 43,
+    "total_transfer_time_in_seconds": 0.701074,
+    "network_total_time_in_seconds": 0.8405110836029053
+   }
+  },
+  "network_tracking_remote_file_reading.FsspecWithCacheDirectFileReadBenchmark.track_network_activity_during_read": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": {
+    "amount_downloaded_in_bytes": 213542,
+    "amount_uploaded_in_bytes": 4440,
+    "total_transfer_in_bytes": 217982,
+    "amount_downloaded_in_number_of_packets": 160,
+    "amount_uploaded_in_number_of_packets": 63,
+    "total_transfer_in_number_of_packets": 223,
+    "total_traffic_in_number_of_web_packets": 63,
+    "total_transfer_time_in_seconds": 0.496109,
+    "network_total_time_in_seconds": 0.5809218883514404
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": {
+    "amount_downloaded_in_bytes": 11249268,
+    "amount_uploaded_in_bytes": 201890,
+    "total_transfer_in_bytes": 11451158,
+    "amount_downloaded_in_number_of_packets": 7890,
+    "amount_uploaded_in_number_of_packets": 2873,
+    "total_transfer_in_number_of_packets": 10763,
+    "total_traffic_in_number_of_web_packets": 2873,
+    "total_transfer_time_in_seconds": 2.821937,
+    "network_total_time_in_seconds": 2.901334047317505
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": {
+    "amount_downloaded_in_bytes": 192596,
+    "amount_uploaded_in_bytes": 3122,
+    "total_transfer_in_bytes": 195718,
+    "amount_downloaded_in_number_of_packets": 146,
+    "amount_uploaded_in_number_of_packets": 40,
+    "total_transfer_in_number_of_packets": 186,
+    "total_traffic_in_number_of_web_packets": 40,
+    "total_transfer_time_in_seconds": 0.41656899999999997,
+    "network_total_time_in_seconds": 0.4979100227355957
+   }
+  },
+  "network_tracking_remote_file_reading.FsspecWithCacheNWBFileReadBenchmark.track_network_activity_during_read": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": {
+    "amount_downloaded_in_bytes": 213442,
+    "amount_uploaded_in_bytes": 4170,
+    "total_transfer_in_bytes": 217612,
+    "amount_downloaded_in_number_of_packets": 159,
+    "amount_uploaded_in_number_of_packets": 58,
+    "total_transfer_in_number_of_packets": 217,
+    "total_traffic_in_number_of_web_packets": 58,
+    "total_transfer_time_in_seconds": 0.47058999999999995,
+    "network_total_time_in_seconds": 0.6089849472045898
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": {
+    "amount_downloaded_in_bytes": 10840104,
+    "amount_uploaded_in_bytes": 106964,
+    "total_transfer_in_bytes": 10947068,
+    "amount_downloaded_in_number_of_packets": 7547,
+    "amount_uploaded_in_number_of_packets": 1894,
+    "total_transfer_in_number_of_packets": 9441,
+    "total_traffic_in_number_of_web_packets": 1894,
+    "total_transfer_time_in_seconds": 3.0144840000000004,
+    "network_total_time_in_seconds": 3.1542317867279053
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": {
+    "amount_downloaded_in_bytes": 192520,
+    "amount_uploaded_in_bytes": 3878,
+    "total_transfer_in_bytes": 196398,
+    "amount_downloaded_in_number_of_packets": 145,
+    "amount_uploaded_in_number_of_packets": 54,
+    "total_transfer_in_number_of_packets": 199,
+    "total_traffic_in_number_of_web_packets": 54,
+    "total_transfer_time_in_seconds": 0.40159600000000006,
+    "network_total_time_in_seconds": 0.5125668048858643
+   }
+  },
+  "network_tracking_remote_file_reading.RemfileDirectFileReadBenchmark.track_network_activity_during_read": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": {
+    "amount_downloaded_in_bytes": 147776,
+    "amount_uploaded_in_bytes": 5269,
+    "total_transfer_in_bytes": 153045,
+    "amount_downloaded_in_number_of_packets": 129,
+    "amount_uploaded_in_number_of_packets": 66,
+    "total_transfer_in_number_of_packets": 195,
+    "total_traffic_in_number_of_web_packets": 66,
+    "total_transfer_time_in_seconds": 0.583563,
+    "network_total_time_in_seconds": 0.6040198802947998
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": {
+    "amount_downloaded_in_bytes": 268146,
+    "amount_uploaded_in_bytes": 7163,
+    "total_transfer_in_bytes": 275309,
+    "amount_downloaded_in_number_of_packets": 208,
+    "amount_uploaded_in_number_of_packets": 96,
+    "total_transfer_in_number_of_packets": 304,
+    "total_traffic_in_number_of_web_packets": 96,
+    "total_transfer_time_in_seconds": 0.7356039999999999,
+    "network_total_time_in_seconds": 0.7559809684753418
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": {
+    "amount_downloaded_in_bytes": 157307,
+    "amount_uploaded_in_bytes": 5625,
+    "total_transfer_in_bytes": 162932,
+    "amount_downloaded_in_number_of_packets": 130,
+    "amount_uploaded_in_number_of_packets": 74,
+    "total_transfer_in_number_of_packets": 204,
+    "total_traffic_in_number_of_web_packets": 74,
+    "total_transfer_time_in_seconds": 0.578015,
+    "network_total_time_in_seconds": 0.5932209491729736
+   }
+  },
+  "network_tracking_remote_file_reading.RemfileDirectFileReadBenchmarkWithCache.track_network_activity_during_read": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": {
+    "amount_downloaded_in_bytes": 166661,
+    "amount_uploaded_in_bytes": 5971,
+    "total_transfer_in_bytes": 172632,
+    "amount_downloaded_in_number_of_packets": 137,
+    "amount_uploaded_in_number_of_packets": 79,
+    "total_transfer_in_number_of_packets": 216,
+    "total_traffic_in_number_of_web_packets": 79,
+    "total_transfer_time_in_seconds": 0.586979,
+    "network_total_time_in_seconds": 0.6033971309661865
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": {
+    "amount_downloaded_in_bytes": 302804,
+    "amount_uploaded_in_bytes": 7973,
+    "total_transfer_in_bytes": 310777,
+    "amount_downloaded_in_number_of_packets": 233,
+    "amount_uploaded_in_number_of_packets": 111,
+    "total_transfer_in_number_of_packets": 344,
+    "total_traffic_in_number_of_web_packets": 111,
+    "total_transfer_time_in_seconds": 0.704966,
+    "network_total_time_in_seconds": 0.7163970470428467
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": {
+    "amount_downloaded_in_bytes": 154022,
+    "amount_uploaded_in_bytes": 5247,
+    "total_transfer_in_bytes": 159269,
+    "amount_downloaded_in_number_of_packets": 129,
+    "amount_uploaded_in_number_of_packets": 67,
+    "total_transfer_in_number_of_packets": 196,
+    "total_traffic_in_number_of_web_packets": 67,
+    "total_transfer_time_in_seconds": 0.598014,
+    "network_total_time_in_seconds": 0.6122710704803467
+   }
+  },
+  "network_tracking_remote_file_reading.RemfileNWBFileReadBenchmark.track_network_activity_during_read": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": {
+    "amount_downloaded_in_bytes": 253945,
+    "amount_uploaded_in_bytes": 6235,
+    "total_transfer_in_bytes": 260180,
+    "amount_downloaded_in_number_of_packets": 201,
+    "amount_uploaded_in_number_of_packets": 79,
+    "total_transfer_in_number_of_packets": 280,
+    "total_traffic_in_number_of_web_packets": 79,
+    "total_transfer_time_in_seconds": 0.7127829999999999,
+    "network_total_time_in_seconds": 0.7913088798522949
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": {
+    "amount_downloaded_in_bytes": 350038,
+    "amount_uploaded_in_bytes": 6974,
+    "total_transfer_in_bytes": 357012,
+    "amount_downloaded_in_number_of_packets": 267,
+    "amount_uploaded_in_number_of_packets": 97,
+    "total_transfer_in_number_of_packets": 364,
+    "total_traffic_in_number_of_web_packets": 97,
+    "total_transfer_time_in_seconds": 0.751639,
+    "network_total_time_in_seconds": 0.9128179550170898
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": {
+    "amount_downloaded_in_bytes": 227430,
+    "amount_uploaded_in_bytes": 5797,
+    "total_transfer_in_bytes": 233227,
+    "amount_downloaded_in_number_of_packets": 182,
+    "amount_uploaded_in_number_of_packets": 73,
+    "total_transfer_in_number_of_packets": 255,
+    "total_traffic_in_number_of_web_packets": 73,
+    "total_transfer_time_in_seconds": 0.708473,
+    "network_total_time_in_seconds": 0.7681219577789307
+   }
+  },
+  "network_tracking_remote_file_reading.RemfileNWBFileReadBenchmarkWithCache.track_network_activity_during_read": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": {
+    "amount_downloaded_in_bytes": 272426,
+    "amount_uploaded_in_bytes": 8125,
+    "total_transfer_in_bytes": 280551,
+    "amount_downloaded_in_number_of_packets": 212,
+    "amount_uploaded_in_number_of_packets": 114,
+    "total_transfer_in_number_of_packets": 326,
+    "total_traffic_in_number_of_web_packets": 114,
+    "total_transfer_time_in_seconds": 0.7341710000000001,
+    "network_total_time_in_seconds": 0.7926242351531982
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": {
+    "amount_downloaded_in_bytes": 351753,
+    "amount_uploaded_in_bytes": 9219,
+    "total_transfer_in_bytes": 360972,
+    "amount_downloaded_in_number_of_packets": 271,
+    "amount_uploaded_in_number_of_packets": 129,
+    "total_transfer_in_number_of_packets": 400,
+    "total_traffic_in_number_of_web_packets": 129,
+    "total_transfer_time_in_seconds": 0.8026340000000001,
+    "network_total_time_in_seconds": 0.8693070411682129
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": {
+    "amount_downloaded_in_bytes": 265691,
+    "amount_uploaded_in_bytes": 7602,
+    "total_transfer_in_bytes": 273293,
+    "amount_downloaded_in_number_of_packets": 206,
+    "amount_uploaded_in_number_of_packets": 116,
+    "total_transfer_in_number_of_packets": 322,
+    "total_traffic_in_number_of_web_packets": 116,
+    "total_transfer_time_in_seconds": 0.638619,
+    "network_total_time_in_seconds": 0.7494680881500244
+   }
+  },
+  "network_tracking_remote_file_reading.Ros3DirectFileReadBenchmark.track_network_activity_during_read": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": {
+    "amount_downloaded_in_bytes": 0,
+    "amount_uploaded_in_bytes": 0,
+    "total_transfer_in_bytes": 0,
+    "amount_downloaded_in_number_of_packets": 0,
+    "amount_uploaded_in_number_of_packets": 0,
+    "total_transfer_in_number_of_packets": 0,
+    "total_traffic_in_number_of_web_packets": 0,
+    "total_transfer_time_in_seconds": 0.0,
+    "network_total_time_in_seconds": 0.530210018157959
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": {
+    "amount_downloaded_in_bytes": 0,
+    "amount_uploaded_in_bytes": 0,
+    "total_transfer_in_bytes": 0,
+    "amount_downloaded_in_number_of_packets": 0,
+    "amount_uploaded_in_number_of_packets": 0,
+    "total_transfer_in_number_of_packets": 0,
+    "total_traffic_in_number_of_web_packets": 0,
+    "total_transfer_time_in_seconds": 0.0,
+    "network_total_time_in_seconds": 5.677761077880859
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": {
+    "amount_downloaded_in_bytes": 0,
+    "amount_uploaded_in_bytes": 0,
+    "total_transfer_in_bytes": 0,
+    "amount_downloaded_in_number_of_packets": 0,
+    "amount_uploaded_in_number_of_packets": 0,
+    "total_transfer_in_number_of_packets": 0,
+    "total_traffic_in_number_of_web_packets": 0,
+    "total_transfer_time_in_seconds": 0.0,
+    "network_total_time_in_seconds": 0.4761638641357422
+   }
+  },
+  "network_tracking_remote_file_reading.Ros3NWBFileReadBenchmark.track_network_activity_during_read": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": {
+    "amount_downloaded_in_bytes": 479447,
+    "amount_uploaded_in_bytes": 9944,
+    "total_transfer_in_bytes": 489391,
+    "amount_downloaded_in_number_of_packets": 359,
+    "amount_uploaded_in_number_of_packets": 146,
+    "total_transfer_in_number_of_packets": 505,
+    "total_traffic_in_number_of_web_packets": 146,
+    "total_transfer_time_in_seconds": 1.121575,
+    "network_total_time_in_seconds": 1.1937711238861084
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": {
+    "amount_downloaded_in_bytes": 35110831,
+    "amount_uploaded_in_bytes": 574954,
+    "total_transfer_in_bytes": 35685785,
+    "amount_downloaded_in_number_of_packets": 24579,
+    "amount_uploaded_in_number_of_packets": 9196,
+    "total_transfer_in_number_of_packets": 33775,
+    "total_traffic_in_number_of_web_packets": 9196,
+    "total_transfer_time_in_seconds": 18.499760000000002,
+    "network_total_time_in_seconds": 18.582128047943115
+   },
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": {
+    "amount_downloaded_in_bytes": 387270,
+    "amount_uploaded_in_bytes": 8998,
+    "total_transfer_in_bytes": 396268,
+    "amount_downloaded_in_number_of_packets": 295,
+    "amount_uploaded_in_number_of_packets": 132,
+    "total_transfer_in_number_of_packets": 427,
+    "total_traffic_in_number_of_web_packets": 132,
+    "total_transfer_time_in_seconds": 1.0045840000000001,
+    "network_total_time_in_seconds": 1.102829933166504
+   }
+  },
+  "network_tracking_remote_slicing.FsspecNoCacheContinuousSliceBenchmark.track_network_activity_during_slice": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": {
+    "amount_downloaded_in_bytes": 43696526,
+    "amount_uploaded_in_bytes": 434505,
+    "total_transfer_in_bytes": 44131031,
+    "amount_downloaded_in_number_of_packets": 30359,
+    "amount_uploaded_in_number_of_packets": 7981,
+    "total_transfer_in_number_of_packets": 38340,
+    "total_traffic_in_number_of_web_packets": 7981,
+    "total_transfer_time_in_seconds": 13.165420000000001,
+    "network_total_time_in_seconds": 13.261090993881226
+   }
+  },
+  "network_tracking_remote_slicing.FsspecWithCacheContinuousSliceBenchmark.track_network_activity_during_slice": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": {
+    "amount_downloaded_in_bytes": 27307869,
+    "amount_uploaded_in_bytes": 358521,
+    "total_transfer_in_bytes": 27666390,
+    "amount_downloaded_in_number_of_packets": 19009,
+    "amount_uploaded_in_number_of_packets": 6079,
+    "total_transfer_in_number_of_packets": 25088,
+    "total_traffic_in_number_of_web_packets": 6079,
+    "total_transfer_time_in_seconds": 5.605178,
+    "network_total_time_in_seconds": 5.813770055770874
+   }
+  },
+  "network_tracking_remote_slicing.RemfileContinuousSliceBenchmark.track_network_activity_during_slice": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": {
+    "amount_downloaded_in_bytes": 26674022,
+    "amount_uploaded_in_bytes": 329170,
+    "total_transfer_in_bytes": 27003192,
+    "amount_downloaded_in_number_of_packets": 18602,
+    "amount_uploaded_in_number_of_packets": 5504,
+    "total_transfer_in_number_of_packets": 24106,
+    "total_traffic_in_number_of_web_packets": 5504,
+    "total_transfer_time_in_seconds": 6.569325,
+    "network_total_time_in_seconds": 6.693562030792236
+   }
+  },
+  "network_tracking_remote_slicing.RemfileContinuousSliceBenchmarkWithCache.track_network_activity_during_slice": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": {
+    "amount_downloaded_in_bytes": 26660508,
+    "amount_uploaded_in_bytes": 295016,
+    "total_transfer_in_bytes": 26955524,
+    "amount_downloaded_in_number_of_packets": 18619,
+    "amount_uploaded_in_number_of_packets": 5063,
+    "total_transfer_in_number_of_packets": 23682,
+    "total_traffic_in_number_of_web_packets": 5063,
+    "total_transfer_time_in_seconds": 4.137424,
+    "network_total_time_in_seconds": 4.277439832687378
+   }
+  },
+  "network_tracking_remote_slicing.Ros3ContinuousSliceBenchmark.track_network_activity_during_slice": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": {
+    "amount_downloaded_in_bytes": 21835885,
+    "amount_uploaded_in_bytes": 95346,
+    "total_transfer_in_bytes": 21931231,
+    "amount_downloaded_in_number_of_packets": 15206,
+    "amount_uploaded_in_number_of_packets": 1649,
+    "total_transfer_in_number_of_packets": 16855,
+    "total_traffic_in_number_of_web_packets": 1649,
+    "total_transfer_time_in_seconds": 3.593381,
+    "network_total_time_in_seconds": 3.6984570026397705
+   }
+  },
+  "time_remote_file_reading.DirectFileReadBenchmark.time_read_hdf5_fsspec_no_cache": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": [
+    0.5035112909972668,
+    0.5001549999578856,
+    0.5064155000145547
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": [
+    3.334527375001926,
+    2.381788416998461,
+    2.1116671659983695
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": [
+    0.4493255830020644,
+    0.4461168340058066,
+    0.4465662090224214
+   ]
+  },
+  "time_remote_file_reading.DirectFileReadBenchmark.time_read_hdf5_fsspec_with_cache": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": [
+    0.5305881249951199,
+    0.5392212079605088,
+    0.5380204590037465
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": [
+    2.8482615829561837,
+    4.500675209041219,
+    1.5599770830012858
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": [
+    0.5150681670056656,
+    0.47260254103457555,
+    0.4826993339811452
+   ]
+  },
+  "time_remote_file_reading.DirectFileReadBenchmark.time_read_hdf5_remfile": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": [
+    0.6369514169637114,
+    0.6295166250201873,
+    0.622674083977472
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": [
+    0.7322884160093963,
+    0.793164708011318,
+    0.7359924589982256
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": [
+    0.66970724996645,
+    0.6651473750243895,
+    0.6269179160008207
+   ]
+  },
+  "time_remote_file_reading.DirectFileReadBenchmark.time_read_hdf5_remfile_with_cache": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": [
+    0.6398781670141034,
+    0.6483911670511588,
+    0.6339193750172853
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": [
+    0.7473873340059072,
+    0.8004671670496464,
+    0.7577312079956755
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": [
+    0.6540609580115415,
+    0.6300513750175014,
+    0.6537958750268444
+   ]
+  },
+  "time_remote_file_reading.DirectFileReadBenchmark.time_read_hdf5_ros3": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": [
+    0.5034994999878109,
+    0.49389495799550787,
+    0.5077822500024922
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": [
+    3.225847583031282,
+    2.465878375049215,
+    3.084084917034488
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": [
+    0.4339276250102557,
+    0.4359898750553839,
+    0.4391030839760788
+   ]
+  },
+  "time_remote_file_reading.NWBFileReadBenchmark.time_read_hdf5_nwbfile_fsspec_no_cache": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": [
+    0.5666222499567084,
+    0.5676359580247663,
+    0.6540347500122152
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": [
+    12.189672209031414,
+    10.679295875015669,
+    12.986828083987348
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": [
+    0.4864183749887161,
+    0.4805889169801958,
+    0.492531375028193
+   ]
+  },
+  "time_remote_file_reading.NWBFileReadBenchmark.time_read_hdf5_nwbfile_fsspec_with_cache": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": [
+    0.595303000009153,
+    0.5622682920075022,
+    0.5947230000165291
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": [
+    5.389149124966934,
+    3.3350068750442006,
+    2.4899771659984253
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": [
+    0.7969977920292877,
+    0.7467974579776637,
+    0.6068370830034837
+   ]
+  },
+  "time_remote_file_reading.NWBFileReadBenchmark.time_read_hdf5_nwbfile_remfile": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": [
+    1.043911290995311,
+    1.0107967919902876,
+    1.063565083022695
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": [
+    1.1496044999803416,
+    1.1405767919495702,
+    1.15403883298859
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": [
+    0.7680339999496937,
+    0.7613873329828493,
+    0.7622385839931667
+   ]
+  },
+  "time_remote_file_reading.NWBFileReadBenchmark.time_read_hdf5_nwbfile_remfile_with_cache": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": [
+    0.7882591670495458,
+    0.8070574160083197,
+    0.7901275829644874
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": [
+    0.8914747920352966,
+    0.9610544589813799,
+    0.8912310830201022
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": [
+    0.7747533340007067,
+    0.7741332920268178,
+    0.7657525830436498
+   ]
+  },
+  "time_remote_file_reading.NWBFileReadBenchmark.time_read_hdf5_nwbfile_ros3": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/dc3/028/dc302863-52b3-4675-9b5e-cf5f8c7636a7'\",)": [
+    2.3300142499501817,
+    1.0253219999722205,
+    1.0837808329961263
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\",)": [
+    11.829411499958951,
+    8.687583249993622,
+    12.437287499953527
+   ],
+   "(\"'https://dandiarchive.s3.amazonaws.com/ros3test.nwb'\",)": [
+    1.0744448750047013,
+    0.9215772920288146,
+    0.9248003329848871
+   ]
+  },
+  "time_remote_slicing.FsspecNoCacheContinuousSliceBenchmark.time_slice": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": [
+    11.009881000034511,
+    14.997986041998956,
+    9.71964816597756
+   ]
+  },
+  "time_remote_slicing.FsspecWithCacheContinuousSliceBenchmark.time_slice": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": [
+    5.833667333994526,
+    7.168427375028841,
+    7.415578667016234
+   ]
+  },
+  "time_remote_slicing.RemfileContinuousSliceBenchmark.time_slice": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": [
+    7.905155165994074,
+    6.952957374975085,
+    8.380637207999825
+   ]
+  },
+  "time_remote_slicing.RemfileContinuousSliceBenchmarkWithCache.time_slice": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": [
+    8.480555457994342,
+    5.427363708033226,
+    5.847847833996639
+   ]
+  },
+  "time_remote_slicing.Ros3ContinuousSliceBenchmark.time_slice": {
+   "(\"'https://dandiarchive.s3.amazonaws.com/blobs/fec/8a6/fec8a690-2ece-4437-8877-8a002ff8bd8a'\", \"'ElectricalSeriesAp'\", '(slice(0, 30000, None), slice(0, 384, None))')": [
+    0.002822709036991,
+    0.0019847499788738787,
+    0.0019402079633437097
+   ]
+  }
+ }
+}

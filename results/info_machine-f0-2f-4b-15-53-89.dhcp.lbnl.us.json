@@ -1,0 +1,119 @@
+{
+    "arch": "arm64",
+    "cpu": "Apple M1 Max",
+    "custom": true,
+    "defaults": {
+        "arch": "arm64",
+        "cpu": "Apple M1 Max",
+        "machine": "terraomega.local",
+        "num_cpu": "10",
+        "os": "Darwin 21.6.0",
+        "ram": "34359738368"
+    },
+    "machine": "f0-2f-4b-15-53-89.dhcp.lbnl.us",
+    "num_cpu": "10",
+    "os": "Darwin 21.6.0",
+    "platform": {
+        "architecture": [
+            "64bit",
+            ""
+        ],
+        "machine": "arm64",
+        "platform": "macOS-12.5.1-arm64-arm-64bit",
+        "processor": "arm",
+        "system": "Darwin"
+    },
+    "psutil": {
+        "disk_partitions": [
+            {
+                "device": "/dev/disk3s1s1",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/",
+                "opts": "ro,local,rootfs,dovolfs,journaled,multilabel"
+            },
+            {
+                "device": "/dev/disk3s6",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/System/Volumes/VM",
+                "opts": "rw,noexec,local,dovolfs,dontbrowse,journaled,multilabel,noatime"
+            },
+            {
+                "device": "/dev/disk3s2",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/System/Volumes/Preboot",
+                "opts": "rw,local,dovolfs,dontbrowse,journaled,multilabel"
+            },
+            {
+                "device": "/dev/disk3s4",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/System/Volumes/Update",
+                "opts": "rw,local,dovolfs,dontbrowse,journaled,multilabel"
+            },
+            {
+                "device": "/dev/disk1s2",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/System/Volumes/xarts",
+                "opts": "rw,noexec,local,dovolfs,dontbrowse,journaled,multilabel,noatime"
+            },
+            {
+                "device": "/dev/disk1s1",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/System/Volumes/iSCPreboot",
+                "opts": "rw,local,dovolfs,dontbrowse,journaled,multilabel"
+            },
+            {
+                "device": "/dev/disk1s3",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/System/Volumes/Hardware",
+                "opts": "rw,local,dovolfs,dontbrowse,journaled,multilabel"
+            },
+            {
+                "device": "/dev/disk3s5",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/System/Volumes/Data",
+                "opts": "rw,local,dovolfs,dontbrowse,journaled,multilabel"
+            },
+            {
+                "device": "/dev/disk3s1",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/System/Volumes/Update/mnt1",
+                "opts": "rw,local,dovolfs,dontbrowse,journaled,multilabel"
+            },
+            {
+                "device": "/dev/disk4s2",
+                "fstype": "hfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/Volumes/MyTimeMachine",
+                "opts": "rw,nosuid,local,dovolfs,journaled,multilabel"
+            }
+        ],
+        "number_of_processes": 10,
+        "number_of_threads": 10,
+        "total_swap_memory": 1073741824,
+        "total_virtual_memory": 34359738368
+    },
+    "ram": "34359738368",
+    "sys": {
+        "platform": "darwin"
+    },
+    "version": 1
+}
