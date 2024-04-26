@@ -4,8 +4,10 @@ from typing import Any, Callable, Tuple, Union
 
 import fsspec
 import h5py
+import hdmf_zarr
 import pynwb
 import remfile
+import zarr
 from fsspec.asyn import reset_lock
 from fsspec.implementations.http import HTTPFile
 
@@ -131,3 +133,39 @@ def read_hdf5_nwbfile_ros3(s3_url: str, retry: bool = True) -> Tuple[pynwb.NWBFi
         retries = None
         nwbfile = io.read()
     return (nwbfile, io, retries)
+
+
+def read_zarr(s3_url: str, force_no_consolidated_metadata=False) -> zarr.Group:
+    """
+    Open a Zarr file from an S3 URL using the built-in fsspec support in Zarr.
+
+    Returns
+    -------
+    file : zarr.Group
+       The zarr.Group object representing the opened file
+    """
+    if force_no_consolidated_metadata:
+        zarrfile = zarr.open(store=s3_url, mode="r", storage_options=dict(anon=True))
+    else:
+        try:
+            zarrfile = zarr.open_consolidated(store=s3_url, mode="r", storage_options=dict(anon=True))
+        except KeyError:
+            zarrfile = zarr.open(store=s3_url, mode="r", storage_options=dict(anon=True))
+    return zarrfile
+
+
+def read_zarr_nwbfile(s3_url: str, force_no_consolidated_metadata=False) -> Tuple[pynwb.NWBFile, hdmf_zarr.NWBZarrIO]:
+    """
+    Read a Zarr NWB file from an S3 URL using the built-in fsspec support in Zarr.
+
+    Returns
+    -------
+    NWBFile : pynwb.NWBFile
+        The remote NWBFile object.
+    NWBZarrIO : hdmf_zarr.NWBZarrIO
+        The open IO object used to open the file.
+    """
+    mode = "r" if not force_no_consolidated_metadata else "r-"
+    io = hdmf_zarr.NWBZarrIO(s3_url, mode=mode, storage_options=dict(anon=True))
+    nwbfile = io.read()
+    return (nwbfile, io)
