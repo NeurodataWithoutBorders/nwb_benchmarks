@@ -6,13 +6,12 @@ from typing import Tuple
 from nwb_benchmarks.core import (
     get_object_by_name,
     get_s3_url,
-    read_hdf5_fsspec_with_cache,
     read_hdf5_nwbfile_fsspec_no_cache,
     read_hdf5_nwbfile_fsspec_with_cache,
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_remfile_with_cache,
     read_hdf5_nwbfile_ros3,
-    read_hdf5_remfile_with_cache,
+    read_zarr_nwbfile,
 )
 
 # TODO: add the others
@@ -27,6 +26,19 @@ params = (
     ],
     ["ElectricalSeriesAp"],
     [(slice(0, 30_000), slice(0, 384))],  # ~23 MB
+)
+
+zarr_param_names = ["s3_url", "object_name", "slice_range"]
+zarr_params = (
+    [
+        (
+            "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
+            "ecephys_625749_2022-08-03_15-15-06_nwb/"
+            "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
+        ),
+    ],
+    ["ElectricalSeriesProbe A-LFP"],
+    [(slice(0, 30_000), slice(0, 384))],
 )
 
 
@@ -117,4 +129,34 @@ class Ros3ContinuousSliceBenchmark:
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         """Note: store as self._temp to avoid tracking garbage collection as well."""
-        self.data_to_slice[slice_range]
+        self._temp = self.data_to_slice[slice_range]
+
+
+class ZarrContinuousSliceBenchmark:
+    rounds = 1
+    repeat = 3
+    param_names = zarr_param_names
+    params = zarr_params
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, force_no_consolidated_metadata=False)
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self._temp = self.data_to_slice[slice_range]
+
+
+class ZarrForceNoConsolidatedContinuousSliceBenchmark:
+    rounds = 1
+    repeat = 3
+    param_names = zarr_param_names
+    params = zarr_params
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, force_no_consolidated_metadata=True)
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self._temp = self.data_to_slice[slice_range]
