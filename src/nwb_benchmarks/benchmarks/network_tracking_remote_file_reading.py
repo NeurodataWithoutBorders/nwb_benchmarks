@@ -12,6 +12,8 @@ from nwb_benchmarks.core import (
     read_hdf5_nwbfile_ros3,
     read_hdf5_remfile,
     read_hdf5_ros3,
+    read_zarr,
+    read_zarr_nwbfile,
 )
 
 param_names = ["s3_url"]
@@ -22,6 +24,15 @@ params = [
         dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
     ),  # Not the best example for testing a theory about file read; should probably replace with something simpler
     "https://dandiarchive.s3.amazonaws.com/ros3test.nwb",  # The original small test NWB file
+]
+
+zarr_param_names = ["s3_url"]
+zarr_params = [
+    (
+        "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
+        "ecephys_625749_2022-08-03_15-15-06_nwb/"
+        "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
+    ),
 ]
 
 
@@ -84,4 +95,44 @@ class Ros3NWBFileReadBenchmark:
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.nwbfile, self.io, retries = read_hdf5_nwbfile_ros3(s3_url=s3_url)
         network_tracker.asv_network_statistics.update(retries=retries)
+        return network_tracker.asv_network_statistics
+
+
+class ZarrDirectFileReadBenchmark:
+    param_names = zarr_param_names
+    params = zarr_params
+
+    def track_network_activity_during_read(self, s3_url: str):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.zarr_file = read_zarr(s3_url=s3_url, force_no_consolidated_metadata=False)
+        return network_tracker.asv_network_statistics
+
+
+class ZarrForceNoConsolidatedDirectFileReadBenchmark:
+    param_names = zarr_param_names
+    params = zarr_params
+
+    def track_network_activity_during_read(self, s3_url: str):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.zarr_file = read_zarr(s3_url=s3_url, force_no_consolidated_metadata=True)
+        return network_tracker.asv_network_statistics
+
+
+class ZarrNWBFileReadBenchmark:
+    param_names = zarr_param_names
+    params = zarr_params
+
+    def track_network_activity_during_read(self, s3_url: str):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, force_no_consolidated_metadata=False)
+        return network_tracker.asv_network_statistics
+
+
+class ZarrForceNoConsolidatedNWBFileReadBenchmark:
+    param_names = zarr_param_names
+    params = zarr_params
+
+    def track_network_activity_during_read(self, s3_url: str):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, force_no_consolidated_metadata=True)
         return network_tracker.asv_network_statistics
