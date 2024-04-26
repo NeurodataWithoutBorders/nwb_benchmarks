@@ -1,3 +1,4 @@
+import json
 import tempfile
 import time
 import warnings
@@ -5,6 +6,7 @@ from typing import Any, Callable, Tuple, Union
 
 import fsspec
 import h5py
+import lindi
 import pynwb
 import remfile
 from fsspec.asyn import reset_lock
@@ -179,3 +181,36 @@ def read_hdf5_nwbfile_ros3(s3_url: str, retry: bool = True) -> Tuple[pynwb.NWBFi
         retries = None
         nwbfile = io.read()
     return (nwbfile, io, retries)
+
+
+def create_lindi_reference_file_system(s3_url: str, outfile_path: str):
+    """
+    Create a lindi reference file system JSON cache file for a given HDF5 file on S3 (or locally)
+
+    The output_file path should end in the '.lindi.json' extension
+    """
+    # Create a read-only Zarr store as a wrapper for the h5 file
+    store = lindi.LindiH5ZarrStore.from_file(s3_url)
+    # Generate a reference file system
+    rfs = store.to_reference_file_system()
+    # Save it to a file for later use
+    with open(outfile_path, "w") as f:
+        json.dump(rfs, f, indent=2)
+
+
+def read_hdf5_lindi(s3_url: str) -> lindi.LindiH5pyFile:
+    """Open an HDF5 file from an S3 URL using Lindi."""
+    # TODO: Example URL of a remote .nwb.lindi.json file that we can use for initial test setup
+    # url = 'https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json'
+    # Load the h5py-like client for the reference file system
+    client = lindi.LindiH5pyFile.from_reference_file_system(s3_url)
+    return client
+
+
+def read_hdf5_nwbfile_lindi(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, lindi.LindiH5pyFile]:
+    """Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py."""
+    client = read_hdf5_lindi(s3_url=s3_url)
+    # Open using pynwb
+    io = pynwb.NWBHDF5IO(file=client, mode="r")
+    nwbfile = io.read()
+    return (nwbfile, io, client)
