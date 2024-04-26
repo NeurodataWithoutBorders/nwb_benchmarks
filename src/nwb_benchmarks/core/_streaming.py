@@ -1,3 +1,8 @@
+"""
+Module with helper functions for streaming read access to remote files using various different methods, e.g,
+fsspec, remfile, ros3, lindi
+"""
+
 import json
 import tempfile
 import time
