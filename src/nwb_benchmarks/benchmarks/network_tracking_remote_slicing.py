@@ -9,6 +9,7 @@ from nwb_benchmarks.core import (
     network_activity_tracker,
     read_hdf5_nwbfile_fsspec_no_cache,
     read_hdf5_nwbfile_fsspec_with_cache,
+    read_hdf5_nwbfile_lindi,
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_remfile_with_cache,
     read_hdf5_nwbfile_ros3,
@@ -26,6 +27,13 @@ params = (
     ["ElectricalSeriesAp"],
     [(slice(0, 30_000), slice(0, 384))],  # ~23 MB
 )
+
+# Parameters for LINDI pointing to a remote LINDI reference file system JSON file. I.e., here we do not
+# to create the JSON but can load it directly from the remote store
+lindi_remote_rfs_param_names = param_names
+lindi_remote_rfs_params = [
+    "https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json"
+]
 
 
 class FsspecNoCacheContinuousSliceBenchmark:
@@ -109,6 +117,30 @@ class Ros3ContinuousSliceBenchmark:
 
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self._temp, retries = robust_ros3_read(command=self.data_to_slice.__getitem__, command_args=(slice_range,))
+            self._temp, self.retries = robust_ros3_read(
+                command=self.data_to_slice.__getitem__, command_args=(slice_range,)
+            )
         network_tracker.asv_network_statistics.update(retries=retries)
+        return network_tracker.asv_network_statistics
+
+
+class LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark:
+    """
+    Time the read of a data slice from a remote NWB file with pynwb using lindi with a remote JSON reference
+    filesystem available.
+    """
+
+    rounds = 1
+    repeat = 3
+    param_names = lindi_remote_rfs_param_names
+    params = lindi_remote_rfs_params
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io, self.client = read_hdf5_nwbfile_lindi(rfs=s3_url)
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self._temp = self.data_to_slice[slice_range]
         return network_tracker.asv_network_statistics
