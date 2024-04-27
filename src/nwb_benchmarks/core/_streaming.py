@@ -203,18 +203,25 @@ def create_lindi_reference_file_system(s3_url: str, outfile_path: str):
         json.dump(rfs, f, indent=2)
 
 
-def read_hdf5_lindi(s3_url: str) -> lindi.LindiH5pyFile:
-    """Open an HDF5 file from an S3 URL using Lindi."""
+def read_hdf5_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
+    """Open an HDF5 file from an S3 URL using Lindi.
+
+    :param rfs: The LINDI reference file system file. This can be a dictionary or a URL or path to a .lindi.json file.
+    """
     # TODO: Example URL of a remote .nwb.lindi.json file that we can use for initial test setup
     # url = 'https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json'
     # Load the h5py-like client for the reference file system
-    client = lindi.LindiH5pyFile.from_reference_file_system(s3_url)
+    client = lindi.LindiH5pyFile.from_reference_file_system(rfs)
     return client
 
 
-def read_hdf5_nwbfile_lindi(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, lindi.LindiH5pyFile]:
-    """Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py."""
-    client = read_hdf5_lindi(s3_url=s3_url)
+def read_hdf5_nwbfile_lindi(rfs: Union[dict, str]) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, lindi.LindiH5pyFile]:
+    """
+    Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py.
+
+    :param rfs: The LINDI reference file system file. This can be a dictionary or a URL or path to a .lindi.json file.
+    """
+    client = read_hdf5_lindi(s3_url=rfs)
     # Open using pynwb
     io = pynwb.NWBHDF5IO(file=client, mode="r")
     nwbfile = io.read()

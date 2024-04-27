@@ -7,10 +7,13 @@ from ._network_statistics import NetworkStatistics
 from ._network_tracker import network_activity_tracker
 from ._nwb_helpers import get_object_by_name
 from ._streaming import (
+    create_lindi_reference_file_system,
     read_hdf5_fsspec_no_cache,
     read_hdf5_fsspec_with_cache,
+    read_hdf5_lindi,
     read_hdf5_nwbfile_fsspec_no_cache,
     read_hdf5_nwbfile_fsspec_with_cache,
+    read_hdf5_nwbfile_lindi,
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_remfile_with_cache,
     read_hdf5_nwbfile_ros3,
@@ -35,6 +38,9 @@ __all__ = [
     "read_hdf5_remfile_with_cache",
     "read_hdf5_nwbfile_remfile",
     "read_hdf5_nwbfile_remfile_with_cache",
+    "create_lindi_reference_file_system",
+    "read_hdf5_lindi",
+    "read_hdf5_nwbfile_lindi",
     "get_s3_url",
     "get_object_by_name",
     "robust_ros3_read",
