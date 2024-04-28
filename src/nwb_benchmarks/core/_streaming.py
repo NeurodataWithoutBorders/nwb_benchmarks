@@ -183,7 +183,7 @@ def read_hdf5_nwbfile_ros3(s3_url: str, retry: bool = True) -> Tuple[pynwb.NWBFi
     return (nwbfile, io, retries)
 
 
-def read_zarr(s3_url: str, force_no_consolidated_metadata=False) -> zarr.Group:
+def read_zarr(s3_url: str, force_no_consolidated_metadata: bool =False) -> zarr.Group:
     """
     Open a Zarr file from an S3 URL using the built-in fsspec support in Zarr.
 
