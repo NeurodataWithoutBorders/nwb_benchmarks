@@ -63,7 +63,7 @@ class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
         self._temp = self.data_to_slice[slice_range]
 
 
-class RemfileContinuousSliceBenchmark(BaseBenchmark):
+class RemfileNoCacheContinuousSliceBenchmark(BaseBenchmark):
     rounds = 1
     repeat = 3
     parameter_cases = parameter_cases
@@ -78,11 +78,10 @@ class RemfileContinuousSliceBenchmark(BaseBenchmark):
         self._temp = self.data_to_slice[slice_range]
 
 
-class RemfileContinuousSliceBenchmarkWithCache:
+class RemfileWithCacheContinuousSliceBenchmark(BaseBenchmark):
     rounds = 1
     repeat = 3
-    param_names = param_names
-    params = params
+    parameter_cases = parameter_cases
 
     def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.tmpdir.cleanup()
