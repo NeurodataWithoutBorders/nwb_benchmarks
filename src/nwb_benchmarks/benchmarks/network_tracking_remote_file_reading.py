@@ -1,17 +1,19 @@
 """Basic benchmarks for profiling network statistics for streaming access to NWB files and their contents."""
 
-import os
-
 from nwb_benchmarks import TSHARK_PATH
 from nwb_benchmarks.core import (
     BaseBenchmark,
     get_s3_url,
     network_activity_tracker,
     read_hdf5_fsspec_no_cache,
+    read_hdf5_fsspec_with_cache,
     read_hdf5_nwbfile_fsspec_no_cache,
+    read_hdf5_nwbfile_fsspec_with_cache,
     read_hdf5_nwbfile_remfile,
+    read_hdf5_nwbfile_remfile_with_cache,
     read_hdf5_nwbfile_ros3,
     read_hdf5_remfile,
+    read_hdf5_remfile_with_cache,
     read_hdf5_ros3,
 )
 
@@ -39,12 +41,36 @@ class FsspecNoCacheDirectFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+class FsspecWithCacheDirectFileReadBenchmark(BaseBenchmark):
+    parameter_cases = parameter_cases
+
+    def teardown(self, s3_url: str):
+        self.tmpdir.cleanup()
+
+    def track_network_activity_during_read(self, s3_url: str):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_with_cache(s3_url=s3_url)
+        return network_tracker.asv_network_statistics
+
+
 class RemfileDirectFileReadBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.file, self.bytestream = read_hdf5_remfile(s3_url=s3_url)
+        return network_tracker.asv_network_statistics
+
+
+class RemfileDirectFileReadBenchmarkWithCache(BaseBenchmark):
+    parameter_cases = parameter_cases
+
+    def teardown(self, s3_url: str):
+        self.tmpdir.cleanup()
+
+    def track_network_activity_during_read(self, s3_url: str):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.file, self.bytestream, self.tmpdir = read_hdf5_remfile_with_cache(s3_url=s3_url)
         return network_tracker.asv_network_statistics
 
 
@@ -67,12 +93,40 @@ class FsspecNoCacheNWBFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+class FsspecWithCacheNWBFileReadBenchmark(BaseBenchmark):
+    parameter_cases = parameter_cases
+
+    def teardown(self, s3_url: str):
+        self.tmpdir.cleanup()
+
+    def track_network_activity_during_read(self, s3_url: str):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(
+                s3_url=s3_url
+            )
+        return network_tracker.asv_network_statistics
+
+
 class RemfileNWBFileReadBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
+        return network_tracker.asv_network_statistics
+
+
+class RemfileNWBFileReadBenchmarkWithCache(BaseBenchmark):
+    parameter_cases = parameter_cases
+
+    def teardown(self, s3_url: str):
+        self.tmpdir.cleanup()
+
+    def track_network_activity_during_read(self, s3_url: str):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_remfile_with_cache(
+                s3_url=s3_url
+            )
         return network_tracker.asv_network_statistics
 
 

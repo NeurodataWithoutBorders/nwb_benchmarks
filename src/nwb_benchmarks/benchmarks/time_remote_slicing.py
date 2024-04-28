@@ -7,9 +7,13 @@ from nwb_benchmarks.core import (
     BaseBenchmark,
     get_object_by_name,
     get_s3_url,
+    read_hdf5_fsspec_with_cache,
     read_hdf5_nwbfile_fsspec_no_cache,
+    read_hdf5_nwbfile_fsspec_with_cache,
     read_hdf5_nwbfile_remfile,
+    read_hdf5_nwbfile_remfile_with_cache,
     read_hdf5_nwbfile_ros3,
+    read_hdf5_remfile_with_cache,
 )
 
 parameter_cases = dict(
@@ -39,6 +43,26 @@ class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
         self._temp = self.data_to_slice[slice_range]
 
 
+class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
+    rounds = 1
+    repeat = 3
+    parameter_cases = parameter_cases
+
+    def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.tmpdir.cleanup()
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(
+            s3_url=s3_url
+        )
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        self._temp = self.data_to_slice[slice_range]
+
+
 class RemfileContinuousSliceBenchmark(BaseBenchmark):
     rounds = 1
     repeat = 3
@@ -46,7 +70,28 @@ class RemfileContinuousSliceBenchmark(BaseBenchmark):
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
-        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name="ElectricalSeriesAp")
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        self._temp = self.data_to_slice[slice_range]
+
+
+class RemfileContinuousSliceBenchmarkWithCache:
+    rounds = 1
+    repeat = 3
+    param_names = param_names
+    params = params
+
+    def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.tmpdir.cleanup()
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_remfile_with_cache(
+            s3_url=s3_url
+        )
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -61,7 +106,7 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(s3_url=s3_url)
-        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name="ElectricalSeriesAp")
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
