@@ -175,7 +175,7 @@ class ZarrNWBFileReadBenchmark(BaseBenchmark):
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, open_without_consolidated_metadata=False)
+            self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
         return network_tracker.asv_network_statistics
 
 
@@ -184,5 +184,5 @@ class ZarrForceNoConsolidatedNWBFileReadBenchmark(BaseBenchmark):
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, open_without_consolidated_metadata=True)
+            self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")
         return network_tracker.asv_network_statistics

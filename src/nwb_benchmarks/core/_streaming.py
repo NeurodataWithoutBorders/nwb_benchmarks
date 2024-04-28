@@ -13,7 +13,7 @@ from fsspec.asyn import reset_lock
 from fsspec.implementations.cached import CachingFileSystem
 from fsspec.implementations.http import HTTPFile
 
-# Useful if running in verbose mode
+# Useful if running in verbose model
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
 warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
@@ -199,11 +199,14 @@ def read_zarr(s3_url: str, open_without_consolidated_metadata: bool = False) -> 
     return zarrfile
 
 
-def read_zarr_nwbfile(
-    s3_url: str, open_without_consolidated_metadata: bool = False
-) -> Tuple[pynwb.NWBFile, hdmf_zarr.NWBZarrIO]:
+def read_zarr_nwbfile(s3_url: str, mode: str) -> Tuple[pynwb.NWBFile, hdmf_zarr.NWBZarrIO]:
     """
     Read a Zarr NWB file from an S3 URL using the built-in fsspec support in Zarr.
+
+    Note: `r-` indicated reading without consolidated metadata, while `r` indicated reading with consolidated.
+          `r` should only be used in a benchmark for files that actually have consolidated metadata available,
+          for files without consolidated metadata, `hdmf_zarr` automatically reads without consolidated
+          metadata if no consolidated metadata is present.
 
     Returns
     -------
@@ -212,7 +215,6 @@ def read_zarr_nwbfile(
     NWBZarrIO : hdmf_zarr.NWBZarrIO
         The open IO object used to open the file.
     """
-    mode = "r" if not open_without_consolidated_metadata else "r-"
     io = hdmf_zarr.NWBZarrIO(s3_url, mode=mode, storage_options=dict(anon=True))
     nwbfile = io.read()
     return (nwbfile, io)

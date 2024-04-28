@@ -143,7 +143,7 @@ class NWBZarrFileReadBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
     def time_read_zarr_nwbfile(self, s3_url: str):
-        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, open_without_consolidated_metadata=False)
+        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
 
     def time_read_zarr_nwbfile_force_no_consolidated(self, s3_url: str):
-        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, open_without_consolidated_metadata=True)
+        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")

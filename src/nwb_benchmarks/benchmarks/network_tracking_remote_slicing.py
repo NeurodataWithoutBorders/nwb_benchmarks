@@ -127,7 +127,7 @@ class ZarrContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, open_without_consolidated_metadata=False)
+        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
@@ -141,7 +141,7 @@ class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, open_without_consolidated_metadata=True)
+        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
