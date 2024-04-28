@@ -31,14 +31,16 @@ parameter_cases = dict(
     ClassicRos3TestCase=dict(s3_url="https://dandiarchive.s3.amazonaws.com/ros3test.nwb"),
 )
 
-zarr_param_names = ["s3_url"]
-zarr_params = [
-    (
-        "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
-        "ecephys_625749_2022-08-03_15-15-06_nwb/"
-        "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
+
+zarr_parameter_cases = dict(
+    AIBSTestCase=dict(
+        s3_url=(
+            "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
+            "ecephys_625749_2022-08-03_15-15-06_nwb/"
+            "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
+        ),
     ),
-]
+)
 
 
 class DirectFileReadBenchmark(BaseBenchmark):
@@ -111,7 +113,7 @@ class NWBFileReadBenchmark(BaseBenchmark):
         self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(s3_url=s3_url, retry=False)
 
 
-class DirectZarrFileReadBenchmark:
+class DirectZarrFileReadBenchmark(BaseBenchmark):
     """
     Time the read of the Zarr-backend files with `pynwb` using each streaming method.
 
@@ -120,8 +122,7 @@ class DirectZarrFileReadBenchmark:
 
     rounds = 1
     repeat = 3
-    param_names = zarr_param_names
-    params = zarr_params
+    parameter_cases = zarr_parameter_cases
 
     def time_read_zarr_nwbfile(self, s3_url: str):
         self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=False)
@@ -130,7 +131,7 @@ class DirectZarrFileReadBenchmark:
         self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=True)
 
 
-class NWBZarrFileReadBenchmark:
+class NWBZarrFileReadBenchmark(BaseBenchmark):
     """
     Time the read of the Zarr-backend files with `pynwb` using each streaming method.
 
@@ -139,8 +140,7 @@ class NWBZarrFileReadBenchmark:
 
     rounds = 1
     repeat = 3
-    param_names = zarr_param_names
-    params = zarr_params
+    parameter_cases = zarr_parameter_cases
 
     def time_read_zarr_nwbfile(self, s3_url: str):
         self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, open_without_consolidated_metadata=False)

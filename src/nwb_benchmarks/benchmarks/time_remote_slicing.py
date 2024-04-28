@@ -26,17 +26,16 @@ parameter_cases = dict(
     )
 )
 
-zarr_param_names = ["s3_url", "object_name", "slice_range"]
-zarr_params = (
-    [
-        (
+zarr_parameter_cases = dict(
+    AIBSTestCase=dict(
+        s3_url=(
             "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
             "ecephys_625749_2022-08-03_15-15-06_nwb/"
             "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
         ),
-    ],
-    ["ElectricalSeriesProbe A-LFP"],
-    [(slice(0, 30_000), slice(0, 384))],
+        object_name="ElectricalSeriesProbe A-LFP",
+        slice_range=(slice(0, 30_000), slice(0, 384)),
+    )
 )
 
 
@@ -125,11 +124,10 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
         self._temp = self.data_to_slice[slice_range]
 
 
-class ZarrContinuousSliceBenchmark:
+class ZarrContinuousSliceBenchmark(BaseBenchmark):
     rounds = 1
     repeat = 3
-    param_names = zarr_param_names
-    params = zarr_params
+    parameter_cases = zarr_parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, open_without_consolidated_metadata=False)
@@ -140,11 +138,10 @@ class ZarrContinuousSliceBenchmark:
         self._temp = self.data_to_slice[slice_range]
 
 
-class ZarrForceNoConsolidatedContinuousSliceBenchmark:
+class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
     rounds = 1
     repeat = 3
-    param_names = zarr_param_names
-    params = zarr_params
+    parameter_cases = zarr_parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, open_without_consolidated_metadata=True)

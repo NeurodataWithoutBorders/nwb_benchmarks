@@ -33,14 +33,15 @@ parameter_cases = dict(
     ClassicRos3TestCase=dict(s3_url="https://dandiarchive.s3.amazonaws.com/ros3test.nwb"),
 )
 
-zarr_param_names = ["s3_url"]
-zarr_params = [
-    (
-        "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
-        "ecephys_625749_2022-08-03_15-15-06_nwb/"
-        "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
+zarr_parameter_cases = dict(
+    AIBSTestCase=dict(
+        s3_url=(
+            "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
+            "ecephys_625749_2022-08-03_15-15-06_nwb/"
+            "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
+        ),
     ),
-]
+)
 
 
 class FsspecNoCacheDirectFileReadBenchmark(BaseBenchmark):
@@ -151,9 +152,8 @@ class Ros3NWBFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
-class ZarrDirectFileReadBenchmark:
-    param_names = zarr_param_names
-    params = zarr_params
+class ZarrDirectFileReadBenchmark(BaseBenchmark):
+    parameter_cases = zarr_parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
@@ -161,9 +161,8 @@ class ZarrDirectFileReadBenchmark:
         return network_tracker.asv_network_statistics
 
 
-class ZarrForceNoConsolidatedDirectFileReadBenchmark:
-    param_names = zarr_param_names
-    params = zarr_params
+class ZarrForceNoConsolidatedDirectFileReadBenchmark(BaseBenchmark):
+    parameter_cases = zarr_parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
@@ -171,9 +170,8 @@ class ZarrForceNoConsolidatedDirectFileReadBenchmark:
         return network_tracker.asv_network_statistics
 
 
-class ZarrNWBFileReadBenchmark:
-    param_names = zarr_param_names
-    params = zarr_params
+class ZarrNWBFileReadBenchmark(BaseBenchmark):
+    parameter_cases = zarr_parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
@@ -181,9 +179,8 @@ class ZarrNWBFileReadBenchmark:
         return network_tracker.asv_network_statistics
 
 
-class ZarrForceNoConsolidatedNWBFileReadBenchmark:
-    param_names = zarr_param_names
-    params = zarr_params
+class ZarrForceNoConsolidatedNWBFileReadBenchmark(BaseBenchmark):
+    parameter_cases = zarr_parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
