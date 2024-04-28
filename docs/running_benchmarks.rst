@@ -65,4 +65,8 @@ Then, open a PR to merge the results to the `main` branch.
 
 .. note::
 
+    When running tests with `sudo` the new results may be owned by `root`. To avoid having to run pre-commit hooks in sudo you may need to change the owner of the results first, e.g., via ``sudo chown -R <new_owner> results
+
+.. note::
+
     Each result file should be single to double-digit KB in size; if we ever reach the point where this is prohibitive to store on GitHub itself, then we will investigate other upload strategies and purge the folder from the repository history.
