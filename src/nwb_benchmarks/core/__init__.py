@@ -1,6 +1,5 @@
 """Exposed imports to the `core` submodule."""
 
-# from ._parametrize import benchmark_parametrize
 from ._base_benchmark import BaseBenchmark
 from ._capture_connections import CaptureConnections
 from ._dandi import get_s3_url
@@ -19,6 +18,8 @@ from ._streaming import (
     read_hdf5_remfile,
     read_hdf5_remfile_with_cache,
     read_hdf5_ros3,
+    read_zarr,
+    read_zarr_nwbfile,
     robust_ros3_read,
 )
 
@@ -41,5 +42,6 @@ __all__ = [
     "get_s3_url",
     "get_object_by_name",
     "robust_ros3_read",
-    "benchmark_parametrize",
+    "read_zarr",
+    "read_zarr_nwbfile",
 ]

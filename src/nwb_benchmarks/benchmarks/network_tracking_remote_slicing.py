@@ -13,6 +13,7 @@ from nwb_benchmarks.core import (
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_remfile_with_cache,
     read_hdf5_nwbfile_ros3,
+    read_zarr_nwbfile,
     robust_ros3_read,
 )
 
@@ -24,6 +25,19 @@ parameter_cases = dict(
         ),
         object_name="ElectricalSeriesAp",
         slice_range=(slice(0, 30_000), slice(0, 384)),  #  ~23 MB
+    )
+)
+
+
+zarr_parameter_cases = dict(
+    AIBSTestCase=dict(
+        s3_url=(
+            "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
+            "ecephys_625749_2022-08-03_15-15-06_nwb/"
+            "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
+        ),
+        object_name="ElectricalSeriesProbe A-LFP",
+        slice_range=(slice(0, 30_000), slice(0, 384)),
     )
 )
 
@@ -106,4 +120,32 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp, retries = robust_ros3_read(command=self.data_to_slice.__getitem__, command_args=(slice_range,))
         network_tracker.asv_network_statistics.update(retries=retries)
+        return network_tracker.asv_network_statistics
+
+
+class ZarrContinuousSliceBenchmark(BaseBenchmark):
+    parameter_cases = zarr_parameter_cases
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self._temp = self.data_to_slice[slice_range]
+        return network_tracker.asv_network_statistics
+
+
+class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
+    parameter_cases = zarr_parameter_cases
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self._temp = self.data_to_slice[slice_range]
         return network_tracker.asv_network_statistics
