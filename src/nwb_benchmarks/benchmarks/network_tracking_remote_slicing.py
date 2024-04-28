@@ -4,6 +4,7 @@ from typing import Tuple
 
 from nwb_benchmarks import TSHARK_PATH
 from nwb_benchmarks.core import (
+    BaseBenchmark,
     get_object_by_name,
     get_s3_url,
     network_activity_tracker,
@@ -16,16 +17,15 @@ from nwb_benchmarks.core import (
     robust_ros3_read,
 )
 
-param_names = ["s3_url", "object_name", "slice_range"]
-params = (
-    [
-        get_s3_url(
+parameter_cases = dict(
+    IBLTestCase1=dict(
+        s3_url=get_s3_url(
             dandiset_id="000717",
             dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
-        )
-    ],
-    ["ElectricalSeriesAp"],
-    [(slice(0, 30_000), slice(0, 384))],  # ~23 MB
+        ),
+        object_name="ElectricalSeriesAp",
+        slice_range=(slice(0, 30_000), slice(0, 384)),  #  ~23 MB
+    )
 )
 
 zarr_param_names = ["s3_url", "object_name", "slice_range"]
@@ -42,9 +42,8 @@ zarr_params = (
 )
 
 
-class FsspecNoCacheContinuousSliceBenchmark:
-    param_names = param_names
-    params = params
+class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
+    parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
@@ -57,9 +56,8 @@ class FsspecNoCacheContinuousSliceBenchmark:
         return network_tracker.asv_network_statistics
 
 
-class FsspecWithCacheContinuousSliceBenchmark:
-    param_names = param_names
-    params = params
+class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
+    parameter_cases = parameter_cases
 
     def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.tmpdir.cleanup()
@@ -77,9 +75,8 @@ class FsspecWithCacheContinuousSliceBenchmark:
         return network_tracker.asv_network_statistics
 
 
-class RemfileContinuousSliceBenchmark:
-    param_names = param_names
-    params = params
+class RemfileContinuousSliceBenchmark(BaseBenchmark):
+    parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
@@ -92,9 +89,8 @@ class RemfileContinuousSliceBenchmark:
         return network_tracker.asv_network_statistics
 
 
-class RemfileContinuousSliceBenchmarkWithCache:
-    param_names = param_names
-    params = params
+class RemfileContinuousSliceBenchmarkWithCache(BaseBenchmark):
+    parameter_cases = parameter_cases
 
     def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.tmpdir.cleanup()
@@ -112,9 +108,8 @@ class RemfileContinuousSliceBenchmarkWithCache:
         return network_tracker.asv_network_statistics
 
 
-class Ros3ContinuousSliceBenchmark:
-    param_names = param_names
-    params = params
+class Ros3ContinuousSliceBenchmark(BaseBenchmark):
+    parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(s3_url=s3_url)
