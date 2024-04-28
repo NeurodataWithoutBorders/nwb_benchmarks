@@ -28,12 +28,14 @@ parameter_cases = dict(
 
 
 # Parameters for LINDI pointing to a remote LINDI reference file system JSON file
-lindi_remote_rfs_param_names = param_names
-lindi_remote_rfs_params = [
-    ["https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json"],
-    ["accelerometer"],
-    [(slice(0, 30_000), slice(0, 3))],
-]
+lindi_remote_rfs_parameter_cases = dict(
+    # TODO: Just an example case for testing. Replace with real test case
+    BaseExample=dict(
+        s3_url="https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json",
+        object_name="accelerometer",
+        slice_range=(slice(0, 30_000), slice(0, 3)),
+    ),
+)
 
 
 class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
@@ -121,7 +123,7 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice[slice_range]
 
 
-class NWBLindiFileReadRemoteReferenceFileSystemBenchmark:
+class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the read of a data slice from a remote NWB file with pynwb using lindi with a remote JSON reference
     filesystem available.
@@ -129,8 +131,7 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark:
 
     rounds = 1
     repeat = 3
-    param_names = lindi_remote_rfs_param_names
-    params = lindi_remote_rfs_params
+    parameter_cases = lindi_remote_rfs_parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.client = read_hdf5_nwbfile_lindi(rfs=s3_url)

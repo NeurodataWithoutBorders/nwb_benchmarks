@@ -38,15 +38,16 @@ parameter_cases = dict(
 
 # Parameters for LINDI when HDF5 files are remote without using an existing LINDI JSON reference file system on
 # the remote server (i.e., we create the LINDI JSON file for these in these tests)
-lindi_hdf5_param_names = param_names
-lindi_hdf5_params = params
+lindi_hdf5_parameter_cases = parameter_cases
 
 # Parameters for LINDI pointing to a remote LINDI reference file system JSON file. I.e., here we do not
 # to create the JSON but can load it directly from the remote store
-lindi_remote_rfs_param_names = param_names
-lindi_remote_rfs_params = [
-    "https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json"
-]
+lindi_remote_rfs_parameter_cases = dict(
+    # TODO: Just an example case for testing. Replace with real test case
+    BaseExample=dict(
+        s3_url="https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json",
+    ),
+)
 
 
 class FsspecNoCacheDirectFileReadBenchmark(BaseBenchmark):
@@ -157,7 +158,7 @@ class Ros3NWBFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
-class LindiFileReadLocalReferenceFileSystemBenchmark:
+class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the read of the Lindi HDF5 files with `pynwb` assuming that a local copy of the lindi
     filesystem is available locally.
@@ -165,8 +166,7 @@ class LindiFileReadLocalReferenceFileSystemBenchmark:
 
     rounds = 1
     repeat = 3
-    param_names = lindi_hdf5_param_names
-    params = lindi_hdf5_params
+    parameter_cases = lindi_hdf5_parameter_cases
 
     def setup(self, s3_url: str):
         """Create the local JSON LINDI reference filesystem if it does not exist"""
@@ -187,7 +187,7 @@ class LindiFileReadLocalReferenceFileSystemBenchmark:
         return network_tracker.asv_network_statistics
 
 
-class NWBLindiFileCreateLocalReferenceFileSystemBenchmark:
+class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the creation of a local Lindi JSON reference filesystem for a remote NWB file
     as well as reading the NWB file with PyNWB when the local reference filesystem does not
@@ -196,8 +196,7 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark:
 
     rounds = 1
     repeat = 3
-    param_names = lindi_hdf5_param_names
-    params = lindi_hdf5_params
+    parameter_cases = lindi_hdf5_parameter_cases
 
     def setup(self, s3_url: str):
         """Clear the LINDI JSON if it still exists"""
@@ -227,7 +226,7 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark:
         return network_tracker.asv_network_statistics
 
 
-class NWBLindiFileReadRemoteReferenceFileSystemBenchmark:
+class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the read of the Lindi HDF5 files with `pynwb` assuming that a local copy of the lindi
     filesystem is available locally.
@@ -235,8 +234,7 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark:
 
     rounds = 1
     repeat = 3
-    param_names = lindi_remote_rfs_param_names
-    params = lindi_remote_rfs_params
+    parameter_cases = lindi_remote_rfs_parameter_cases
 
     def track_network_activity_time_read_lindi_nwbfile(self, s3_url: str):
         """Read a remote NWB file with PyNWB using the remote LINDI JSON reference filesystem"""
