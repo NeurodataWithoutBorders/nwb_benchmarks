@@ -121,10 +121,10 @@ class DirectZarrFileReadBenchmark:
     params = zarr_params
 
     def time_read_zarr_nwbfile(self, s3_url: str):
-        self.zarr_file = read_zarr(s3_url=s3_url, force_no_consolidated_metadata=False)
+        self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=False)
 
     def time_read_zarr_nwbfile_force_no_consolidated(self, s3_url: str):
-        self.zarr_file = read_zarr(s3_url=s3_url, force_no_consolidated_metadata=True)
+        self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=True)
 
 
 class NWBZarrFileReadBenchmark:
@@ -140,7 +140,7 @@ class NWBZarrFileReadBenchmark:
     params = zarr_params
 
     def time_read_zarr_nwbfile(self, s3_url: str):
-        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, force_no_consolidated_metadata=False)
+        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, open_without_consolidated_metadata=False)
 
     def time_read_zarr_nwbfile_force_no_consolidated(self, s3_url: str):
-        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, force_no_consolidated_metadata=True)
+        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, open_without_consolidated_metadata=True)
