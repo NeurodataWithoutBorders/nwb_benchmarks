@@ -62,7 +62,7 @@ class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        """Track network activity for slicing into a h5py.Dataset with Fsspec"""
         self._temp = self.data_to_slice[slice_range]
 
 
@@ -82,7 +82,7 @@ class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        """Track network activity for slicing into a h5py.Dataset with Fsspec"""
         self._temp = self.data_to_slice[slice_range]
 
 
@@ -97,7 +97,7 @@ class RemfileNoCacheContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        """Track network activity for slicing into a h5py.Dataset with RemFile"""
         self._temp = self.data_to_slice[slice_range]
 
 
@@ -117,7 +117,7 @@ class RemfileWithCacheContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        """Track network activity for slicing into a h5py.Dataset with RemFile"""
         self._temp = self.data_to_slice[slice_range]
 
 
@@ -132,7 +132,7 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        """Track network activity for slicing into a h5py.Dataset with Ros3"""
         self._temp = self.data_to_slice[slice_range]
 
 
@@ -152,11 +152,15 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        """Track network activity for slicing into a LindiDataset"""
         self._temp = self.data_to_slice[slice_range]
 
 
 class ZarrContinuousSliceBenchmark(BaseBenchmark):
+    """
+    Benchmark network activity for slicing into a Zarr dataset using consolidated metadata (if available)
+    """
+
     rounds = 1
     repeat = 3
     parameter_cases = zarr_parameter_cases
@@ -167,10 +171,15 @@ class ZarrContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Track network activity for slicing into a Zarr dataset"""
         self._temp = self.data_to_slice[slice_range]
 
 
 class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
+    """
+    Benchmark network activity for slicing into a Zarr dataset without using consolidated metadata
+    """
+
     rounds = 1
     repeat = 3
     parameter_cases = zarr_parameter_cases
@@ -181,4 +190,5 @@ class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Track network activity for slicing into a Zarr dataset"""
         self._temp = self.data_to_slice[slice_range]

@@ -36,6 +36,7 @@ parameter_cases = dict(
     ClassicRos3TestCase=dict(s3_url="https://dandiarchive.s3.amazonaws.com/ros3test.nwb"),
 )
 
+
 # Parameters for LINDI when HDF5 files are remote without using an existing LINDI JSON reference file system on
 # the remote server (i.e., we create the LINDI JSON file for these in these tests)
 lindi_hdf5_parameter_cases = parameter_cases
@@ -230,10 +231,12 @@ class DirectZarrFileReadBenchmark(BaseBenchmark):
     repeat = 3
     parameter_cases = zarr_parameter_cases
 
-    def time_read_zarr_nwbfile(self, s3_url: str):
+    def time_read_zarr(self, s3_url: str):
+        """Read a Zarr file using consolidated metadata (if available)"""
         self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=False)
 
-    def time_read_zarr_nwbfile_force_no_consolidated(self, s3_url: str):
+    def time_read_zarr_force_no_consolidated(self, s3_url: str):
+        """Read a Zarr file without using consolidated metadata"""
         self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=True)
 
 
@@ -249,7 +252,9 @@ class NWBZarrFileReadBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
     def time_read_zarr_nwbfile(self, s3_url: str):
+        """Read NWB file with PyNWB using Zarr with consolidated metadata. (if available)"""
         self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
 
     def time_read_zarr_nwbfile_force_no_consolidated(self, s3_url: str):
+        """Read NWB file with PyNWB using Zarr without consolidated metadata."""
         self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")
