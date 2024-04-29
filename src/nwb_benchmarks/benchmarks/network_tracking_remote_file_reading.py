@@ -214,6 +214,7 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
 
     def setup(self, s3_url: str):
         """Clear the LINDI JSON if it still exists"""
+        self.lindi_file = os.path.basename(s3_url) + ".lindi.json"
         self.teardown(s3_url=s3_url)
 
     def teardown(self, s3_url: str):
@@ -224,7 +225,6 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
     def track_network_activity_create_lindi_referernce_file_system(self, s3_url: str):
         """Create a local Lindi JSON reference filesystem from a remote HDF5 file"""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.lindi_file = os.path.basename(s3_url) + ".lindi.json"
             create_lindi_reference_file_system(s3_url=s3_url, outfile_path=self.lindi_file)
         return network_tracker.asv_network_statistics
 
@@ -234,7 +234,6 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
         and then read the NWB file with PyNWB using LINDI with the local JSON
         """
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.lindi_file = os.path.basename(s3_url) + ".lindi.json"
             create_lindi_reference_file_system(s3_url=s3_url, outfile_path=self.lindi_file)
             self.nwbfile, self.io, self.client = read_hdf5_nwbfile_lindi(rfs=self.lindi_file)
         return network_tracker.asv_network_statistics
