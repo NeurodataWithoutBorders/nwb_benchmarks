@@ -223,7 +223,7 @@ def read_hdf5_nwbfile_lindi(rfs: Union[dict, str]) -> Tuple[pynwb.NWBFile, pynwb
 
     :param rfs: The LINDI reference file system file. This can be a dictionary or a URL or path to a .lindi.json file.
     """
-    client = read_hdf5_lindi(s3_url=rfs)
+    client = read_hdf5_lindi(rfs=rfs)
     # Open using pynwb
     io = pynwb.NWBHDF5IO(file=client, mode="r")
     nwbfile = io.read()

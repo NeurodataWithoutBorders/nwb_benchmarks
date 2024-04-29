@@ -217,7 +217,7 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
 
     def time_read_lindi_jsonrfs(self, s3_url: str):
         """Read a remote HDF5 file with LINDI using the remote LINDI JSON reference filesystem"""
-        self.client = read_hdf5_lindi(rfs=self.lindi_file)
+        self.client = read_hdf5_lindi(rfs=s3_url)
 
 
 class DirectZarrFileReadBenchmark(BaseBenchmark):

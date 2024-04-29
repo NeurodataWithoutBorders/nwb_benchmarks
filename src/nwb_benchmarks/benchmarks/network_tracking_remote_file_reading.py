@@ -259,7 +259,7 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
     def track_network_activity_time_read_lindi_jsonrfs(self, s3_url: str):
         """Read a remote HDF5 file with LINDI using the remote LINDI JSON reference filesystem"""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.client = read_hdf5_lindi(rfs=self.lindi_file)
+            self.client = read_hdf5_lindi(rfs=s3_url)
         return network_tracker.asv_network_statistics
 
 
