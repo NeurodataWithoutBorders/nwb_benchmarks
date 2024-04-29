@@ -136,7 +136,7 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
         self._temp = self.data_to_slice[slice_range]
 
 
-class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
+class LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark(BaseBenchmark):
     """
     Time the read of a data slice from a remote NWB file with pynwb using lindi with a remote JSON reference
     filesystem available.
