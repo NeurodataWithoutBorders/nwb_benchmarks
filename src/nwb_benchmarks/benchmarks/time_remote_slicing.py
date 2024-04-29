@@ -182,4 +182,3 @@ class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
 
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self._temp = self.data_to_slice[slice_range]
-

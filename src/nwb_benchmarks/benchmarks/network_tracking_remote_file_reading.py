@@ -52,7 +52,7 @@ lindi_remote_rfs_parameter_cases = dict(
     ),
 )
 
-      
+
 zarr_parameter_cases = dict(
     AIBSTestCase=dict(
         s3_url=(
@@ -174,9 +174,10 @@ class Ros3NWBFileReadBenchmark(BaseBenchmark):
 
 class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
-    Time the read of the Lindi HDF5 files with and without `pynwb` assuming that a local 
+    Time the read of the Lindi HDF5 files with and without `pynwb` assuming that a local
     copy of the lindi filesystem is available locally.
     """
+
     rounds = 1
     repeat = 3
     parameter_cases = lindi_hdf5_parameter_cases
@@ -244,6 +245,7 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
     Time the read of the Lindi HDF5 files with `pynwb` assuming that a local copy of the lindi
     filesystem is available locally.
     """
+
     rounds = 1
     repeat = 3
     parameter_cases = lindi_remote_rfs_parameter_cases
@@ -259,8 +261,8 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.client = read_hdf5_lindi(rfs=self.lindi_file)
         return network_tracker.asv_network_statistics
-      
-            
+
+
 class ZarrDirectFileReadBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 

@@ -229,7 +229,7 @@ def read_hdf5_nwbfile_lindi(rfs: Union[dict, str]) -> Tuple[pynwb.NWBFile, pynwb
     nwbfile = io.read()
     return (nwbfile, io, client)
 
-  
+
 def read_zarr(s3_url: str, open_without_consolidated_metadata: bool = False) -> zarr.Group:
     """
     Open a Zarr file from an S3 URL using the built-in fsspec support in Zarr.

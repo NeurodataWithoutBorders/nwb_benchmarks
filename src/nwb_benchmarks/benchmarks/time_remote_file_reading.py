@@ -136,6 +136,7 @@ class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
     Time the read of the Lindi HDF5 files with `pynwb` assuming that a local copy of the lindi
     filesystem is available locally.
     """
+
     rounds = 1
     repeat = 3
     parameter_cases = lindi_hdf5_parameter_cases
@@ -161,6 +162,7 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
     as well as reading the NWB file with PyNWB when the local reference filesystem does not
     yet exist.
     """
+
     rounds = 1
     repeat = 3
     parameter_cases = lindi_hdf5_parameter_cases
@@ -196,13 +198,14 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
         self.lindi_file = os.path.basename(s3_url) + ".lindi.json"
         create_lindi_reference_file_system(s3_url=s3_url, outfile_path=self.lindi_file)
         self.client = read_hdf5_lindi(rfs=self.lindi_file)
-    
-    
+
+
 class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the read of the Lindi HDF5 files with `pynwb` assuming that a local copy of the lindi
-    filesystem is available locally.   
+    filesystem is available locally.
     """
+
     rounds = 1
     repeat = 3
     parameter_cases = lindi_remote_rfs_parameter_cases
@@ -214,7 +217,7 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
     def time_read_lindi_jsonrfs(self, s3_url: str):
         """Read a remote HDF5 file with LINDI using the remote LINDI JSON reference filesystem"""
         self.client = read_hdf5_lindi(rfs=self.lindi_file)
-    
+
 
 class DirectZarrFileReadBenchmark(BaseBenchmark):
     """
