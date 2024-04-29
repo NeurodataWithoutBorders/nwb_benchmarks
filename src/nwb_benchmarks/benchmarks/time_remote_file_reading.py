@@ -18,6 +18,8 @@ from nwb_benchmarks.core import (
     read_hdf5_remfile,
     read_hdf5_remfile_with_cache,
     read_hdf5_ros3,
+    read_zarr,
+    read_zarr_nwbfile,
 )
 
 parameter_cases = dict(
@@ -44,6 +46,17 @@ lindi_remote_rfs_parameter_cases = dict(
     # TODO: Just an example case for testing. Replace with real test case
     BaseExample=dict(
         s3_url="https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json",
+    ),
+)
+
+
+zarr_parameter_cases = dict(
+    AIBSTestCase=dict(
+        s3_url=(
+            "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
+            "ecephys_625749_2022-08-03_15-15-06_nwb/"
+            "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
+        ),
     ),
 )
 
@@ -123,7 +136,6 @@ class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
     Time the read of the Lindi HDF5 files with `pynwb` assuming that a local copy of the lindi
     filesystem is available locally.
     """
-
     rounds = 1
     repeat = 3
     parameter_cases = lindi_hdf5_parameter_cases
@@ -149,7 +161,6 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
     as well as reading the NWB file with PyNWB when the local reference filesystem does not
     yet exist.
     """
-
     rounds = 1
     repeat = 3
     parameter_cases = lindi_hdf5_parameter_cases
@@ -185,14 +196,13 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
         self.lindi_file = os.path.basename(s3_url) + ".lindi.json"
         create_lindi_reference_file_system(s3_url=s3_url, outfile_path=self.lindi_file)
         self.client = read_hdf5_lindi(rfs=self.lindi_file)
-
-
+    
+    
 class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the read of the Lindi HDF5 files with `pynwb` assuming that a local copy of the lindi
-    filesystem is available locally.
+    filesystem is available locally.   
     """
-
     rounds = 1
     repeat = 3
     parameter_cases = lindi_remote_rfs_parameter_cases
@@ -204,3 +214,39 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
     def time_read_lindi_jsonrfs(self, s3_url: str):
         """Read a remote HDF5 file with LINDI using the remote LINDI JSON reference filesystem"""
         self.client = read_hdf5_lindi(rfs=self.lindi_file)
+    
+
+class DirectZarrFileReadBenchmark(BaseBenchmark):
+    """
+    Time the read of with Zarr only (not using PyNWB)
+
+    Note: in all cases, store the in-memory objects to avoid timing garbage collection steps.
+    """
+
+    rounds = 1
+    repeat = 3
+    parameter_cases = zarr_parameter_cases
+
+    def time_read_zarr_nwbfile(self, s3_url: str):
+        self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=False)
+
+    def time_read_zarr_nwbfile_force_no_consolidated(self, s3_url: str):
+        self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=True)
+
+
+class NWBZarrFileReadBenchmark(BaseBenchmark):
+    """
+    Time the read of the Zarr-backend files with `pynwb` using each streaming method.
+
+    Note: in all cases, store the in-memory objects to avoid timing garbage collection steps.
+    """
+
+    rounds = 1
+    repeat = 3
+    parameter_cases = zarr_parameter_cases
+
+    def time_read_zarr_nwbfile(self, s3_url: str):
+        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
+
+    def time_read_zarr_nwbfile_force_no_consolidated(self, s3_url: str):
+        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")
