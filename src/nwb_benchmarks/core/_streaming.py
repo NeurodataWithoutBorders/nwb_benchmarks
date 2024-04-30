@@ -1,3 +1,9 @@
+"""
+Module with helper functions for streaming read access to remote files using various different methods, e.g,
+fsspec, remfile, ros3, lindi
+"""
+
+import json
 import tempfile
 import time
 import warnings
@@ -6,6 +12,7 @@ from typing import Any, Callable, Tuple, Union
 import fsspec
 import h5py
 import hdmf_zarr
+import lindi
 import pynwb
 import remfile
 import zarr
@@ -181,6 +188,41 @@ def read_hdf5_nwbfile_ros3(s3_url: str, retry: bool = True) -> Tuple[pynwb.NWBFi
         retries = None
         nwbfile = io.read()
     return (nwbfile, io, retries)
+
+
+def create_lindi_reference_file_system(s3_url: str, outfile_path: str):
+    """
+    Create a lindi reference file system JSON cache file for a given HDF5 file on S3 (or locally)
+
+    The output_file path should end in the '.lindi.json' extension
+    """
+    # Create a read-only Zarr store as a wrapper for the h5 file
+    store = lindi.LindiH5ZarrStore.from_file(s3_url)
+    # Generate a reference file system and write it to a file
+    store.write_reference_file_system(outfile_path)
+
+
+def read_hdf5_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
+    """Open an HDF5 file from an S3 URL using Lindi.
+
+    :param rfs: The LINDI reference file system file. This can be a dictionary or a URL or path to a .lindi.json file.
+    """
+    # Load the h5py-like client for the reference file system
+    client = lindi.LindiH5pyFile.from_reference_file_system(rfs)
+    return client
+
+
+def read_hdf5_nwbfile_lindi(rfs: Union[dict, str]) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, lindi.LindiH5pyFile]:
+    """
+    Read an HDF5 NWB file from an S3 URL using LINDI.
+
+    :param rfs: The LINDI reference file system file. This can be a dictionary or a URL or path to a .lindi.json file.
+    """
+    client = read_hdf5_lindi(rfs=rfs)
+    # Open using pynwb
+    io = pynwb.NWBHDF5IO(file=client, mode="r")
+    nwbfile = io.read()
+    return (nwbfile, io, client)
 
 
 def read_zarr(s3_url: str, open_without_consolidated_metadata: bool = False) -> zarr.Group:

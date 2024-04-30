@@ -9,6 +9,7 @@ from nwb_benchmarks.core import (
     get_s3_url,
     read_hdf5_nwbfile_fsspec_no_cache,
     read_hdf5_nwbfile_fsspec_with_cache,
+    read_hdf5_nwbfile_lindi,
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_remfile_with_cache,
     read_hdf5_nwbfile_ros3,
@@ -39,6 +40,17 @@ zarr_parameter_cases = dict(
 )
 
 
+# Parameters for LINDI pointing to a remote LINDI reference file system JSON file
+lindi_remote_rfs_parameter_cases = dict(
+    # TODO: Just an example case for testing. Replace with real test case
+    BaseExample=dict(
+        s3_url="https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json",
+        object_name="accelerometer",
+        slice_range=(slice(0, 30_000), slice(0, 3)),
+    ),
+)
+
+
 class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
     rounds = 1
     repeat = 3
@@ -50,7 +62,7 @@ class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        """Track network activity for slicing into a h5py.Dataset with Fsspec"""
         self._temp = self.data_to_slice[slice_range]
 
 
@@ -70,7 +82,7 @@ class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        """Track network activity for slicing into a h5py.Dataset with Fsspec"""
         self._temp = self.data_to_slice[slice_range]
 
 
@@ -85,7 +97,7 @@ class RemfileNoCacheContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        """Track network activity for slicing into a h5py.Dataset with RemFile"""
         self._temp = self.data_to_slice[slice_range]
 
 
@@ -105,7 +117,7 @@ class RemfileWithCacheContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        """Track network activity for slicing into a h5py.Dataset with RemFile"""
         self._temp = self.data_to_slice[slice_range]
 
 
@@ -120,11 +132,35 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Note: store as self._temp to avoid tracking garbage collection as well."""
+        """Track network activity for slicing into a h5py.Dataset with Ros3"""
+        self._temp = self.data_to_slice[slice_range]
+
+
+class LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark(BaseBenchmark):
+    """
+    Time the read of a data slice from a remote NWB file with pynwb using lindi with a remote JSON reference
+    filesystem available.
+    """
+
+    rounds = 1
+    repeat = 3
+    parameter_cases = lindi_remote_rfs_parameter_cases
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io, self.client = read_hdf5_nwbfile_lindi(rfs=s3_url)
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Track network activity for slicing into a LindiDataset"""
         self._temp = self.data_to_slice[slice_range]
 
 
 class ZarrContinuousSliceBenchmark(BaseBenchmark):
+    """
+    Benchmark network activity for slicing into a Zarr dataset using consolidated metadata (if available)
+    """
+
     rounds = 1
     repeat = 3
     parameter_cases = zarr_parameter_cases
@@ -134,11 +170,16 @@ class ZarrContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Track network activity for slicing into a Zarr dataset"""
         self._temp = self.data_to_slice[slice_range]
 
 
 class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
+    """
+    Benchmark network activity for slicing into a Zarr dataset without using consolidated metadata
+    """
+
     rounds = 1
     repeat = 3
     parameter_cases = zarr_parameter_cases
@@ -148,5 +189,6 @@ class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Track network activity for slicing into a Zarr dataset"""
         self._temp = self.data_to_slice[slice_range]
