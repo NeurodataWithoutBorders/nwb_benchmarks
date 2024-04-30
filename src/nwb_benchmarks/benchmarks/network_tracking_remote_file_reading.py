@@ -256,8 +256,8 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
 @skip_benchmark_if(TSHARK_PATH is None)
 class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
     """
-    Time the read of the Lindi HDF5 files with `pynwb` assuming that a local copy of the lindi
-    filesystem is available locally.
+    Time the read of a remote NWB file with pynwb using lindi with a remote JSON reference
+    filesystem available.
     """
 
     rounds = 1
