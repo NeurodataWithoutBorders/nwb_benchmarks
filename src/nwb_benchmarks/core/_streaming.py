@@ -198,11 +198,8 @@ def create_lindi_reference_file_system(s3_url: str, outfile_path: str):
     """
     # Create a read-only Zarr store as a wrapper for the h5 file
     store = lindi.LindiH5ZarrStore.from_file(s3_url)
-    # Generate a reference file system
-    rfs = store.to_reference_file_system()
-    # Save it to a file for later use
-    with open(outfile_path, "w") as f:
-        json.dump(rfs, f, indent=2)
+    # Generate a reference file system and write it to a file
+    store.write_reference_file_system(outfile_path)
 
 
 def read_hdf5_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
