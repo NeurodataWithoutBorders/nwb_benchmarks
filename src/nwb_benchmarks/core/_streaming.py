@@ -207,8 +207,6 @@ def read_hdf5_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
 
     :param rfs: The LINDI reference file system file. This can be a dictionary or a URL or path to a .lindi.json file.
     """
-    # TODO: Example URL of a remote .nwb.lindi.json file that we can use for initial test setup
-    # url = 'https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json'
     # Load the h5py-like client for the reference file system
     client = lindi.LindiH5pyFile.from_reference_file_system(rfs)
     return client
