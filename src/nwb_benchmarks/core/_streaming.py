@@ -216,7 +216,7 @@ def read_hdf5_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
 
 def read_hdf5_nwbfile_lindi(rfs: Union[dict, str]) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, lindi.LindiH5pyFile]:
     """
-    Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py.
+    Read an HDF5 NWB file from an S3 URL using LINDI.
 
     :param rfs: The LINDI reference file system file. This can be a dictionary or a URL or path to a .lindi.json file.
     """
