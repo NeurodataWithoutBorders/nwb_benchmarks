@@ -229,9 +229,9 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
     def setup(self, s3_url: str):
         """Clear the LINDI JSON if it still exists"""
         self.lindi_file = os.path.basename(s3_url) + ".lindi.json"
-        self.teardown()
+        self.teardown(s3_url=s3_url)
 
-    def teardown(self):
+    def teardown(self, s3_url: str):
         """Clear the LINDI JSON if it still exists"""
         if os.path.exists(self.lindi_file):
             os.remove(self.lindi_file)
