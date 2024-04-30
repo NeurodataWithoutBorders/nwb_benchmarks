@@ -38,9 +38,9 @@ def main() -> None:
         asv_root.mkdir(exist_ok=True)
 
         raw_environment_info_file_path = asv_root / ".raw_environment_info.txt"
-        environment_info_process = subprocess.Popen(["conda", "list", ">", raw_environment_info_file_path],
-                                         stdout=subprocess.PIPE,
-                              shell=True)
+        environment_info_process = subprocess.Popen(
+            ["conda", "list", ">", raw_environment_info_file_path], stdout=subprocess.PIPE, shell=True
+        )
         environment_info_process.wait()
 
         if not raw_environment_info_file_path.exists():
