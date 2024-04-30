@@ -197,9 +197,9 @@ def create_lindi_reference_file_system(s3_url: str, outfile_path: str):
     The output_file path should end in the '.lindi.json' extension
     """
     # Create a read-only Zarr store as a wrapper for the h5 file
-    store = lindi.LindiH5ZarrStore.from_file(s3_url)
+    store = lindi.LindiH5ZarrStore.from_file(hdf5_file_name_or_url=s3_url)
     # Generate a reference file system and write it to a file
-    store.write_reference_file_system(outfile_path)
+    store.write_reference_file_system(output_file_name=outfile_path)
 
 
 def read_hdf5_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
@@ -208,7 +208,7 @@ def read_hdf5_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
     :param rfs: The LINDI reference file system file. This can be a dictionary or a URL or path to a .lindi.json file.
     """
     # Load the h5py-like client for the reference file system
-    client = lindi.LindiH5pyFile.from_reference_file_system(rfs)
+    client = lindi.LindiH5pyFile.from_reference_file_system(rfs=rfs)
     return client
 
 

@@ -38,9 +38,9 @@ def main() -> None:
         asv_root.mkdir(exist_ok=True)
 
         raw_environment_info_file_path = asv_root / ".raw_environment_info.txt"
-        outfile = open(raw_environment_info_file_path, "w")
-        environment_info_process = subprocess.Popen(["conda list"], stdout=outfile, shell=True)
-        environment_info_process.wait()
+        with open(file=raw_environment_info_file_path, mode="w") as stdout:
+            environment_info_process = subprocess.Popen(args=["conda", "list"], stdout=stdout, shell=True)
+            environment_info_process.wait()
 
         if not raw_environment_info_file_path.exists():
             raise FileNotFoundError(f"Unable to create environment file at {raw_environment_info_file_path}!")
@@ -59,13 +59,15 @@ def main() -> None:
         if bench_mode:
             cmd.extend(["--bench", specific_benchmark_pattern])
 
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        # Run ASV with all the desired flags and reroute the output to our main console
+        asv_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
-        for line in iter(process.stdout.readline, b""):
+        for line in iter(asv_process.stdout.readline, b""):
             print(line.decode(encoding).strip("\n"))
-        process.stdout.close()
-        process.wait()
+        asv_process.stdout.close()
+        asv_process.wait()
 
+        # Consider the raw ASV output as 'intermediate' and perform additional parsing
         globbed_json_file_paths = [
             path
             for path in pathlib.Path(asv_root / "intermediate_results").rglob("*.json")
