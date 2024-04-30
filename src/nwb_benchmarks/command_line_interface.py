@@ -26,8 +26,8 @@ def main() -> None:
 
     default_asv_machine_file_path = pathlib.Path.home() / ".asv-machine.json"
     if command == "run":
-        process = subprocess.Popen(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
-        process.wait()
+        aws_machine_process = subprocess.Popen(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
+        aws_machine_process.wait()
         customize_asv_machine_file(file_path=default_asv_machine_file_path)
 
         commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
@@ -35,8 +35,16 @@ def main() -> None:
         # Save latest environment list from conda (most thorough)
         # subprocess tends to have issues inheriting `conda` entrypoint
         asv_root = pathlib.Path(__file__).parent.parent.parent / ".asv"
+        asv_root.mkdir(exist_ok=True)
+
         raw_environment_info_file_path = asv_root / ".raw_environment_info.txt"
-        os.system(f"conda list > {raw_environment_info_file_path}")
+        environment_info_process = subprocess.Popen(["conda", "list", ">", raw_environment_info_file_path],
+                                         stdout=subprocess.PIPE,
+                              shell=True)
+        environment_info_process.wait()
+
+        if not raw_environment_info_file_path.exists():
+            raise FileNotFoundError(f"Unable to create environment file at {raw_environment_info_file_path}!")
 
         # Deploy ASV
         cmd = [

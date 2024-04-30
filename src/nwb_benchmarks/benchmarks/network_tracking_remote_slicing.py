@@ -2,6 +2,8 @@
 
 from typing import Tuple
 
+from asv_runner.benchmarks.mark import skip_benchmark_if
+
 from nwb_benchmarks import TSHARK_PATH
 from nwb_benchmarks.core import (
     BaseBenchmark,
@@ -54,6 +56,7 @@ zarr_parameter_cases = dict(
 )
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -68,6 +71,7 @@ class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -87,6 +91,7 @@ class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class RemfileContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -101,6 +106,7 @@ class RemfileContinuousSliceBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class RemfileContinuousSliceBenchmarkWithCache(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -120,6 +126,7 @@ class RemfileContinuousSliceBenchmarkWithCache(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class Ros3ContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -137,6 +144,7 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark(BaseBenchmark):
     """
     Time the read of a data slice from a remote NWB file with pynwb using lindi with a remote JSON reference
@@ -156,6 +164,7 @@ class LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark(BaseBenchma
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class ZarrContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
@@ -170,6 +179,7 @@ class ZarrContinuousSliceBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 

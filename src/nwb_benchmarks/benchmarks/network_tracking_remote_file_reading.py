@@ -2,6 +2,8 @@
 
 import os
 
+from asv_runner.benchmarks.mark import skip_benchmark_if
+
 from nwb_benchmarks import TSHARK_PATH
 from nwb_benchmarks.core import (
     BaseBenchmark,
@@ -64,6 +66,7 @@ zarr_parameter_cases = dict(
 )
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class FsspecNoCacheDirectFileReadBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -73,6 +76,7 @@ class FsspecNoCacheDirectFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class FsspecWithCacheDirectFileReadBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -85,6 +89,7 @@ class FsspecWithCacheDirectFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class RemfileDirectFileReadBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -94,6 +99,7 @@ class RemfileDirectFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class RemfileDirectFileReadBenchmarkWithCache(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -106,6 +112,7 @@ class RemfileDirectFileReadBenchmarkWithCache(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class Ros3DirectFileReadBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -116,6 +123,7 @@ class Ros3DirectFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class FsspecNoCacheNWBFileReadBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -125,6 +133,7 @@ class FsspecNoCacheNWBFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class FsspecWithCacheNWBFileReadBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -139,6 +148,7 @@ class FsspecWithCacheNWBFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class RemfileNWBFileReadBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -148,6 +158,7 @@ class RemfileNWBFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class RemfileNWBFileReadBenchmarkWithCache(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -162,6 +173,7 @@ class RemfileNWBFileReadBenchmarkWithCache(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class Ros3NWBFileReadBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -172,6 +184,7 @@ class Ros3NWBFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the read of the Lindi HDF5 files with and without `pynwb` assuming that a local
@@ -201,6 +214,7 @@ class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the creation of a local Lindi JSON reference filesystem for a remote NWB file
@@ -215,9 +229,9 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
     def setup(self, s3_url: str):
         """Clear the LINDI JSON if it still exists"""
         self.lindi_file = os.path.basename(s3_url) + ".lindi.json"
-        self.teardown(s3_url=s3_url)
+        self.teardown()
 
-    def teardown(self, s3_url: str):
+    def teardown(self):
         """Clear the LINDI JSON if it still exists"""
         if os.path.exists(self.lindi_file):
             os.remove(self.lindi_file)
@@ -239,6 +253,7 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the read of the Lindi HDF5 files with `pynwb` assuming that a local copy of the lindi
@@ -262,6 +277,7 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class ZarrDirectFileReadBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
@@ -271,6 +287,7 @@ class ZarrDirectFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class ZarrForceNoConsolidatedDirectFileReadBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
@@ -280,6 +297,7 @@ class ZarrForceNoConsolidatedDirectFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class ZarrNWBFileReadBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
@@ -289,6 +307,7 @@ class ZarrNWBFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+@skip_benchmark_if(TSHARK_PATH is None)
 class ZarrForceNoConsolidatedNWBFileReadBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
