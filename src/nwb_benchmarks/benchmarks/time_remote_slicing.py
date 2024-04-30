@@ -170,7 +170,7 @@ class ZarrContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         """Track network activity for slicing into a Zarr dataset"""
         self._temp = self.data_to_slice[slice_range]
 
@@ -189,6 +189,6 @@ class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         """Track network activity for slicing into a Zarr dataset"""
         self._temp = self.data_to_slice[slice_range]
