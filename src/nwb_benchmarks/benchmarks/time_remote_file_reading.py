@@ -44,10 +44,31 @@ lindi_hdf5_parameter_cases = parameter_cases
 # Parameters for LINDI pointing to a remote LINDI reference file system JSON file. I.e., here we do not
 # to create the JSON but can load it directly from the remote store
 lindi_remote_rfs_parameter_cases = dict(
-    # TODO: Just an example case for testing. Replace with real test case
-    BaseExample=dict(
-        s3_url="https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json",
+    EcephysTestCase=dict(
+        s3_url=get_s3_url(
+            is_staging=True,
+            dandiset_id="213889",
+            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
+        ),
     ),
+    OphysTestCase=dict(
+        s3_url=get_s3_url(
+            is_staging=True,
+            dandiset_id="213889",
+            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+        ),
+    ),
+    IcephysTestCase=dict(
+        s3_url=get_s3_url(
+            is_staging=True,
+            dandiset_id="213889",
+            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
+        ),
+    ),
+    # TODO: Just an example case for testing. Replace with real test case
+    # BaseExample=dict(
+    #     s3_url="https://lindi.neurosift.org/dandi/dandisets/000939/assets/56d875d6-a705-48d3-944c-53394a389c85/nwb.lindi.json",
+    # ),
 )
 
 
