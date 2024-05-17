@@ -194,12 +194,14 @@ def create_lindi_reference_file_system(s3_url: str, outfile_path: str):
     """
     Create a lindi reference file system JSON cache file for a given HDF5 file on S3 (or locally)
 
-    The output_file path should end in the '.lindi.json' extension
+    The outfile_path path should end in the '.lindi.json' extension
     """
-    # Create a read-only Zarr store as a wrapper for the h5 file
-    store = lindi.LindiH5ZarrStore.from_file(hdf5_file_name_or_url=s3_url)
+    # Create the h5py-like client
+    max_chunks_to_cache = int(1e9)
+    zarr_store_opts = lindi.LindiH5ZarrStoreOpts(num_dataset_chunks_threshold=max_chunks_to_cache)
+    client = lindi.LindiH5pyFile.from_hdf5_file(url_or_path=s3_url, zarr_store_opts=zarr_store_opts)
     # Generate a reference file system and write it to a file
-    store.write_reference_file_system(output_file_name=outfile_path)
+    client.write_lindi_file(filename=outfile_path)
 
 
 def read_hdf5_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
@@ -208,7 +210,7 @@ def read_hdf5_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
     :param rfs: The LINDI reference file system file. This can be a dictionary or a URL or path to a .lindi.json file.
     """
     # Load the h5py-like client for the reference file system
-    client = lindi.LindiH5pyFile.from_reference_file_system(rfs=rfs)
+    client = lindi.LindiH5pyFile.from_lindi_file(url_or_path=rfs)
     return client
 
 
