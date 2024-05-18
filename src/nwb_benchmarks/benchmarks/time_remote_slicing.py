@@ -67,7 +67,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
         ),
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 30_000), ),
+        slice_range=(slice(0, 30_000),),
     ),
     # # TODO: Just an example case for testing. Replace with real test case
     # BaseExample=dict(
