@@ -1,4 +1,7 @@
-from typing import Any, Dict, Union
+import itertools
+from typing import Any, Dict, Self, Union
+
+import asv_runner
 
 
 class BaseBenchmark:
@@ -27,19 +30,43 @@ class BaseBenchmark:
 
     parameter_cases: Union[Dict[str, Dict[str, Any]], None] = None
 
-    def __init__(self):
+    def __new__(cls, *args, **kwargs) -> Self:
+        instance = super().__new__(cls)
+
         # Unpack parameter cases dictionary into ASV expected form
-        if self.parameter_cases is not None:
-            self.param_names = list(next(iter(self.parameter_cases.values())).keys())
-            self.params = (
+        if cls.parameter_cases is not None:
+            cls.param_names = list(next(iter(cls.parameter_cases.values())).keys())
+            cls.params = (
                 [
-                    [parameter_case[param_name] for parameter_case in self.parameter_cases.values()]
-                    for param_name in self.param_names
+                    [parameter_case[param_name] for parameter_case in cls.parameter_cases.values()]
+                    for param_name in cls.param_names
                 ]
-                if len(self.param_names) > 1
+                if len(cls.param_names) > 1
                 else [
                     parameter
-                    for parameter_case in self.parameter_cases.values()
+                    for parameter_case in cls.parameter_cases.values()
                     for parameter in parameter_case.values()
                 ]
             )
+
+            # ASV automatically forms a cartesian product over all params
+            # But we want our `parameter_names` usage to be flat in order to be more explicit
+            # So use the skip decorator to exclude the 'off-diagonal' parts of a square product
+            # These will still show up in the console display table, but will have n/a as display value
+            # And values of samples in intermediate results will be saved to JSON as `null`
+            cartesian_params = itertools.product(*cls.params)
+            desired_params = [
+                tuple(parameter_case[parameter_name] for parameter_name in cls.param_names)
+                for parameter_case in cls.parameter_cases.values()
+            ]
+            non_cartesian_exclusion = [
+                cartesian_param for cartesian_param in cartesian_params if cartesian_param not in desired_params
+            ]
+
+            for method_name, method in vars(cls).items():
+                if any(method_name.startswith(prefix) for prefix in ["time_", "track_"]):  # Add more when needed
+                    setattr(
+                        cls, method_name, asv_runner.benchmarks.mark.skip_for_params(non_cartesian_exclusion)(method)
+                    )
+
+        return instance
