@@ -17,6 +17,7 @@ class BaseBenchmark:
             parameter1=value1,
             parameter2=value2,
             ...
+        ),
         ParameterCase2=dict(
             parameter1=value3,
             parameter2=value4,
