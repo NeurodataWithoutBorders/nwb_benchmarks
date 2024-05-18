@@ -112,7 +112,7 @@ Notice how the ``read_hdf5_nwbfile_remfile`` function (which reads an HDF5-backe
     def read_hdf5_nwbfile_remfile(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File]:
         """Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py."""
         (file, byte_stream) = read_hdf5_remfile(s3_url=s3_url)
-        io = pynwb.NWBHDF5IO(file=file, aws_region=bytes("us-east-2", "ascii"))
+        io = pynwb.NWBHDF5IO(file=file, aws_region="us-east-2")
         nwbfile = io.read()
         return (nwbfile, io, file, byte_stream)
 

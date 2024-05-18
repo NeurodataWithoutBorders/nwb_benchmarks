@@ -24,7 +24,7 @@ from fsspec.implementations.http import HTTPFile
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
 warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
-AWS_REGION = bytes("us-east-2", "ascii")
+AWS_REGION = "us-east-2"  # DANDI is hosted on us-east-2
 
 
 def read_hdf5_fsspec_no_cache(
@@ -36,7 +36,7 @@ def read_hdf5_fsspec_no_cache(
     filesystem = fsspec.filesystem("https")
 
     byte_stream = filesystem.open(path=s3_url, mode="rb")
-    file = h5py.File(name=byte_stream, aws_region=AWS_REGION)
+    file = h5py.File(name=byte_stream, aws_region=bytes(AWS_REGION, "ascii"))
     return (file, byte_stream)
 
 
@@ -158,11 +158,11 @@ def read_hdf5_ros3(s3_url: str, retry: bool = True) -> Tuple[h5py.File, Union[in
     ros3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
     if retry:
         file, retries = robust_ros3_read(
-            command=h5py.File, command_kwargs=dict(name=ros3_form, driver="ros3", aws_region=AWS_REGION)
+            command=h5py.File, command_kwargs=dict(name=ros3_form, driver="ros3", aws_region=bytes(AWS_REGION, "ascii"))
         )
     else:
         retries = None
-        file = h5py.File(name=ros3_form, driver="ros3", aws_region=AWS_REGION)
+        file = h5py.File(name=ros3_form, driver="ros3", aws_region=bytes(AWS_REGION, "ascii"))
     return (file, retries)
 
 
