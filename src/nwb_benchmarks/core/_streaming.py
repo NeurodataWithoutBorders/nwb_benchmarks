@@ -24,7 +24,7 @@ from fsspec.implementations.http import HTTPFile
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
 warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
-AWS_REGION = "us-east-2"
+AWS_REGION = bytes("us-east-2", "ascii")
 
 
 def read_hdf5_fsspec_no_cache(
