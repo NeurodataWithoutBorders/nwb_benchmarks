@@ -42,12 +42,39 @@ zarr_parameter_cases = dict(
 
 # Parameters for LINDI pointing to a remote LINDI reference file system JSON file
 lindi_remote_rfs_parameter_cases = dict(
-    # TODO: Just an example case for testing. Replace with real test case
-    BaseExample=dict(
-        s3_url="https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json",
-        object_name="accelerometer",
-        slice_range=(slice(0, 30_000), slice(0, 3)),
+    EcephysTestCase=dict(
+        s3_url=get_s3_url(
+            is_staging=True,
+            dandiset_id="213889",
+            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
+        ),
+        object_name="ElectricalSeriesAp",
+        slice_range=(slice(0, 30_000), slice(0, 384)),
     ),
+    OphysTestCase=dict(
+        s3_url=get_s3_url(
+            is_staging=True,
+            dandiset_id="213889",
+            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+        ),
+        object_name="TwoPhotonSeries",
+        slice_range=(slice(0, 3), slice(0, 796), slice(0, 512)),
+    ),
+    IcephysTestCase=dict(
+        s3_url=get_s3_url(
+            is_staging=True,
+            dandiset_id="213889",
+            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
+        ),
+        object_name="data_00002_AD0",
+        slice_range=(slice(0, 30_000), ),
+    ),
+    # # TODO: Just an example case for testing. Replace with real test case
+    # BaseExample=dict(
+    #     s3_url="https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json",
+    #     object_name="accelerometer",
+    #     slice_range=(slice(0, 30_000), slice(0, 3)),
+    # ),
 )
 
 
