@@ -37,7 +37,6 @@ parameter_cases = dict(
 lindi_remote_rfs_parameter_cases = dict(
     EcephysTestCase=dict(
         s3_url=get_s3_url(
-            is_staging=True,
             dandiset_id="213889",
             dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
         ),
@@ -46,7 +45,6 @@ lindi_remote_rfs_parameter_cases = dict(
     ),
     OphysTestCase=dict(
         s3_url=get_s3_url(
-            is_staging=True,
             dandiset_id="213889",
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
         ),
@@ -55,7 +53,6 @@ lindi_remote_rfs_parameter_cases = dict(
     ),
     IcephysTestCase=dict(
         s3_url=get_s3_url(
-            is_staging=True,
             dandiset_id="213889",
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
         ),

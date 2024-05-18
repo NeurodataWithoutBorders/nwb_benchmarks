@@ -3,8 +3,10 @@
 import locale
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
+import warnings
 
 from .setup import customize_asv_machine_file, reduce_results
 
@@ -26,6 +28,19 @@ def main() -> None:
 
     default_asv_machine_file_path = pathlib.Path.home() / ".asv-machine.json"
     if command == "run":
+        asv_root = pathlib.Path(__file__).parent.parent.parent / ".asv"
+        asv_root.mkdir(exist_ok=True)
+        intermediate_results_folder = asv_root / "intermediate_results"
+
+        if intermediate_results_folder.exists():
+            try:
+                shutil.rmtree(path=intermediate_results_folder)
+            except PermissionError:
+                raise FileExistsError(
+                    f"Unable to auotmatically remove {intermediate_results_folder} - please manually delete and "
+                    "try to run the benchmarks again."
+                )
+
         aws_machine_process = subprocess.Popen(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
         aws_machine_process.wait()
         customize_asv_machine_file(file_path=default_asv_machine_file_path)
@@ -34,9 +49,6 @@ def main() -> None:
 
         # Save latest environment list from conda (most thorough)
         # subprocess tends to have issues inheriting `conda` entrypoint
-        asv_root = pathlib.Path(__file__).parent.parent.parent / ".asv"
-        asv_root.mkdir(exist_ok=True)
-
         raw_environment_info_file_path = asv_root / ".raw_environment_info.txt"
         with open(file=raw_environment_info_file_path, mode="w") as stdout:
             environment_info_process = subprocess.Popen(args=["conda", "list"], stdout=stdout, shell=True)
@@ -70,16 +82,13 @@ def main() -> None:
         # Consider the raw ASV output as 'intermediate' and perform additional parsing
         globbed_json_file_paths = [
             path
-            for path in pathlib.Path(asv_root / "intermediate_results").rglob("*.json")
+            for path in intermediate_results_folder.rglob("*.json")
             if not any(path.stem == skip_stems for skip_stems in ["benchmarks", "machine"])
         ]
         assert (
             len(globbed_json_file_paths) > 0
         ), "No intermediate result was found, likely as a result of a failure in the benchmarks."
-        assert len(globbed_json_file_paths) == 1, (
-            "A single intermediate result was not found, likely as a result of a previous failure to reduce "
-            "the results! Please manually remove these."
-        )
+        assert len(globbed_json_file_paths) == 1, "A single intermediate result was not found, please raise an issue."
         raw_results_file_path = globbed_json_file_paths[0]
 
         reduce_results(

@@ -1,7 +1,7 @@
 from dandi.dandiapi import DandiAPIClient
 
 
-def get_s3_url(dandiset_id: str, dandi_path: str, is_staging: bool = False) -> str:
+def get_s3_url(dandiset_id: str, dandi_path: str) -> str:
     """
     Helper function to get S3 url form that fsspec/remfile expect from basic info about a file on DANDI.
 
@@ -16,8 +16,12 @@ def get_s3_url(dandiset_id: str, dandi_path: str, is_staging: bool = False) -> s
     """
     assert len(dandiset_id) == 6, f"The specified 'dandiset_id' ({dandiset_id}) should be the six-digit identifier."
 
-    api_url = "https://api-staging.dandiarchive.org/api" if is_staging else "https://api.dandiarchive.org/api"
-    client = DandiAPIClient(api_url)
+    if int(dandiset_id) >= 200_000:
+        api_url = "https://api-staging.dandiarchive.org/api"
+    else:
+        api_url = "https://api.dandiarchive.org/api"
+
+    client = DandiAPIClient(api_url=api_url)
     dandiset = client.get_dandiset(dandiset_id=dandiset_id)
     asset = dandiset.get_asset_by_path(path=dandi_path)
 
