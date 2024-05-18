@@ -24,6 +24,8 @@ from fsspec.implementations.http import HTTPFile
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
 warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
+AWS_REGION = "us-east-2"
+
 
 def read_hdf5_fsspec_no_cache(
     s3_url: str,
@@ -34,7 +36,7 @@ def read_hdf5_fsspec_no_cache(
     filesystem = fsspec.filesystem("https")
 
     byte_stream = filesystem.open(path=s3_url, mode="rb")
-    file = h5py.File(name=byte_stream)
+    file = h5py.File(name=byte_stream, aws_region=AWS_REGION)
     return (file, byte_stream)
 
 
@@ -60,7 +62,7 @@ def read_hdf5_nwbfile_fsspec_no_cache(
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, HTTPFile]:
     """Read an HDF5 NWB file from an S3 URL using fsspec without a cache."""
     (file, byte_stream) = read_hdf5_fsspec_no_cache(s3_url=s3_url)
-    io = pynwb.NWBHDF5IO(file=file, load_namespaces=True)
+    io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream)
 
@@ -70,7 +72,7 @@ def read_hdf5_nwbfile_fsspec_with_cache(
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, HTTPFile, tempfile.TemporaryDirectory]:
     """Read an HDF5 NWB file from an S3 URL using fsspec without a cache."""
     (file, byte_stream, tmpdir) = read_hdf5_fsspec_with_cache(s3_url=s3_url)
-    io = pynwb.NWBHDF5IO(file=file, load_namespaces=True)
+    io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream, tmpdir)
 
@@ -83,9 +85,9 @@ def read_hdf5_remfile(s3_url: str) -> Tuple[h5py.File, remfile.File]:
 
 
 def read_hdf5_nwbfile_remfile(s3_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File]:
-    """Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py."""
+    """Read an HDF5 NWB file from an S3 URL using remfile."""
     (file, byte_stream) = read_hdf5_remfile(s3_url=s3_url)
-    io = pynwb.NWBHDF5IO(file=file, load_namespaces=True)
+    io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream)
 
@@ -102,9 +104,9 @@ def read_hdf5_remfile_with_cache(s3_url: str) -> Tuple[h5py.File, remfile.File, 
 def read_hdf5_nwbfile_remfile_with_cache(
     s3_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File, tempfile.TemporaryDirectory]:
-    """Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py."""
+    """Read an HDF5 NWB file from an S3 URL using remfile."""
     (file, byte_stream, tmpdir) = read_hdf5_remfile_with_cache(s3_url=s3_url)
-    io = pynwb.NWBHDF5IO(file=file, load_namespaces=True)
+    io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream, tmpdir)
 
@@ -154,14 +156,13 @@ def read_hdf5_ros3(s3_url: str, retry: bool = True) -> Tuple[h5py.File, Union[in
         The number of retries, if `retry` is `True`.
     """
     ros3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
-    aws_region = bytes("us-east-2", "ascii")  # TODO: generalize this as an argument if necessary
     if retry:
         file, retries = robust_ros3_read(
-            command=h5py.File, command_kwargs=dict(name=ros3_form, driver="ros3", aws_region=aws_region)
+            command=h5py.File, command_kwargs=dict(name=ros3_form, driver="ros3", aws_region=AWS_REGION)
         )
     else:
         retries = None
-        file = h5py.File(name=ros3_form, driver="ros3", aws_region=aws_region)
+        file = h5py.File(name=ros3_form, driver="ros3", aws_region=AWS_REGION)
     return (file, retries)
 
 
@@ -180,7 +181,7 @@ def read_hdf5_nwbfile_ros3(s3_url: str, retry: bool = True) -> Tuple[pynwb.NWBFi
         The number of retries, if `retry` is `True`.
     """
     ros3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
-    io = pynwb.NWBHDF5IO(path=ros3_form, mode="r", load_namespaces=True, driver="ros3")
+    io = pynwb.NWBHDF5IO(path=ros3_form, mode="r", driver="ros3", aws_region=AWS_REGION)
 
     if retry:
         nwbfile, retries = robust_ros3_read(command=io.read)
