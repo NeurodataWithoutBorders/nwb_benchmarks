@@ -8,6 +8,7 @@ import pathlib
 import shutil
 import subprocess
 import sys
+import warnings
 from typing import Dict, List
 
 
@@ -58,19 +59,23 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
 
         # Skipped results in JSON are writen as `null` and read back into Python as `None`
         non_skipped_results = [result for result in raw_results_list[11] if result is not None]
-        assert len(serialized_flattened_joint_params) == len(non_skipped_results), (
-            f"Length mismatch between flattened joint parameters ({serialized_flattened_joint_params} and result "
-            f"samples ({len(non_skipped_results)}) in test case '{test_case}'! "
-            "Please raise an issue and share your intermediate results file."
-        )
-        reduced_results.update(
-            {
-                test_case: {
-                    joint_params: raw_result
-                    for joint_params, raw_result in zip(serialized_flattened_joint_params, non_skipped_results)
+        if len(serialized_flattened_joint_params) != len(non_skipped_results):
+            message = (
+                f"In intermediate results for test case {test_case}: \n"
+                f"\tLength mismatch between flattened joint parameters ({len(serialized_flattened_joint_params)}) and "
+                f"result samples ({len(non_skipped_results)})!\n\n"
+                "Please raise an issue and share your intermediate results file."
+            )
+            warnings.warn(message=message)
+        else:
+            reduced_results.update(
+                {
+                    test_case: {
+                        joint_params: raw_result
+                        for joint_params, raw_result in zip(serialized_flattened_joint_params, non_skipped_results)
+                    }
                 }
-            }
-        )
+            )
 
     if len(reduced_results) == 0:
         raise ValueError(

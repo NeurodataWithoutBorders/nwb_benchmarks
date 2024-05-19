@@ -33,14 +33,14 @@ parameter_cases = dict(
         object_name="TwoPhotonSeries",
         slice_range=(slice(0, 3), slice(0, 796), slice(0, 512)),
     ),
-    # IcephysTestCase=dict(
-    #     s3_url=get_s3_url(
-    #         dandiset_id="000717",
-    #         dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
-    #     ),
-    #     object_name="data_00002_AD0",
-    #     slice_range=(slice(0, 30_000),),
-    # ),
+    IcephysTestCase=dict(
+        s3_url=get_s3_url(
+            dandiset_id="000717",
+            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
+        ),
+        object_name="data_00002_AD0",
+        slice_range=(slice(0, 30_000),),
+    ),
 )
 
 zarr_parameter_cases = dict(
