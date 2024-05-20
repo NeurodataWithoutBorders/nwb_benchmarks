@@ -14,7 +14,7 @@ original_file_path = (
 hdf5_benchmark_dandiset_folder = pathlib.Path("E:/nwb_benchmark_data/000717")  # Path to your local copy of 000717
 
 # Read source NWBFile
-io = pynwb.NWBHDF5IO(path=original_file_path, mode="r", load_namespaces=True)
+io = pynwb.NWBHDF5IO(path=original_file_path, mode="r")
 source_nwbfile = io.read()
 
 session_id = source_nwbfile.session_id.split("-")[0]  # Shorten for readability; should still be enough to be unique
