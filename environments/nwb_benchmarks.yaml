@@ -17,6 +17,6 @@ dependencies:
       - pyshark
       - lindi>=0.3.6
       - pynwb @ git+https://github.com/NeurodataWithoutBorders/pynwb.git@expose_aws_region  # required until region fix is released
-      - hdmf @ git+https://github.com/hdmf-dev/hdmf.git@expose_aws_region  # required until region fix is released
+      - hdmf>=3.14.0
       - hdmf-zarr
       - -e ..
