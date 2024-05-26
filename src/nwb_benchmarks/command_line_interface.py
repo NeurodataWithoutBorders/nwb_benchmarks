@@ -37,12 +37,11 @@ def main() -> None:
                 shutil.rmtree(path=intermediate_results_folder)
             except PermissionError:
                 raise FileExistsError(
-                    f"Unable to auotmatically remove {intermediate_results_folder} - please manually delete and "
+                    f"Unable to automatically remove {intermediate_results_folder} - please manually delete and "
                     "try to run the benchmarks again."
                 )
 
-        aws_machine_process = subprocess.Popen(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
-        aws_machine_process.wait()
+        asv_machine_process = subprocess.run(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
         customize_asv_machine_file(file_path=default_asv_machine_file_path)
 
         commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
@@ -51,8 +50,7 @@ def main() -> None:
         # subprocess tends to have issues inheriting `conda` entrypoint
         raw_environment_info_file_path = asv_root / ".raw_environment_info.txt"
         with open(file=raw_environment_info_file_path, mode="w") as stdout:
-            environment_info_process = subprocess.Popen(args=["conda", "list"], stdout=stdout, shell=True)
-            environment_info_process.wait()
+            subprocess.run(args=["conda list"], stdout=stdout, shell=True)
 
         if not raw_environment_info_file_path.exists():
             raise FileNotFoundError(f"Unable to create environment file at {raw_environment_info_file_path}!")
