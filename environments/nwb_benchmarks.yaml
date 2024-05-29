@@ -15,8 +15,8 @@ dependencies:
       - aiohttp
       - remfile
       - pyshark
-      - lindi>=0.3.6
-      - pynwb @ git+https://github.com/NeurodataWithoutBorders/pynwb.git  # required until region fix is released
+      - lindi>=0.3.9
+      - pynwb>=2.8.0
       - hdmf>=3.14.0
       - hdmf-zarr
       - -e ..
