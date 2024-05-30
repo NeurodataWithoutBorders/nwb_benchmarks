@@ -36,7 +36,7 @@ def read_hdf5_fsspec_no_cache(
     filesystem = fsspec.filesystem("https")
 
     byte_stream = filesystem.open(path=s3_url, mode="rb")
-    file = h5py.File(name=byte_stream, aws_region=bytes(AWS_REGION, "ascii"))
+    file = h5py.File(name=byte_stream)
     return (file, byte_stream)
 
 
