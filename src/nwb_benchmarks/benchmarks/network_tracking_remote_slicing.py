@@ -21,27 +21,61 @@ from nwb_benchmarks.core import (
 )
 
 parameter_cases = dict(
-    IBLTestCase1=dict(
+    # data is uncompressed, chunked (13653, 384), shape (18000000, 384), 1319 chunks, dtype int16
+    EcephysTestCase1=dict(
         s3_url=get_s3_url(
             dandiset_id="000717",
             dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
         ),
         object_name="ElectricalSeriesAp",
-        slice_range=(slice(0, 30_000), slice(0, 384)),  #  ~23 MB
-    )
+        slice_range=(slice(0, 30_000), slice(0, 384)),
+    ),
+    # data is gzipped (level 4), chunked (30000, 16), shape (130182852, 384), 4340x24=104160 chunks, dtype int16
+    EcephysTestCase2=dict(
+        s3_url=get_s3_url(
+            dandiset_id="000409",
+            dandi_path="sub-CSH-ZAD-001/sub-CSH-ZAD-001_ses-3e7ae7c0-fe8b-487c-9354-036236fa1010_behavior+ecephys+image.nwb",
+        ),
+        object_name="ElectricalSeriesAp",
+        slice_range=(slice(0, 30_000), slice(0, 128)),
+    ),
+    OphysTestCase=dict(
+        s3_url=get_s3_url(
+            dandiset_id="000717",
+            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
+        ),
+        object_name="TwoPhotonSeries",
+        slice_range=(slice(0, 3), slice(0, 796), slice(0, 512)),
+    ),
+    IcephysTestCase=dict(
+        s3_url=get_s3_url(
+            dandiset_id="000717",
+            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
+        ),
+        object_name="data_00002_AD0",
+        slice_range=(slice(0, 30_000),),
+    ),
 )
 
-# Parameters for LINDI pointing to a remote LINDI reference file system JSON file. I.e., here we do not
-# to create the JSON but can load it directly from the remote store
 # Parameters for LINDI pointing to a remote LINDI reference file system JSON file
+# i.e., here we do not to create the JSON but can load it directly from the remote store.
+# These should correspond to parameter_cases above.
 lindi_remote_rfs_parameter_cases = dict(
-    EcephysTestCase=dict(
+    EcephysTestCase1=dict(
         s3_url=get_s3_url(
             dandiset_id="213889",
             dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
         ),
         object_name="ElectricalSeriesAp",
         slice_range=(slice(0, 30_000), slice(0, 384)),
+    ),
+    EcephysTestCase2=dict(
+        s3_url=get_s3_url(
+            dandiset_id="213889",
+            dandi_path="sub-CSHL047/sub-CSHL047_ses-b52182e7-39f6-4914-9717-136db589706e_behavior+ecephys+image.lindi.json",
+        ),
+        object_name="ElectricalSeriesAp",
+        slice_range=(slice(0, 30_000), slice(0, 128)),
     ),
     OphysTestCase=dict(
         s3_url=get_s3_url(
@@ -59,12 +93,6 @@ lindi_remote_rfs_parameter_cases = dict(
         object_name="data_00002_AD0",
         slice_range=(slice(0, 30_000),),
     ),
-    # # TODO: Just an example case for testing. Replace with real test case
-    # BaseExample=dict(
-    #     s3_url="https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json",
-    #     object_name="accelerometer",
-    #     slice_range=(slice(0, 30_000), slice(0, 3)),
-    # ),
 )
 
 
