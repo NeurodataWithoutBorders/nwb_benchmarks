@@ -3,7 +3,6 @@ Module with helper functions for streaming read access to remote files using var
 fsspec, remfile, ros3, lindi
 """
 
-import json
 import tempfile
 import time
 import warnings

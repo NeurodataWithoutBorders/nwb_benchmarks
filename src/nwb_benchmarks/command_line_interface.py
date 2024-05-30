@@ -1,12 +1,10 @@
 """Simple wrapper around `asv run` for convenience."""
 
 import locale
-import os
 import pathlib
 import shutil
 import subprocess
 import sys
-import warnings
 
 from .setup import customize_asv_machine_file, reduce_results
 
@@ -41,7 +39,7 @@ def main() -> None:
                     "try to run the benchmarks again."
                 )
 
-        asv_machine_process = subprocess.run(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
+        subprocess.run(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
         customize_asv_machine_file(file_path=default_asv_machine_file_path)
 
         commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
