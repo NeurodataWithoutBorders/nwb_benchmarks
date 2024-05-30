@@ -217,31 +217,31 @@ class LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark(BaseBenchma
         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class ZarrContinuousSliceBenchmark(BaseBenchmark):
-    parameter_cases = zarr_parameter_cases
+# @skip_benchmark_if(TSHARK_PATH is None)
+# class ZarrContinuousSliceBenchmark(BaseBenchmark):
+#     parameter_cases = zarr_parameter_cases
 
-    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
-        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
-        self.data_to_slice = self.neurodata_object.data
+#     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+#         self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
+#         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+#         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self._temp = self.data_to_slice[slice_range]
-        return network_tracker.asv_network_statistics
+#     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+#         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+#             self._temp = self.data_to_slice[slice_range]
+#         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
-    parameter_cases = zarr_parameter_cases
+# @skip_benchmark_if(TSHARK_PATH is None)
+# class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
+#     parameter_cases = zarr_parameter_cases
 
-    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")
-        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
-        self.data_to_slice = self.neurodata_object.data
+#     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+#         self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")
+#         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+#         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self._temp = self.data_to_slice[slice_range]
-        return network_tracker.asv_network_statistics
+#     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+#         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+#             self._temp = self.data_to_slice[slice_range]
+#         return network_tracker.asv_network_statistics

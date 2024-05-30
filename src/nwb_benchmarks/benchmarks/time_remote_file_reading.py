@@ -259,41 +259,41 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
         self.client = read_hdf5_lindi(rfs=s3_url)
 
 
-class DirectZarrFileReadBenchmark(BaseBenchmark):
-    """
-    Time the read of with Zarr only (not using PyNWB)
+# class DirectZarrFileReadBenchmark(BaseBenchmark):
+#     """
+#     Time the read of with Zarr only (not using PyNWB)
 
-    Note: in all cases, store the in-memory objects to avoid timing garbage collection steps.
-    """
+#     Note: in all cases, store the in-memory objects to avoid timing garbage collection steps.
+#     """
 
-    rounds = 1
-    repeat = 3
-    parameter_cases = zarr_parameter_cases
+#     rounds = 1
+#     repeat = 3
+#     parameter_cases = zarr_parameter_cases
 
-    def time_read_zarr(self, s3_url: str):
-        """Read a Zarr file using consolidated metadata (if available)"""
-        self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=False)
+#     def time_read_zarr(self, s3_url: str):
+#         """Read a Zarr file using consolidated metadata (if available)"""
+#         self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=False)
 
-    def time_read_zarr_force_no_consolidated(self, s3_url: str):
-        """Read a Zarr file without using consolidated metadata"""
-        self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=True)
+#     def time_read_zarr_force_no_consolidated(self, s3_url: str):
+#         """Read a Zarr file without using consolidated metadata"""
+#         self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=True)
 
 
-class NWBZarrFileReadBenchmark(BaseBenchmark):
-    """
-    Time the read of the Zarr-backend files with `pynwb` using each streaming method.
+# class NWBZarrFileReadBenchmark(BaseBenchmark):
+#     """
+#     Time the read of the Zarr-backend files with `pynwb` using each streaming method.
 
-    Note: in all cases, store the in-memory objects to avoid timing garbage collection steps.
-    """
+#     Note: in all cases, store the in-memory objects to avoid timing garbage collection steps.
+#     """
 
-    rounds = 1
-    repeat = 3
-    parameter_cases = zarr_parameter_cases
+#     rounds = 1
+#     repeat = 3
+#     parameter_cases = zarr_parameter_cases
 
-    def time_read_zarr_nwbfile(self, s3_url: str):
-        """Read NWB file with PyNWB using Zarr with consolidated metadata. (if available)"""
-        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
+#     def time_read_zarr_nwbfile(self, s3_url: str):
+#         """Read NWB file with PyNWB using Zarr with consolidated metadata. (if available)"""
+#         self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
 
-    def time_read_zarr_nwbfile_force_no_consolidated(self, s3_url: str):
-        """Read NWB file with PyNWB using Zarr without consolidated metadata."""
-        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")
+#     def time_read_zarr_nwbfile_force_no_consolidated(self, s3_url: str):
+#         """Read NWB file with PyNWB using Zarr without consolidated metadata."""
+#         self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")

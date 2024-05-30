@@ -318,41 +318,41 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class ZarrDirectFileReadBenchmark(BaseBenchmark):
-    parameter_cases = zarr_parameter_cases
+# @skip_benchmark_if(TSHARK_PATH is None)
+# class ZarrDirectFileReadBenchmark(BaseBenchmark):
+#     parameter_cases = zarr_parameter_cases
 
-    def track_network_activity_during_read(self, s3_url: str):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=False)
-        return network_tracker.asv_network_statistics
-
-
-@skip_benchmark_if(TSHARK_PATH is None)
-class ZarrForceNoConsolidatedDirectFileReadBenchmark(BaseBenchmark):
-    parameter_cases = zarr_parameter_cases
-
-    def track_network_activity_during_read(self, s3_url: str):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=True)
-        return network_tracker.asv_network_statistics
+#     def track_network_activity_during_read(self, s3_url: str):
+#         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+#             self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=False)
+#         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class ZarrNWBFileReadBenchmark(BaseBenchmark):
-    parameter_cases = zarr_parameter_cases
+# @skip_benchmark_if(TSHARK_PATH is None)
+# class ZarrForceNoConsolidatedDirectFileReadBenchmark(BaseBenchmark):
+#     parameter_cases = zarr_parameter_cases
 
-    def track_network_activity_during_read(self, s3_url: str):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
-        return network_tracker.asv_network_statistics
+#     def track_network_activity_during_read(self, s3_url: str):
+#         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+#             self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=True)
+#         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class ZarrForceNoConsolidatedNWBFileReadBenchmark(BaseBenchmark):
-    parameter_cases = zarr_parameter_cases
+# @skip_benchmark_if(TSHARK_PATH is None)
+# class ZarrNWBFileReadBenchmark(BaseBenchmark):
+#     parameter_cases = zarr_parameter_cases
 
-    def track_network_activity_during_read(self, s3_url: str):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")
-        return network_tracker.asv_network_statistics
+#     def track_network_activity_during_read(self, s3_url: str):
+#         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+#             self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
+#         return network_tracker.asv_network_statistics
+
+
+# @skip_benchmark_if(TSHARK_PATH is None)
+# class ZarrForceNoConsolidatedNWBFileReadBenchmark(BaseBenchmark):
+#     parameter_cases = zarr_parameter_cases
+
+#     def track_network_activity_during_read(self, s3_url: str):
+#         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+#             self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")
+#         return network_tracker.asv_network_statistics
