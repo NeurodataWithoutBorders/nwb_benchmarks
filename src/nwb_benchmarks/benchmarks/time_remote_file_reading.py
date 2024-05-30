@@ -29,12 +29,12 @@ parameter_cases = dict(
     # ClassicRos3TestCase=dict(s3_url="https://dandiarchive.s3.amazonaws.com/ros3test.nwb"),
     # EcephysTestCase from IBL is not the best example for testing a theory about file read; should probably replace with simpler
     # data is uncompressed, chunked (13653, 384), shape (18000000, 384), 1319 chunks, dtype int16
-    EcephysTestCase1=dict(
-        s3_url=get_s3_url(
-            dandiset_id="000717",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
-        ),
-    ),
+    # EcephysTestCase1=dict(
+    #     s3_url=get_s3_url(
+    #         dandiset_id="000717",
+    #         dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
+    #     ),
+    # ),
     # data is gzipped (level 4), chunked (30000, 16), shape (130182852, 384), 4340x24=104160 chunks, dtype int16
     EcephysTestCase2=dict(
         s3_url=get_s3_url(
@@ -42,18 +42,18 @@ parameter_cases = dict(
             dandi_path="sub-CSH-ZAD-001/sub-CSH-ZAD-001_ses-3e7ae7c0-fe8b-487c-9354-036236fa1010_behavior+ecephys+image.nwb",
         ),
     ),
-    OphysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="000717",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
-        ),
-    ),
-    IcephysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="000717",
-            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
-        ),
-    ),
+    # OphysTestCase=dict(
+    #     s3_url=get_s3_url(
+    #         dandiset_id="000717",
+    #         dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
+    #     ),
+    # ),
+    # IcephysTestCase=dict(
+    #     s3_url=get_s3_url(
+    #         dandiset_id="000717",
+    #         dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
+    #     ),
+    # ),
 )
 
 
@@ -65,30 +65,30 @@ lindi_hdf5_parameter_cases = parameter_cases
 # i.e., here we do not to create the JSON but can load it directly from the remote store.
 # These should correspond to parameter_cases above.
 lindi_remote_rfs_parameter_cases = dict(
-    EcephysTestCase1=dict(
-        s3_url=get_s3_url(
-            dandiset_id="213889",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
-        ),
-    ),
+    # EcephysTestCase1=dict(
+    #     s3_url=get_s3_url(
+    #         dandiset_id="213889",
+    #         dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
+    #     ),
+    # ),
     EcephysTestCase2=dict(
         s3_url=get_s3_url(
             dandiset_id="213889",
             dandi_path="sub-CSHL047/sub-CSHL047_ses-b52182e7-39f6-4914-9717-136db589706e_behavior+ecephys+image.lindi.json",
         ),
     ),
-    OphysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
-        ),
-    ),
-    IcephysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="213889",
-            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
-        ),
-    ),
+    # OphysTestCase=dict(
+    #     s3_url=get_s3_url(
+    #         dandiset_id="213889",
+    #         dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+    #     ),
+    # ),
+    # IcephysTestCase=dict(
+    #     s3_url=get_s3_url(
+    #         dandiset_id="213889",
+    #         dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
+    #     ),
+    # ),
 )
 
 

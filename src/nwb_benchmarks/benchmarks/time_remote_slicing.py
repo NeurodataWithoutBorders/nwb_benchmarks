@@ -18,14 +18,14 @@ from nwb_benchmarks.core import (
 
 parameter_cases = dict(
     # data is uncompressed, chunked (13653, 384), shape (18000000, 384), 1319 chunks, dtype int16
-    EcephysTestCase1=dict(
-        s3_url=get_s3_url(
-            dandiset_id="000717",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
-        ),
-        object_name="ElectricalSeriesAp",
-        slice_range=(slice(0, 30_000), slice(0, 384)),
-    ),
+    # EcephysTestCase1=dict(
+    #     s3_url=get_s3_url(
+    #         dandiset_id="000717",
+    #         dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
+    #     ),
+    #     object_name="ElectricalSeriesAp",
+    #     slice_range=(slice(0, 30_000), slice(0, 384)),
+    # ),
     # data is gzipped (level 4), chunked (30000, 16), shape (130182852, 384), 4340x24=104160 chunks, dtype int16
     EcephysTestCase2=dict(
         s3_url=get_s3_url(
@@ -35,22 +35,22 @@ parameter_cases = dict(
         object_name="ElectricalSeriesAp",
         slice_range=(slice(0, 30_000), slice(0, 128)),
     ),
-    OphysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="000717",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
-        ),
-        object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 3), slice(0, 796), slice(0, 512)),
-    ),
-    IcephysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="000717",
-            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
-        ),
-        object_name="data_00002_AD0",
-        slice_range=(slice(0, 30_000),),
-    ),
+    # OphysTestCase=dict(
+    #     s3_url=get_s3_url(
+    #         dandiset_id="000717",
+    #         dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
+    #     ),
+    #     object_name="TwoPhotonSeries",
+    #     slice_range=(slice(0, 3), slice(0, 796), slice(0, 512)),
+    # ),
+    # IcephysTestCase=dict(
+    #     s3_url=get_s3_url(
+    #         dandiset_id="000717",
+    #         dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
+    #     ),
+    #     object_name="data_00002_AD0",
+    #     slice_range=(slice(0, 30_000),),
+    # ),
 )
 
 
@@ -58,14 +58,14 @@ parameter_cases = dict(
 # i.e., here we do not to create the JSON but can load it directly from the remote store.
 # These should correspond to parameter_cases above.
 lindi_remote_rfs_parameter_cases = dict(
-    EcephysTestCase1=dict(
-        s3_url=get_s3_url(
-            dandiset_id="213889",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
-        ),
-        object_name="ElectricalSeriesAp",
-        slice_range=(slice(0, 30_000), slice(0, 384)),
-    ),
+    # EcephysTestCase1=dict(
+    #     s3_url=get_s3_url(
+    #         dandiset_id="213889",
+    #         dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
+    #     ),
+    #     object_name="ElectricalSeriesAp",
+    #     slice_range=(slice(0, 30_000), slice(0, 384)),
+    # ),
     EcephysTestCase2=dict(
         s3_url=get_s3_url(
             dandiset_id="213889",
@@ -74,22 +74,22 @@ lindi_remote_rfs_parameter_cases = dict(
         object_name="ElectricalSeriesAp",
         slice_range=(slice(0, 30_000), slice(0, 128)),
     ),
-    OphysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
-        ),
-        object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 3), slice(0, 796), slice(0, 512)),
-    ),
-    IcephysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="213889",
-            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
-        ),
-        object_name="data_00002_AD0",
-        slice_range=(slice(0, 30_000),),
-    ),
+    # OphysTestCase=dict(
+    #     s3_url=get_s3_url(
+    #         dandiset_id="213889",
+    #         dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+    #     ),
+    #     object_name="TwoPhotonSeries",
+    #     slice_range=(slice(0, 3), slice(0, 796), slice(0, 512)),
+    # ),
+    # IcephysTestCase=dict(
+    #     s3_url=get_s3_url(
+    #         dandiset_id="213889",
+    #         dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
+    #     ),
+    #     object_name="data_00002_AD0",
+    #     slice_range=(slice(0, 30_000),),
+    # ),
 )
 
 
