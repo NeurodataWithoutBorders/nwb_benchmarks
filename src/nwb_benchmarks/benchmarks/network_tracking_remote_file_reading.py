@@ -44,7 +44,7 @@ parameter_cases = dict(
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
         ),
     )
-    
+
 )
 
 
@@ -224,7 +224,7 @@ class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the read of the Lindi HDF5 files with and without `pynwb` assuming that a local
     copy of the lindi filesystem is available locally.
-    """create_lindi_reference_file_system(s3_url, outfile_path='/pscratch/sd/m/mavaylon/nwb_bench/lindi/'+os.path.basename(s3_url) + ".lindi.json")
+    """
 
     rounds = 1
     repeat = 3
