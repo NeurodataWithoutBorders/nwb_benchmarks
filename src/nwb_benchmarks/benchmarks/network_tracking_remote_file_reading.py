@@ -30,7 +30,8 @@ parameter_cases = dict(
     ICEphysTestCase=dict(
         s3_url=get_s3_url(
             dandiset_id="000717",
-            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb"),
+            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
+        ),
     ),
     EPhysTestCase=dict(
         s3_url=get_s3_url(
@@ -43,7 +44,7 @@ parameter_cases = dict(
             dandiset_id="000717",
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
         ),
-    )
+    ),
 )
 
 
@@ -76,14 +77,10 @@ lindi_remote_rfs_parameter_cases = dict(
 
 
 zarr_parameter_cases = dict(
-    ZarrICEphysTestCase=dict(
-        s3_url='s3://dandiarchive/zarr/2e8d0cb4-c5d4-4abc-88d8-2581c3cf7f5a/'
-
-    ),
-    ZarrOPhysTestCase=dict(
-        s3_url='s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/'
-    )
+    ZarrICEphysTestCase=dict(s3_url="s3://dandiarchive/zarr/2e8d0cb4-c5d4-4abc-88d8-2581c3cf7f5a/"),
+    ZarrOPhysTestCase=dict(s3_url="s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/"),
 )
+
 
 @skip_benchmark_if(TSHARK_PATH is None)
 class FsspecNoCacheDirectFileReadBenchmark(BaseBenchmark):

@@ -2,8 +2,8 @@
 
 import os
 import warnings
-from .command_line_interface import main
 
+from .command_line_interface import main
 
 TSHARK_PATH = os.environ.get("TSHARK_PATH", None)
 
