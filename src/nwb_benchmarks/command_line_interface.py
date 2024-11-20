@@ -80,7 +80,6 @@ def main() -> None:
             print(line.decode(encoding).strip("\n"))
         asv_process.stdout.close()
         asv_process.wait()
-        # breakpoint()
 
         # Consider the raw ASV output as 'intermediate' and perform additional parsing
         globbed_json_file_paths = [
