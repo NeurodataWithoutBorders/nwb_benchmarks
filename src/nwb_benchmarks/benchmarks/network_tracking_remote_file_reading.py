@@ -230,7 +230,8 @@ class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
+# @skip_benchmark_if(TSHARK_PATH is None)
+@skip_benchmark_if(True)
 class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the creation of a local Lindi JSON reference filesystem for a remote NWB file

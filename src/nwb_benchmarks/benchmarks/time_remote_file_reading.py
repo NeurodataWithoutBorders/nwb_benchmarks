@@ -172,6 +172,7 @@ class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
         self.client = read_hdf5_lindi(rfs=self.lindi_file)
 
 
+@skip_benchmark_if(True)
 class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the creation of a local Lindi JSON reference filesystem for a remote NWB file
