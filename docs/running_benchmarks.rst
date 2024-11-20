@@ -12,11 +12,11 @@ use `psutil net_connections <https://psutil.readthedocs.io/en/latest/#psutil.net
 
 .. code-block::
 
-    sudo nwb_benchmarks run
+    sudo -E nwb_benchmarks run
 
 Or drop the ``sudo`` if on Windows.
 
-When running on Windows or if ``tshark`` is not installed on the path, then may also need to set the ``TSHARK_PATH`` environment variable beforehand, which should be the absolute path to the ``tshark`` executable (e.g., ``tshark.exe``) on your system.
+When running on Windows or if ``tshark`` is not installed on the path, then you may also need to set the ``TSHARK_PATH`` environment variable beforehand, which should be the absolute path to the ``tshark`` executable (e.g., ``tshark.exe``) on your system.
 
 Many of the current tests can take several minutes to complete; the entire suite will take many times that. Grab some coffee, read a book, or better yet (when the suite becomes larger) just leave it to run overnight.
 
