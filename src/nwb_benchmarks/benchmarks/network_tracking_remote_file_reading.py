@@ -44,7 +44,6 @@ parameter_cases = dict(
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
         ),
     )
-
 )
 
 
@@ -73,33 +72,18 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
         ),
     ),
-    # TODO: Just an example case for testing. Replace with real test case
-    # BaseExample=dict(
-    #     s3_url="https://lindi.neurosift.org/dandi/dandisets/000939/assets/56d875d6-a705-48d3-944c-53394a389c85/nwb.lindi.json",
-    # ),
 )
 
 
-# zarr_parameter_cases = dict(
-#     ZarrICEphysTestCase=dict(
-#         s3_url=get_s3_url(
-#             dandiset_id="000719",
-#             dandi_path="icephys_DirectoryStore_9_29_24/sub-1214579789_ses-1214621812_icephys_DirectoryStore.nwb.zarr"),
-#     ),
-#     # ZarrEPhysTestCase=dict(
-#     #     s3_url=get_s3_url(
-#     #         dandiset_id="000719",
-#     #         dandi_path="...",
-#     #     ),
-#     # ),
-#     # ZarrOPhysTestCase=dict(
-#     #     s3_url=get_s3_url(
-#     #         dandiset_id="000719",
-#     #         dandi_path="...",
-#     #     ),
-#     # )
-# )
+zarr_parameter_cases = dict(
+    ZarrICEphysTestCase=dict(
+        s3_url='s3://dandiarchive/zarr/2e8d0cb4-c5d4-4abc-88d8-2581c3cf7f5a/'
 
+    ),
+    ZarrOPhysTestCase=dict(
+        s3_url='s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/'
+    )
+)
 
 @skip_benchmark_if(TSHARK_PATH is None)
 class FsspecNoCacheDirectFileReadBenchmark(BaseBenchmark):

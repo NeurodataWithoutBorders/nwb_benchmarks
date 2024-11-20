@@ -23,17 +23,23 @@ from nwb_benchmarks.core import (
 )
 
 parameter_cases = dict(
-    IBLTestCase1=dict(
-        s3_url=get_s3_url(dandiset_id="000717", dandi_path="sub-mock/sub-mock_ses-ecephys1.nwb"),
-    ),
-    # IBLTestCase2 is not the best example for testing a theory about file read; should probably replace with simpler
-    IBLTestCase2=dict(
+    ICEphysTestCase=dict(
         s3_url=get_s3_url(
             dandiset_id="000717",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
+            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb"),
+    ),
+    EPhysTestCase=dict(
+        s3_url=get_s3_url(
+            dandiset_id="000717",
+            dandi_path="sub-npI3_ses-20190421_behavior+ecephys/sub-npI3_ses-20190421_behavior+ecephys.nwb",
         ),
     ),
-    ClassicRos3TestCase=dict(s3_url="https://dandiarchive.s3.amazonaws.com/ros3test.nwb"),
+    OPhysTestCase=dict(
+        s3_url=get_s3_url(
+            dandiset_id="000717",
+            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
+        ),
+    )
 )
 
 
@@ -47,7 +53,7 @@ lindi_remote_rfs_parameter_cases = dict(
     EcephysTestCase=dict(
         s3_url=get_s3_url(
             dandiset_id="213889",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
+            dandi_path="sub-ecephys/c493119b-4b99-4b14-bc03-65bb28cfbd29.lindi.json",
         ),
     ),
     OphysTestCase=dict(
@@ -62,21 +68,16 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
         ),
     ),
-    # TODO: Just an example case for testing. Replace with real test case
-    # BaseExample=dict(
-    #     s3_url="https://lindi.neurosift.org/dandi/dandisets/000939/assets/56d875d6-a705-48d3-944c-53394a389c85/nwb.lindi.json",
-    # ),
 )
 
-
 zarr_parameter_cases = dict(
-    AIBSTestCase=dict(
-        s3_url=(
-            "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
-            "ecephys_625749_2022-08-03_15-15-06_nwb/"
-            "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
-        ),
+    ZarrICEphysTestCase=dict(
+        s3_url='s3://dandiarchive/zarr/2e8d0cb4-c5d4-4abc-88d8-2581c3cf7f5a/'
+
     ),
+    ZarrOPhysTestCase=dict(
+        s3_url='s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/'
+    )
 )
 
 
