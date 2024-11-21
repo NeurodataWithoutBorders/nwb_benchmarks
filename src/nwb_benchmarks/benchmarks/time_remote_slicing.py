@@ -22,7 +22,7 @@ parameter_cases = dict(
             dandiset_id="000717",
             dandi_path="sub-npI3_ses-20190421_behavior+ecephys/sub-npI3_ses-20190421_behavior+ecephys.nwb",
         ),
-        object_name="ElectricalSeries",  # TODO
+        object_name="ElectricalSeries", # TODO
         slice_range=(slice(0, 30_000), slice(0, 384)),
     ),
     OphysTestCase=dict(
@@ -45,15 +45,15 @@ parameter_cases = dict(
 
 zarr_parameter_cases = dict(
     ZarrICEphysTestCase=dict(
-        s3_url="s3://dandiarchive/zarr/2e8d0cb4-c5d4-4abc-88d8-2581c3cf7f5a/",
+        s3_url='s3://dandiarchive/zarr/2e8d0cb4-c5d4-4abc-88d8-2581c3cf7f5a/',
         object_name="data_00002_AD0",
         slice_range=(slice(0, 30_000),),
     ),
     ZarrOPhysTestCase=dict(
-        s3_url="s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/",
+        s3_url='s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/',
         object_name="TwoPhotonSeries",
         slice_range=(slice(0, 3), slice(0, 796), slice(0, 512)),
-    ),
+    )
 )
 
 
@@ -83,6 +83,12 @@ lindi_remote_rfs_parameter_cases = dict(
         object_name="data_00002_AD0",
         slice_range=(slice(0, 30_000),),
     ),
+    # # TODO: Just an example case for testing. Replace with real test case
+    # BaseExample=dict(
+    #     s3_url="https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json",
+    #     object_name="accelerometer",
+    #     slice_range=(slice(0, 30_000), slice(0, 3)),
+    # ),
 )
 
 
