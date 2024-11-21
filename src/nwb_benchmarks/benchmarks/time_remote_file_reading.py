@@ -74,7 +74,7 @@ lindi_remote_rfs_parameter_cases = dict(
 )
 
 zarr_parameter_cases = dict(
-    ZarrICEphysTestCase=dict(s3_url="s3://dandiarchive/zarr/2e8d0cb4-c5d4-4abc-88d8-2581c3cf7f5a/"),
+    ZarrICEphysTestCase=dict(s3_url="s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/"),
     ZarrOPhysTestCase=dict(s3_url="s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/"),
 )
 
