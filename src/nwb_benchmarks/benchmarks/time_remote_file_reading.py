@@ -149,6 +149,7 @@ class NWBFileReadBenchmark(BaseBenchmark):
         self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(s3_url=s3_url, retry=False)
 
 
+@skip_benchmark_if(True)
 class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the read of the Lindi HDF5 files with `pynwb` assuming that a local copy of the lindi

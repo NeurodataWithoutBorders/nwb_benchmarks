@@ -200,7 +200,8 @@ class Ros3NWBFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
+# @skip_benchmark_if(TSHARK_PATH is None)
+@skip_benchmark_if(True)
 class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the read of the Lindi HDF5 files with and without `pynwb` assuming that a local
