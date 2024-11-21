@@ -62,7 +62,7 @@ lindi_remote_rfs_parameter_cases = dict(
     EcephysTestCase=dict(
         s3_url=get_s3_url(
             dandiset_id="213889",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
+            dandi_path="sub-ecephys/c493119b-4b99-4b14-bc03-65bb28cfbd29.lindi.json",
         ),
         object_name="ElectricalSeries",
         slice_range=(slice(0, 30_000), slice(0, 384)),
@@ -83,6 +83,12 @@ lindi_remote_rfs_parameter_cases = dict(
         object_name="data_00002_AD0",
         slice_range=(slice(0, 30_000),),
     ),
+    # # TODO: Just an example case for testing. Replace with real test case
+    # BaseExample=dict(
+    #     s3_url="https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json",
+    #     object_name="accelerometer",
+    #     slice_range=(slice(0, 30_000), slice(0, 3)),
+    # ),
 )
 
 
