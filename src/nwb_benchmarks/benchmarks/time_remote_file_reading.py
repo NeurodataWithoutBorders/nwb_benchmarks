@@ -2,6 +2,8 @@
 
 import os
 
+from asv_runner.benchmarks.mark import skip_benchmark_if
+
 from nwb_benchmarks.core import (
     BaseBenchmark,
     create_lindi_reference_file_system,
@@ -72,7 +74,7 @@ lindi_remote_rfs_parameter_cases = dict(
 )
 
 zarr_parameter_cases = dict(
-    ZarrICEphysTestCase=dict(s3_url="s3://dandiarchive/zarr/2e8d0cb4-c5d4-4abc-88d8-2581c3cf7f5a/"),
+    ZarrICEphysTestCase=dict(s3_url="s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/"),
     ZarrOPhysTestCase=dict(s3_url="s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/"),
 )
 
@@ -147,6 +149,7 @@ class NWBFileReadBenchmark(BaseBenchmark):
         self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(s3_url=s3_url, retry=False)
 
 
+@skip_benchmark_if(True)
 class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the read of the Lindi HDF5 files with `pynwb` assuming that a local copy of the lindi
@@ -172,6 +175,7 @@ class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
         self.client = read_hdf5_lindi(rfs=self.lindi_file)
 
 
+@skip_benchmark_if(True)
 class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the creation of a local Lindi JSON reference filesystem for a remote NWB file
