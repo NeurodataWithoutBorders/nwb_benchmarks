@@ -389,4 +389,3 @@ Please raise an issue and share your intermediate results file.
                s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/    data_00002_AD0             n/a                                           n/a
                s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/   TwoPhotonSeries             n/a                                         153±4ms
               ============================================================== ================= ========================== ===============================================================
-
