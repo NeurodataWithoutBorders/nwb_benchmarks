@@ -1,0 +1,401 @@
+jovyan@jupyter-oruebel:~/nwb_benchmarks$ nwb_benchmarks run
+/home/jovyan/nwb_benchmarks/src/nwb_benchmarks/__init__.py:16: UserWarning: tshark not found. Set TSHARK_PATH in the environment or install tshark on the default path.
+  warnings.warn(msg)
+· Discovering benchmarks
+· Running 24 total benchmarks (1 commits * 1 environments * 24 benchmarks)
+[ 0.00%] · For nwb_benchmarks commit 61b361be <main>:
+[ 0.00%] ·· Building for existing-py_opt_conda_bin_python3.11
+[ 0.00%] ·· Benchmarking existing-py_opt_conda_bin_python3.11
+[ 4.17%] ··· time_remote_file_reading.DirectFileReadBenchmark.time_read_hdf5_fsspec_no_cache                                                                                                                                                                ok
+[ 4.17%] ··· ========================================================================================== ==========
+                                                       s3_url
+             ------------------------------------------------------------------------------------------ ----------
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   102±2ms
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   214±20ms
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   140±10ms
+             ========================================================================================== ==========
+
+[ 8.33%] ··· time_remote_file_reading.DirectFileReadBenchmark.time_read_hdf5_fsspec_with_cache                                                                                                                                                              ok
+[ 8.33%] ··· ========================================================================================== =========
+                                                       s3_url
+             ------------------------------------------------------------------------------------------ ---------
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   105±3ms
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   194±1ms
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   161±4ms
+             ========================================================================================== =========
+
+[12.50%] ··· time_remote_file_reading.DirectFileReadBenchmark.time_read_hdf5_remfile                                                                                                                                                                        ok
+[12.50%] ··· ========================================================================================== ===========
+                                                       s3_url
+             ------------------------------------------------------------------------------------------ -----------
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    106±5ms
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   151±0.5ms
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    127±2ms
+             ========================================================================================== ===========
+
+[16.67%] ··· time_remote_file_reading.DirectFileReadBenchmark.time_read_hdf5_remfile_with_cache                                                                                                                                                             ok
+[16.67%] ··· ========================================================================================== ==========
+                                                       s3_url
+             ------------------------------------------------------------------------------------------ ----------
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   102±6ms
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   163±7ms
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   132±10ms
+             ========================================================================================== ==========
+
+[20.83%] ··· time_remote_file_reading.DirectFileReadBenchmark.time_read_hdf5_ros3                                                                                                                                                                           ok
+[20.83%] ··· ========================================================================================== =========
+                                                       s3_url
+             ------------------------------------------------------------------------------------------ ---------
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   213±1ms
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   210±3ms
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   206±4ms
+             ========================================================================================== =========
+
+[25.00%] ··· time_remote_file_reading.DirectZarrFileReadBenchmark.time_read_zarr                                                                                                                                                                            ok
+[25.00%] ··· ============================================================== ============
+                                         s3_url
+             -------------------------------------------------------------- ------------
+              s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/    34.1±1ms
+              s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/   17.6±0.8ms
+             ============================================================== ============
+
+[29.17%] ··· time_remote_file_reading.DirectZarrFileReadBenchmark.time_read_zarr_force_no_consolidated                                                                                                                                                      ok
+[29.17%] ··· ============================================================== ==========
+                                         s3_url
+             -------------------------------------------------------------- ----------
+              s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/   90.2±1ms
+              s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/   93.5±1ms
+             ============================================================== ==========
+
+[33.33%] ··· time_remote_file_reading.NWBFileReadBenchmark.time_read_hdf5_nwbfile_fsspec_no_cache                                                                                                                                                           ok
+[33.33%] ··· ========================================================================================== ============
+                                                       s3_url
+             ------------------------------------------------------------------------------------------ ------------
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   36.7±0.1s
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   7.07±0.2s
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   6.30±0.03s
+             ========================================================================================== ============
+
+[37.50%] ··· time_remote_file_reading.NWBFileReadBenchmark.time_read_hdf5_nwbfile_fsspec_with_cache                                                                                                                                                         ok
+[37.50%] ··· ========================================================================================== ============
+                                                       s3_url
+             ------------------------------------------------------------------------------------------ ------------
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   19.9±0.1s
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   2.83±0.08s
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   1.38±0.03s
+             ========================================================================================== ============
+
+[41.67%] ··· time_remote_file_reading.NWBFileReadBenchmark.time_read_hdf5_nwbfile_remfile                                                                                                                                                                   ok
+[41.67%] ··· ========================================================================================== ============
+                                                       s3_url
+             ------------------------------------------------------------------------------------------ ------------
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   21.9±0.01s
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   1.60±0.08s
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   1.60±0.01s
+             ========================================================================================== ============
+
+[45.83%] ··· time_remote_file_reading.NWBFileReadBenchmark.time_read_hdf5_nwbfile_remfile_with_cache                                                                                                                                                        ok
+[45.83%] ··· ========================================================================================== ============
+                                                       s3_url
+             ------------------------------------------------------------------------------------------ ------------
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   22.0±0.03s
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   1.61±0.07s
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   1.61±0.01s
+             ========================================================================================== ============
+
+[50.00%] ··· time_remote_file_reading.NWBFileReadBenchmark.time_read_hdf5_nwbfile_ros3                                                                                                                                                                      ok
+[50.00%] ··· ========================================================================================== ============
+                                                       s3_url
+             ------------------------------------------------------------------------------------------ ------------
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   1.20±0.05m
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   1.07±0.3s
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   1.37±0.2s
+             ========================================================================================== ============
+
+[54.17%] ··· time_remote_file_reading.NWBLindiFileReadRemoteReferenceFileSystemBenchmark.time_read_lindi_jsonrfs                                                                                                                                    1/3 failed
+[54.17%] ··· ========================================================================================================= ==========
+                                                               s3_url
+             --------------------------------------------------------------------------------------------------------- ----------
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/2f1/4b0/2f14b0a6-067e-4489-81ae-27d6857cdf0d   1.20±0s
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/813/1b9/8131b99f-004a-4946-8bde-f2895bf42504    failed
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/8b1/f9e/8b1f9e4e-c5bb-4c25-acee-3c99327aa841   249±10ms
+             ========================================================================================================= ==========
+
+
+[58.33%] ··· time_remote_file_reading.NWBLindiFileReadRemoteReferenceFileSystemBenchmark.time_read_lindi_nwbfile                                                                                                                                    1/3 failed
+[58.33%] ··· ========================================================================================================= ============
+                                                               s3_url
+             --------------------------------------------------------------------------------------------------------- ------------
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/2f1/4b0/2f14b0a6-067e-4489-81ae-27d6857cdf0d   4.44±0.01s
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/813/1b9/8131b99f-004a-4946-8bde-f2895bf42504     failed
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/8b1/f9e/8b1f9e4e-c5bb-4c25-acee-3c99327aa841   20.7±0.03s
+             ========================================================================================================= ============
+
+
+[62.50%] ··· time_remote_file_reading.NWBZarrFileReadBenchmark.time_read_zarr_nwbfile                                                                                                                                                                       ok
+[62.50%] ··· ============================================================== ============
+                                         s3_url
+             -------------------------------------------------------------- ------------
+              s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/   43.5±0.08s
+              s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/   2.75±0.04s
+             ============================================================== ============
+
+
+[66.67%] ··· time_remote_file_reading.NWBZarrFileReadBenchmark.time_read_zarr_nwbfile_force_no_consolidated                                                                                                                                         1/2 failed
+[66.67%] ··· ============================================================== ===========
+                                         s3_url
+             -------------------------------------------------------------- -----------
+              s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/     failed
+              s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/   14.0±0.2s
+             ============================================================== ===========
+
+
+[70.83%] ··· time_remote_slicing.FsspecNoCacheContinuousSliceBenchmark.time_slice                                                                                                                                                                           ok
+[70.83%] ··· ========================================================================================== ================== =============================================================== ============
+                                                       s3_url                                              object_name                               slice_range
+             ------------------------------------------------------------------------------------------ ------------------ --------------------------------------------------------------- ------------
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))           3.52±0.03s
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries                      (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries                      (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))    728±10ms
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries                      (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0                       (slice(0, 30000, None),)                     120±0.3μs
+             ========================================================================================== ================== =============================================================== ============
+
+[75.00%] ··· time_remote_slicing.FsspecWithCacheContinuousSliceBenchmark.time_slice                                                                                                                                                                         ok
+[75.00%] ··· ========================================================================================== ================== =============================================================== ============
+                                                       s3_url                                              object_name                               slice_range
+             ------------------------------------------------------------------------------------------ ------------------ --------------------------------------------------------------- ------------
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))           2.33±0.02s
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries                      (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries                      (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))    213±2ms
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries                      (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0                       (slice(0, 30000, None),)                      153±4μs
+             ========================================================================================== ================== =============================================================== ============
+
+[79.17%] ··· time_remote_slicing.LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark.time_slice                                                                                                                                         1/27 failed
+[79.17%] ··· ========================================================================================================= ================== =============================================================== ===========
+                                                               s3_url                                                     object_name                               slice_range
+             --------------------------------------------------------------------------------------------------------- ------------------ --------------------------------------------------------------- -----------
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/2f1/4b0/2f14b0a6-067e-4489-81ae-27d6857cdf0d   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))           22.5±0.1s
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/2f1/4b0/2f14b0a6-067e-4489-81ae-27d6857cdf0d   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/2f1/4b0/2f14b0a6-067e-4489-81ae-27d6857cdf0d   ElectricalSeries                      (slice(0, 30000, None),)                        n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/2f1/4b0/2f14b0a6-067e-4489-81ae-27d6857cdf0d   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/2f1/4b0/2f14b0a6-067e-4489-81ae-27d6857cdf0d   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/2f1/4b0/2f14b0a6-067e-4489-81ae-27d6857cdf0d   TwoPhotonSeries                       (slice(0, 30000, None),)                        n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/2f1/4b0/2f14b0a6-067e-4489-81ae-27d6857cdf0d    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/2f1/4b0/2f14b0a6-067e-4489-81ae-27d6857cdf0d    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/2f1/4b0/2f14b0a6-067e-4489-81ae-27d6857cdf0d    data_00002_AD0                       (slice(0, 30000, None),)                        n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/813/1b9/8131b99f-004a-4946-8bde-f2895bf42504   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/813/1b9/8131b99f-004a-4946-8bde-f2895bf42504   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/813/1b9/8131b99f-004a-4946-8bde-f2895bf42504   ElectricalSeries                      (slice(0, 30000, None),)                        n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/813/1b9/8131b99f-004a-4946-8bde-f2895bf42504   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/813/1b9/8131b99f-004a-4946-8bde-f2895bf42504   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))     failed
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/813/1b9/8131b99f-004a-4946-8bde-f2895bf42504   TwoPhotonSeries                       (slice(0, 30000, None),)                        n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/813/1b9/8131b99f-004a-4946-8bde-f2895bf42504    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/813/1b9/8131b99f-004a-4946-8bde-f2895bf42504    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/813/1b9/8131b99f-004a-4946-8bde-f2895bf42504    data_00002_AD0                       (slice(0, 30000, None),)                        n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/8b1/f9e/8b1f9e4e-c5bb-4c25-acee-3c99327aa841   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/8b1/f9e/8b1f9e4e-c5bb-4c25-acee-3c99327aa841   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/8b1/f9e/8b1f9e4e-c5bb-4c25-acee-3c99327aa841   ElectricalSeries                      (slice(0, 30000, None),)                        n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/8b1/f9e/8b1f9e4e-c5bb-4c25-acee-3c99327aa841   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/8b1/f9e/8b1f9e4e-c5bb-4c25-acee-3c99327aa841   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/8b1/f9e/8b1f9e4e-c5bb-4c25-acee-3c99327aa841   TwoPhotonSeries                       (slice(0, 30000, None),)                        n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/8b1/f9e/8b1f9e4e-c5bb-4c25-acee-3c99327aa841    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/8b1/f9e/8b1f9e4e-c5bb-4c25-acee-3c99327aa841    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandi-api-staging-dandisets.s3.amazonaws.com/blobs/8b1/f9e/8b1f9e4e-c5bb-4c25-acee-3c99327aa841    data_00002_AD0                       (slice(0, 30000, None),)                      215±7ms
+             ========================================================================================================= ================== =============================================================== ===========
+
+
+[83.33%] ··· time_remote_slicing.RemfileNoCacheContinuousSliceBenchmark.time_slice                                                                                                                                                                          ok
+[83.33%] ··· ========================================================================================== ================== =============================================================== ============
+                                                       s3_url                                              object_name                               slice_range
+             ------------------------------------------------------------------------------------------ ------------------ --------------------------------------------------------------- ------------
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))           2.58±0.01s
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries                      (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries                      (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))    343±20ms
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries                      (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries                       (slice(0, 30000, None),)                        n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))              n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))      n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0                       (slice(0, 30000, None),)                     22.1±0.2μs
+             ========================================================================================== ================== =============================================================== ============
+
+[87.50%] ··· time_remote_slicing.RemfileWithCacheContinuousSliceBenchmark.time_slice                                                                                                                                                                        ok
+[87.50%] ··· ========================================================================================== ================== =============================================================== =============
+                                                       s3_url                                              object_name                               slice_range
+             ------------------------------------------------------------------------------------------ ------------------ --------------------------------------------------------------- -------------
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))            2.76±0.01s
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries                      (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries                       (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0                       (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries                      (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))     354±7ms
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries                       (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0                       (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries                      (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries                       (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0                       (slice(0, 30000, None),)                     21.6±0.05μs
+             ========================================================================================== ================== =============================================================== =============
+
+[91.67%] ··· time_remote_slicing.Ros3ContinuousSliceBenchmark.time_slice                                                                                                                                                                                    ok
+[91.67%] ··· ========================================================================================== ================== =============================================================== =============
+                                                       s3_url                                              object_name                               slice_range
+             ------------------------------------------------------------------------------------------ ------------------ --------------------------------------------------------------- -------------
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))            7.95±0.07s
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   ElectricalSeries                      (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29   TwoPhotonSeries                       (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c49/311/c493119b-4b99-4b14-bc03-65bb28cfbd29    data_00002_AD0                       (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   ElectricalSeries                      (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))   1.38±0.03ms
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541   TwoPhotonSeries                       (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/38c/c24/38cc240b-77c5-418a-9040-a7f582ff6541    data_00002_AD0                       (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries            (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   ElectricalSeries                      (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries             (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a   TwoPhotonSeries                       (slice(0, 30000, None),)                         n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0             (slice(0, 30000, None), slice(0, 384, None))               n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0    (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))       n/a
+              https://dandiarchive.s3.amazonaws.com/blobs/c98/3a4/c983a4e1-097a-402c-bda8-e6a41cb7e24a    data_00002_AD0                       (slice(0, 30000, None),)                      21.1±0.1μs
+             ========================================================================================== ================== =============================================================== =============
+
+[95.83%] ··· time_remote_slicing.ZarrContinuousSliceBenchmark.time_slice                                                                                                                                                                                    ok
+[95.83%] ··· ============================================================== ================= ========================== ===============================================================
+             --                                                                                                                      slice_range
+             -------------------------------------------------------------------------------- ------------------------------------------------------------------------------------------
+                                         s3_url                                object_name     (slice(0, 30000, None),)   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))
+             ============================================================== ================= ========================== ===============================================================
+              s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/    data_00002_AD0           50.7±1ms                                        n/a
+              s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/   TwoPhotonSeries             n/a                                           n/a
+              s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/    data_00002_AD0             n/a                                           n/a
+              s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/   TwoPhotonSeries             n/a                                         152±4ms
+             ============================================================== ================= ========================== ===============================================================
+
+[100.00%] ··· time_remote_slicing.ZarrForceNoConsolidatedContinuousSliceBenchmark.time_slice                                                                                                                                                         1/8 failed
+[100.00%] ··· ============================================================== ================= ========================== ===============================================================
+              --                                                                                                                      slice_range
+              -------------------------------------------------------------------------------- ------------------------------------------------------------------------------------------
+                                          s3_url                                object_name     (slice(0, 30000, None),)   (slice(0, 3, None), slice(0, 796, None), slice(0, 512, None))
+              ============================================================== ================= ========================== ===============================================================
+               s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/    data_00002_AD0            failed                                         n/a
+               s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/   TwoPhotonSeries             n/a                                           n/a
+               s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/    data_00002_AD0             n/a                                           n/a
+               s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/   TwoPhotonSeries             n/a                                         152±4ms
+              ============================================================== ================= ========================== ===============================================================
+
+
+/home/jovyan/nwb_benchmarks/src/nwb_benchmarks/setup/_reduce_results.py:69: UserWarning: In intermediate results for test case time_remote_file_reading.NWBLindiFileReadRemoteReferenceFileSystemBenchmark.time_read_lindi_jsonrfs:
+        Length mismatch between flattened joint parameters (3) and result samples (2)!
+
+Please raise an issue and share your intermediate results file.
+  warnings.warn(message=message)
+/home/jovyan/nwb_benchmarks/src/nwb_benchmarks/setup/_reduce_results.py:69: UserWarning: In intermediate results for test case time_remote_file_reading.NWBLindiFileReadRemoteReferenceFileSystemBenchmark.time_read_lindi_nwbfile:
+        Length mismatch between flattened joint parameters (3) and result samples (2)!
+
+Please raise an issue and share your intermediate results file.
+  warnings.warn(message=message)
+/home/jovyan/nwb_benchmarks/src/nwb_benchmarks/setup/_reduce_results.py:69: UserWarning: In intermediate results for test case time_remote_file_reading.NWBZarrFileReadBenchmark.time_read_zarr_nwbfile_force_no_consolidated:
+        Length mismatch between flattened joint parameters (2) and result samples (1)!
+
+Please raise an issue and share your intermediate results file.
+  warnings.warn(message=message)
+/home/jovyan/nwb_benchmarks/src/nwb_benchmarks/setup/_reduce_results.py:69: UserWarning: In intermediate results for test case time_remote_slicing.LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark.time_slice:
+        Length mismatch between flattened joint parameters (3) and result samples (2)!
+
+Please raise an issue and share your intermediate results file.
+  warnings.warn(message=message)
+/home/jovyan/nwb_benchmarks/src/nwb_benchmarks/setup/_reduce_results.py:69: UserWarning: In intermediate results for test case time_remote_slicing.ZarrForceNoConsolidatedContinuousSliceBenchmark.time_slice:
+        Length mismatch between flattened joint parameters (2) and result samples (1)!
+
+Please raise an issue and share your intermediate results file.
+  warnings.warn(message=message)
