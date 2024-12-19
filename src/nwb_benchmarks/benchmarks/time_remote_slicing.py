@@ -22,7 +22,7 @@ parameter_cases = dict(
             dandiset_id="000717",
             dandi_path="sub-npI3_ses-20190421_behavior+ecephys/sub-npI3_ses-20190421_behavior+ecephys.nwb",
         ),
-        object_name="ElectricalSeries",  # TODO
+        object_name="ElectricalSeries",
         slice_range=(slice(0, 30_000), slice(0, 384)),
     ),
     OphysTestCase=dict(
