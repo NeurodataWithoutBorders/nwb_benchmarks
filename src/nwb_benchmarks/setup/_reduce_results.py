@@ -67,6 +67,16 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
                 "Please raise an issue and share your intermediate results file."
             )
             warnings.warn(message=message)
+            reduced_results.update(
+                {
+                    test_case: dict(
+                        serialized_flattened_joint_params=serialized_flattened_joint_params,
+                        non_skipped_results=non_skipped_results,
+                        raw_results_list=raw_results_list,
+                    )
+                }
+            )
+
         else:
             reduced_results.update(
                 {

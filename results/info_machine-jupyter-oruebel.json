@@ -1,0 +1,71 @@
+{
+    "arch": "x86_64",
+    "cpu": "Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz",
+    "custom": true,
+    "defaults": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz",
+        "machine": "jupyter-oruebel",
+        "num_cpu": "16",
+        "os": "Linux 5.10.227-219.884.amzn2.x86_64",
+        "ram": "130393520"
+    },
+    "machine": "jupyter-oruebel",
+    "num_cpu": "32",
+    "os": "Linux 5.10.227-219.884.amzn2.x86_64",
+    "platform": {
+        "architecture": [
+            "64bit",
+            "ELF"
+        ],
+        "machine": "x86_64",
+        "platform": "Linux-5.10.227-219.884.amzn2.x86_64-x86_64-with-glibc2.35",
+        "processor": "x86_64",
+        "system": "Linux"
+    },
+    "psutil": {
+        "disk_partitions": [
+            {
+                "device": "/dev/nvme0n1p1",
+                "fstype": "xfs",
+                "maxfile": 255,
+                "maxpath": 4096,
+                "mountpoint": "/etc/hosts",
+                "opts": "rw,noatime,attr2,inode64,logbufs=8,logbsize=32k,noquota"
+            },
+            {
+                "device": "/dev/nvme0n1p1",
+                "fstype": "xfs",
+                "maxfile": 255,
+                "maxpath": 4096,
+                "mountpoint": "/dev/termination-log",
+                "opts": "rw,noatime,attr2,inode64,logbufs=8,logbsize=32k,noquota"
+            },
+            {
+                "device": "/dev/nvme0n1p1",
+                "fstype": "xfs",
+                "maxfile": 255,
+                "maxpath": 4096,
+                "mountpoint": "/etc/hostname",
+                "opts": "rw,noatime,attr2,inode64,logbufs=8,logbsize=32k,noquota"
+            },
+            {
+                "device": "/dev/nvme0n1p1",
+                "fstype": "xfs",
+                "maxfile": 255,
+                "maxpath": 4096,
+                "mountpoint": "/etc/resolv.conf",
+                "opts": "rw,noatime,attr2,inode64,logbufs=8,logbsize=32k,noquota"
+            }
+        ],
+        "number_of_processes": 8,
+        "number_of_threads": 16,
+        "total_swap_memory": 0,
+        "total_virtual_memory": 133522964480
+    },
+    "ram": "261035480",
+    "sys": {
+        "platform": "linux"
+    },
+    "version": 1
+}

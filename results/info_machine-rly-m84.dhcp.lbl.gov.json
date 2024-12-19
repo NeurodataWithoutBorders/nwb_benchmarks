@@ -1,0 +1,79 @@
+{
+    "arch": "x86_64",
+    "cpu": "Intel(R) Xeon(R) CPU E5-1620 v2 @ 3.70GHz",
+    "custom": true,
+    "defaults": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Core(TM) i5-2520M CPU",
+        "machine": "Rly",
+        "num_cpu": "   @ 2.50GHz (4 cores)",
+        "os": "Macintosh OS-X 10.8",
+        "ram": "34359738368"
+    },
+    "machine": "rly-m84.dhcp.lbl.gov",
+    "num_cpu": "8",
+    "os": "Darwin 21.6.0",
+    "platform": {
+        "architecture": [
+            "64bit",
+            ""
+        ],
+        "machine": "x86_64",
+        "platform": "macOS-12.7.4-x86_64-i386-64bit",
+        "processor": "i386",
+        "system": "Darwin"
+    },
+    "psutil": {
+        "disk_partitions": [
+            {
+                "device": "/dev/disk1s5s1",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/",
+                "opts": "ro,local,rootfs,dovolfs,journaled,multilabel"
+            },
+            {
+                "device": "/dev/disk1s4",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/System/Volumes/VM",
+                "opts": "rw,noexec,local,dovolfs,dontbrowse,journaled,multilabel,noatime"
+            },
+            {
+                "device": "/dev/disk1s2",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/System/Volumes/Preboot",
+                "opts": "rw,local,dovolfs,dontbrowse,journaled,multilabel"
+            },
+            {
+                "device": "/dev/disk1s6",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/System/Volumes/Update",
+                "opts": "rw,local,dovolfs,dontbrowse,journaled,multilabel"
+            },
+            {
+                "device": "/dev/disk1s1",
+                "fstype": "apfs",
+                "maxfile": 255,
+                "maxpath": 1024,
+                "mountpoint": "/System/Volumes/Data",
+                "opts": "rw,local,dovolfs,dontbrowse,journaled,multilabel"
+            }
+        ],
+        "number_of_processes": 4,
+        "number_of_threads": 8,
+        "total_swap_memory": 0,
+        "total_virtual_memory": 34359738368
+    },
+    "ram": "34359738368",
+    "sys": {
+        "platform": "darwin"
+    },
+    "version": 1
+}
