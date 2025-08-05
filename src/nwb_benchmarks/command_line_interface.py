@@ -1,5 +1,6 @@
 """Simple wrapper around `asv run` for convenience."""
 
+import json
 import locale
 import os
 import pathlib
@@ -7,6 +8,8 @@ import shutil
 import subprocess
 import sys
 import warnings
+
+import requests
 
 from .setup import customize_asv_machine_file, reduce_results
 
@@ -95,6 +98,20 @@ def main() -> None:
             raw_results_file_path=raw_results_file_path, raw_environment_info_file_path=raw_environment_info_file_path
         )
 
+        results_cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "results"
+        for results_file_path in results_cache_directory.rglob(pattern="*.json"):
+            with results_file_path.open("r") as file_stream:
+                json_content = json.load(file_stream)
+
+            filename = results_file_path.name
+            response = requests.post(
+                url=f"https://codycbakerphd.pythonanywhere.com/data/contribute?filename={filename}",
+                json={"json_content": json_content},
+                timeout=30,
+            )
+            response.raise_for_status()
+
+        print(f"Results posted successfully: {response.status_code}")
     else:
         print(f"{command} is an invalid command.")
 

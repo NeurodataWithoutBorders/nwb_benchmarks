@@ -1,17 +1,12 @@
-import distutils.util
 import json
 import os
-import pathlib
-import shutil
 import subprocess
-import tempfile
 import uuid
 from datetime import datetime
 from pathlib import Path
 
 import flask
 import flask_restx
-from flask import jsonify, request
 
 app = flask.Flask(__name__)
 api = flask_restx.Api(
@@ -25,7 +20,8 @@ data_namespace = flask_restx.Namespace(name="data", description="API route for d
 api.add_namespace(data_namespace)
 
 contribute_parser = flask_restx.reqparse.RequestParser()
-contribute_parser.add_argument("test", type=bool, required=False, default=False, help="Test mode flag")
+contribute_parser.add_argument("filename", type=str, required=True, help="Name of the file to upload.")
+contribute_parser.add_argument("test", type=bool, required=False, default=False, help="Test mode flag.")
 
 
 @data_namespace.route("/contribute")
@@ -34,32 +30,21 @@ class Contribute(flask_restx.Resource):
     @data_namespace.doc(responses={200: "Success", 400: "Bad Request", 500: "Internal server error"})
     def post(self) -> int:
         arguments = contribute_parser.parse_args()
+        filename = arguments["filename"]
         test_mode = arguments["test"]
 
         payload = data_namespace.payload
-        results_json = payload["results_json"]
+        json_content = payload["json_content"]
 
         manager = GitHubResultsManager()
         manager.ensure_repo_exists()
-        manager.write_file(results_json=results_json)
+        manager.write_file(filename=filename, json_content=json_content)
 
         if test_mode is False:
             manager.add_and_commit()
             manager.push()
 
         return 200
-
-
-@data_namespace.route("/test-contribute")
-class Contribute(flask_restx.Resource):
-    @data_namespace.doc(responses={200: "Success", 400: "Bad Request", 500: "Internal server error"})
-    def post(self) -> int:
-        payload = data_namespace.payload
-        results_json = payload["results_json"]
-
-        manager = GitHubResultsManager()
-        manager.ensure_repo_exists()
-        return manager.write_file(results_json=results_json)
 
 
 class GitHubResultsManager:
@@ -95,16 +80,12 @@ class GitHubResultsManager:
             message = f"Git command ({command}) failed: {result.stderr.decode()}"
             raise RuntimeError(message)
 
-    def write_file(self, results_json: dict) -> None:
+    def write_file(self, filename: str, json_content: dict) -> None:
         """Write results JSON to a file in the cache directory."""
-        id = str(uuid.uuid4())[:6]
-        filename = f"results_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{id}.json"
         results_file_path = self.cache_directory / "nwb-benchmarks-results" / filename
 
         with open(file=results_file_path, mode="w") as file_stream:
-            json.dump(obj=results_json, fp=file_stream, indent=4)
-
-        return str(results_file_path)
+            json.dump(obj=json_content, fp=file_stream, indent=4)
 
     def add_and_commit(self) -> None:
         """Commit results to git repo."""
@@ -120,7 +101,7 @@ class GitHubResultsManager:
             raise RuntimeError(message)
 
     def push(self):
-        """Commit and push results to GitHub repository"""
+        """Commit and push results to GitHub repository."""
         command = "git push"
         result = subprocess.run(
             args=command,
@@ -134,9 +115,12 @@ class GitHubResultsManager:
 
 
 if __name__ == "__main__":
-    DEBUG_MODE = distutils.util.strtobool(os.environ.get("NWB_BENCHMARKS_DEBUG", "0"))
+    DEBUG_MODE = os.environ.get("NWB_BENCHMARKS_DEBUG", None)
+    if DEBUG_MODE is not None and DEBUG_MODE != "1":
+        message = "NWB_BENCHMARKS_DEBUG environment variable must be set to '1' to run the Flask app in debug mode."
+        raise ValueError(message)
 
-    if DEBUG_MODE is True:
+    if DEBUG_MODE == "1":
         app.run(debug=True, host="127.0.0.1", port=5000)
     else:
         app.run()
