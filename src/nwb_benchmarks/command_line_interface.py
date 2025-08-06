@@ -109,9 +109,18 @@ def main() -> None:
                 json={"json_content": json_content},
                 timeout=30,
             )
-            response.raise_for_status()
 
-        print(f"Results posted successfully: {response.status_code}")
+            if response.status_code == 200:
+                print(f"Results posted successfully!")
+            else:
+                message = (
+                    "Failed to post results. "
+                    "Please raise an issue on https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues."
+                    f"Status code: {response.status_code} "
+                    f"Response: {response.text}"
+                )
+                warnings.warn(message=message, stacklevel=2)
+                raise
     else:
         print(f"{command} is an invalid command.")
 
