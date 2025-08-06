@@ -94,25 +94,26 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
 
     # Save reduced results to main .asv folder
     # 'raw' results go to nwb_benchmarks/.asv/intermediate_results/<machine hash>/<results stem>.json
-    # 'processed' results go to nwb_benchmarks/results
-    main_results_folder = raw_results_file_path.parent.parent.parent.parent / "results"
+    # 'processed' results go to ~/.cache/nwb_benchmarks/results
+    results_cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "results"
+    results_cache_directory.mkdir(parents=True, exist_ok=True)
+
     parsed_results_file = (
-        main_results_folder
+        results_cache_directory
         / f"results_timestamp-{timestamp}_machine-{machine_hash}_environment-{environment_hash}.json"
     )
-    main_results_folder.mkdir(parents=True, exist_ok=True)
 
     with open(file=parsed_results_file, mode="w") as io:
         json.dump(obj=reduced_results_info, fp=io, indent=1)  # At least one level of indent makes it easier to read
 
     # Copy machine file to main results
     machine_info_file_path = raw_results_file_path.parent / "machine.json"
-    machine_info_copy_file_path = main_results_folder / f"info_machine-{machine_hash}.json"
+    machine_info_copy_file_path = results_cache_directory / f"info_machine-{machine_hash}.json"
     if not machine_info_copy_file_path.exists():
         shutil.copyfile(src=machine_info_file_path, dst=machine_info_copy_file_path)
 
     # Save parsed environment info within machine subdirectory of .asv
-    parsed_environment_file_path = main_results_folder / f"info_environment-{environment_hash}.json"
+    parsed_environment_file_path = results_cache_directory / f"info_environment-{environment_hash}.json"
     if not parsed_environment_file_path.exists():
         with open(file=parsed_environment_file_path, mode="w") as io:
             json.dump(obj=parsed_environment_info, fp=io, indent=1)
