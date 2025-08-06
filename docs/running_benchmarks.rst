@@ -52,7 +52,18 @@ If you want to get a full traceback to examine why a new test might be failing, 
 Contributing Results
 --------------------
 
-All results are automatically posted to the central database found on `GitHub <https://github.com/CodyCBakerPhD/nwb-benchmarks-results>`_.
+All results should be automatically posted to the central database found on `GitHub <https://github.com/CodyCBakerPhD/nwb-benchmarks-results>`_.
+
+If this fails, you can contribute your results manually by:
+
+.. code-block::
+    git clone https://github.com/CodyCBakerPhD/nwb-benchmarks-results
+    git checkout -b new_results_from_<...>
+    <copy results from ~/.cache/nwb_benchmarks/results>
+    git commit -m "New results from ...." .
+    git push
+
+Then, open a PR to merge the results to the `main` branch.
 
 .. note::
 
