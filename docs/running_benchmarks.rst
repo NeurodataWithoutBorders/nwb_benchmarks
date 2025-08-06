@@ -57,13 +57,15 @@ All results should be automatically posted to the central database found on `Git
 If this fails, you can contribute your results manually by:
 
 .. code-block::
-    git clone https://github.com/CodyCBakerPhD/nwb-benchmarks-results
+
+    <Fork https://github.com/CodyCBakerPhD/nwb-benchmarks-results on GitHub>
+    git clone https://github.com/<your GitHub username>/nwb-benchmarks-results
     git checkout -b new_results_from_<...>
     <copy results from ~/.cache/nwb_benchmarks/results>
     git commit -m "New results from ...." .
     git push
 
-Then, open a PR to merge the results to the `main` branch.
+Then, open a PR to merge the results to the `main` branch of the central repo.
 
 .. note::
 
