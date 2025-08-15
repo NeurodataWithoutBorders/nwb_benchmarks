@@ -21,14 +21,24 @@ from nwb_benchmarks.core import (
 )
 
 parameter_cases = dict(
-    IBLTestCase1=dict(
+    ICEphysTestCase=dict(
         s3_url=get_s3_url(
             dandiset_id="000717",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
+            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
         ),
-        object_name="ElectricalSeriesAp",
-        slice_range=(slice(0, 30_000), slice(0, 384)),  #  ~23 MB
-    )
+    ),
+    EPhysTestCase=dict(
+        s3_url=get_s3_url(
+            dandiset_id="000717",
+            dandi_path="sub-npI3_ses-20190421_behavior+ecephys/sub-npI3_ses-20190421_behavior+ecephys.nwb",
+        ),
+    ),
+    OPhysTestCase=dict(
+        s3_url=get_s3_url(
+            dandiset_id="000717",
+            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
+        ),
+    ),
 )
 
 # Parameters for LINDI pointing to a remote LINDI reference file system JSON file. I.e., here we do not
@@ -38,50 +48,30 @@ lindi_remote_rfs_parameter_cases = dict(
     EcephysTestCase=dict(
         s3_url=get_s3_url(
             dandiset_id="213889",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
+            dandi_path="sub-ecephys/c493119b-4b99-4b14-bc03-65bb28cfbd29.lindi.json",
         ),
-        object_name="ElectricalSeriesAp",
-        slice_range=(slice(0, 30_000), slice(0, 384)),
     ),
     OphysTestCase=dict(
         s3_url=get_s3_url(
             dandiset_id="213889",
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
         ),
-        object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 3), slice(0, 796), slice(0, 512)),
     ),
     IcephysTestCase=dict(
         s3_url=get_s3_url(
             dandiset_id="213889",
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
         ),
-        object_name="data_00002_AD0",
-        slice_range=(slice(0, 30_000),),
     ),
-    # # TODO: Just an example case for testing. Replace with real test case
-    # BaseExample=dict(
-    #     s3_url="https://kerchunk.neurosift.org/dandi/dandisets/000939/assets/11f512ba-5bcf-4230-a8cb-dc8d36db38cb/zarr.json",
-    #     object_name="accelerometer",
-    #     slice_range=(slice(0, 30_000), slice(0, 3)),
-    # ),
 )
 
 
 zarr_parameter_cases = dict(
-    AIBSTestCase=dict(
-        s3_url=(
-            "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
-            "ecephys_625749_2022-08-03_15-15-06_nwb/"
-            "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
-        ),
-        object_name="ElectricalSeriesProbe A-LFP",
-        slice_range=(slice(0, 30_000), slice(0, 384)),
-    )
+    ZarrICEphysTestCase=dict(s3_url="s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/"),
+    ZarrOPhysTestCase=dict(s3_url="s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/"),
 )
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
 class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -90,13 +80,13 @@ class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
+    @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp = self.data_to_slice[slice_range]
         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
 class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -110,13 +100,13 @@ class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
+    @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp = self.data_to_slice[slice_range]
         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
 class RemfileContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -125,13 +115,13 @@ class RemfileContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
+    @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp = self.data_to_slice[slice_range]
         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
 class RemfileContinuousSliceBenchmarkWithCache(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -145,13 +135,13 @@ class RemfileContinuousSliceBenchmarkWithCache(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
+    @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp = self.data_to_slice[slice_range]
         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
 class Ros3ContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
@@ -160,6 +150,7 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
+    @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp, self.retries = robust_ros3_read(
@@ -169,7 +160,6 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
 class LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark(BaseBenchmark):
     """
     Time the read of a data slice from a remote NWB file with pynwb using lindi with a remote JSON reference
@@ -183,13 +173,13 @@ class LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark(BaseBenchma
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
+    @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp = self.data_to_slice[slice_range]
         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
 class ZarrContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
@@ -198,13 +188,13 @@ class ZarrContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
+    @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp = self.data_to_slice[slice_range]
         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
 class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
@@ -213,6 +203,7 @@ class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
+    @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp = self.data_to_slice[slice_range]
