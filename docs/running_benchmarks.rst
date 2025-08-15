@@ -37,7 +37,7 @@ For example,
 
 .. code-block::
 
-    nwb_benchmarks run --bench time_remote_slicing
+    nwb_benchmarks run --bench time_remote_file_reading
 
 Debug mode
 ~~~~~~~~~~
@@ -52,16 +52,20 @@ If you want to get a full traceback to examine why a new test might be failing, 
 Contributing Results
 --------------------
 
-To contribute your results back to the project, please use the following workflow...
+All results should be automatically posted to the central database found on `GitHub <https://github.com/CodyCBakerPhD/nwb-benchmarks-results>`_.
+
+If this fails, you can contribute your results manually by:
 
 .. code-block::
 
+    <Fork https://github.com/CodyCBakerPhD/nwb-benchmarks-results on GitHub>
+    git clone https://github.com/<your GitHub username>/nwb-benchmarks-results
     git checkout -b new_results_from_<...>
-    git add results/
+    <copy results from ~/.cache/nwb_benchmarks/results>
     git commit -m "New results from ...." .
     git push
 
-Then, open a PR to merge the results to the `main` branch.
+Then, open a PR to merge the results to the `main` branch of the central repo.
 
 .. note::
 
