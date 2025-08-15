@@ -1,8 +1,6 @@
 import json
 import os
 import subprocess
-import uuid
-from datetime import datetime
 from pathlib import Path
 
 import flask
@@ -49,14 +47,6 @@ class Contribute(flask_restx.Resource):
 
 class GitHubResultsManager:
     def __init__(self):
-        self.github_token = os.environ.get("GITHUB_API_TOKEN", None)
-        if self.github_token is None:
-            message = "`GITHUB_API_TOKEN` environment variable is required."
-            raise ValueError(message)
-
-        self.repo_url = f"https://{self.github_token}@github.com/codycbakerphd/nwb-benchmarks-results.git"
-        self.repo_name = "codycbakerphd/nwb-benchmarks-results"
-
         self.cache_directory = Path.home() / ".cache" / "nwb-benchmarks"
         self.cache_directory.mkdir(parents=True, exist_ok=True)
         self.repo_path = self.cache_directory / "nwb-benchmarks-results"

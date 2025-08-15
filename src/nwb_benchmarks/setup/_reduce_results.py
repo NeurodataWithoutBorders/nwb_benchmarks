@@ -27,7 +27,7 @@ def _parse_environment_info(raw_environment_info: List[str]) -> Dict[str, List[[
     return parsed_environment
 
 
-def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_file_path: pathlib.Path):
+def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_environment_info_file_path: pathlib.Path):
     """Default ASV result file is very inefficient - this routine simplifies it for sharing."""
     with open(file=raw_results_file_path, mode="r") as io:
         raw_results_info = json.load(fp=io)
@@ -40,7 +40,6 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
     timestamp = unix_time_to_datetime.replace(" ", "-").replace(":", "-")
 
     environment_hash = hashlib.sha1(string=bytes(json.dumps(obj=parsed_environment_info), "utf-8")).hexdigest()
-    machine_hash = raw_results_info["params"]["machine"]
 
     reduced_results = dict()
     for test_case, raw_results_list in raw_results_info["results"].items():
@@ -79,7 +78,7 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
 
     if len(reduced_results) == 0:
         raise ValueError(
-            "The results parser failed to find any succesful results! "
+            "The results parser failed to find any successful results! "
             "Please raise an issue and share your intermediate results file."
         )
 
@@ -88,7 +87,7 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
         timestamp=timestamp,
         commit_hash=raw_results_info["commit_hash"],
         environment_hash=environment_hash,
-        machine_hash=machine_hash,
+        machine_id=machine_id,
         results=reduced_results,
     )
 
@@ -102,15 +101,8 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
         results_cache_directory
         / f"results_timestamp-{timestamp}_machine-{machine_hash}_environment-{environment_hash}.json"
     )
-
     with open(file=parsed_results_file, mode="w") as io:
         json.dump(obj=reduced_results_info, fp=io, indent=1)  # At least one level of indent makes it easier to read
-
-    # Copy machine file to main results
-    machine_info_file_path = raw_results_file_path.parent / "machine.json"
-    machine_info_copy_file_path = results_cache_directory / f"info_machine-{machine_hash}.json"
-    if not machine_info_copy_file_path.exists():
-        shutil.copyfile(src=machine_info_file_path, dst=machine_info_copy_file_path)
 
     # Save parsed environment info within machine subdirectory of .asv
     parsed_environment_file_path = results_cache_directory / f"info_environment-{environment_hash}.json"

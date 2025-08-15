@@ -8,19 +8,36 @@ source = "vcs"
 [tool.hatch.build.targets.wheel]
 packages = ["src/nwb_benchmarks"]
 
+
+
 [project]
 name = "nwb_benchmarks"
-version="0.1.0"
+version="0.1.1"
 authors = [
   { name="Cody Baker", email="cody.baker@catalystneuro.com" },
 ]
 description = "Benchmarking for NWB."
 readme = "README.md"
-requires-python = ">=3.9,<3.12"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "asv == 0.6.1",
+    "numba>=0.58.1",  # Pin to specific version for cuda import
+    "psutil",
+    "dandi",
+    "s3fs",
+    "fsspec",
+    "requests",
+    "aiohttp",
+    "remfile",
+    "pyshark",
+    "lindi>=0.3.6",
+    "pynwb>=2.8.2",
+    "hdmf>=3.14.5",
+    "hdmf-zarr",
+    "friendlywords"
+]
 license = {file = "license.txt"}
-
 keywords = ["nwb", "benchmark"]
-
 classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.8",
@@ -36,6 +53,18 @@ classifiers = [
 
 [project.scripts]
 nwb_benchmarks = "nwb_benchmarks.command_line_interface:main"
+
+[dependency-groups]
+app = ["flask", "flask-cors"]
+database = ["polars"]
+dev = ["ipython", "pre-commit"]
+all = [
+    {include-group = "app"},
+    {include-group = "database"},
+    {include-group = "dev"}
+]
+
+
 
 [tool.black]
 line-length = 120
