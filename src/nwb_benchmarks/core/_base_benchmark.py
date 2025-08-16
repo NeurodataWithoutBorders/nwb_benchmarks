@@ -37,18 +37,10 @@ class BaseBenchmark:
         # Unpack parameter cases dictionary into ASV expected form
         if cls.parameter_cases is not None:
             cls.param_names = list(next(iter(cls.parameter_cases.values())).keys())
-            cls.params = (
-                [
-                    [parameter_case[param_name] for parameter_case in cls.parameter_cases.values()]
-                    for param_name in cls.param_names
-                ]
-                if len(cls.param_names) > 1
-                else [
-                    parameter
-                    for parameter_case in cls.parameter_cases.values()
-                    for parameter in parameter_case.values()
-                ]
-            )
+            cls.params = [
+                [parameter_case[param_name] for parameter_case in cls.parameter_cases.values()]
+                for param_name in cls.param_names
+            ]
 
             # ASV automatically forms a cartesian product over all params
             # But we want our `parameter_names` usage to be flat in order to be more explicit
