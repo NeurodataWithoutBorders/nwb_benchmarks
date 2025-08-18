@@ -13,7 +13,8 @@ import friendlywords
 import psutil
 from numba import cuda
 
-MACHINE_FILE_VERSION = "1.0.0"
+from ..globals import MACHINE_FILE_VERSION
+from ..utils import get_dictionary_checksum
 
 
 def collect_machine_info() -> Dict[str, Dict[str, Any]]:
@@ -64,8 +65,26 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
     default_asv_machine_file_path = pathlib.Path.home() / ".asv-machine.json"
     if default_asv_machine_file_path.exists():
         with open(file=default_asv_machine_file_path, mode="r") as file_stream:
-            asv_machine_file_info = json.load(fp=file_stream)
-    machine_info["asv"] = asv_machine_file_info
+            asv_machine_info = json.load(fp=file_stream)
+    machine_info["asv"] = asv_machine_info
+
+    # Some info in ASV may be considered 'private'
+    if len(asv_machine_info.keys()) != 2:
+        message = (
+            "The ASV machine file should only contain two keys: 'version' and the machine name. "
+            f"Found {len(asv_machine_info.keys())} keys: {list(asv_machine_info.keys())}' "
+            "Please raise an issue at https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues/new to report."
+        )
+        raise ValueError(message)
+
+    asv_machine_key = next(key for key in asv_machine_info.keys() if key != "version")
+    asv_machine_info[asv_machine_key]["machine"] = machine_name
+
+    anonymized_asv_machine_info = {
+        machine_name: asv_machine_info[asv_machine_key],
+        "version": asv_machine_info["version"],
+    }
+    machine_info["asv"] = anonymized_asv_machine_info
 
     return machine_info
 
@@ -79,7 +98,7 @@ def generate_machine_file() -> str:
     machines_directory = nwb_benchmarks_home_directory / "machines"
     machines_directory.mkdir(exist_ok=True)
 
-    checksum = get_machine_info_checksum(info=machine_info)
+    checksum = get_dictionary_checksum(dictionary=machine_info)
     machine_info_file_path = machines_directory / f"{checksum}.json"
     with open(file=machine_info_file_path, mode="w") as file_stream:
         json.dump(obj=machine_info, fp=file_stream, indent=1)
@@ -96,10 +115,3 @@ def generate_human_readable_machine_name() -> str:
     """
     name = "".join(word.capitalize() for word in friendlywords.generate(command="po", as_list=True))
     return name
-
-
-def get_machine_info_checksum(info: dict) -> str:
-    """Get the SHA1 hash of the machine info."""
-    sorted_info = dict(sorted(info.items()))
-    checksum = hashlib.sha1(string=bytes(json.dumps(obj=sorted_info))).hexdigest()
-    return checksum

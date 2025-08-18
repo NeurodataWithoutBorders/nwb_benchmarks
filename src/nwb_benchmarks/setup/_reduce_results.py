@@ -11,6 +11,9 @@ import sys
 import warnings
 from typing import Dict, List
 
+from ..globals import DATABASE_VERSION
+from ..utils import get_dictionary_checksum
+
 
 def _parse_environment_info(raw_environment_info: List[str]) -> Dict[str, List[[Dict[str, str]]]]:
     """Turn the results of `conda list` printout to a JSON dictionary."""
@@ -34,12 +37,11 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
     with open(file=raw_environment_info_file_path, mode="r") as io:
         raw_environment_info = io.readlines()
     parsed_environment_info = _parse_environment_info(raw_environment_info=raw_environment_info)
+    environment_id = get_dictionary_checksum(dictionary=parsed_environment_info)
 
     # In timestamp, replace separators with underscores for file path
     unix_time_to_datetime = str(datetime.datetime.fromtimestamp(raw_results_info["date"] / 1e3))
     timestamp = unix_time_to_datetime.replace(" ", "-").replace(":", "-")
-
-    environment_hash = hashlib.sha1(string=bytes(json.dumps(obj=parsed_environment_info), "utf-8")).hexdigest()
 
     reduced_results = dict()
     for test_case, raw_results_list in raw_results_info["results"].items():
@@ -83,10 +85,11 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
         )
 
     reduced_results_info = dict(
+        database_version=DATABASE_VERSION,
         version=raw_results_info["version"],
         timestamp=timestamp,
         commit_hash=raw_results_info["commit_hash"],
-        environment_hash=environment_hash,
+        environment_id=environment_id,
         machine_id=machine_id,
         results=reduced_results,
     )
@@ -99,13 +102,13 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
 
     parsed_results_file = (
         results_cache_directory
-        / f"results_timestamp-{timestamp}_machine-{machine_hash}_environment-{environment_hash}.json"
+        / f"results_timestamp-{timestamp}_machine-{machine_id}_environment-{environment_id}.json"
     )
     with open(file=parsed_results_file, mode="w") as io:
         json.dump(obj=reduced_results_info, fp=io, indent=1)  # At least one level of indent makes it easier to read
 
     # Save parsed environment info within machine subdirectory of .asv
-    parsed_environment_file_path = results_cache_directory / f"info_environment-{environment_hash}.json"
+    parsed_environment_file_path = results_cache_directory / f"environment-{environment_id}.json"
     if not parsed_environment_file_path.exists():
         with open(file=parsed_environment_file_path, mode="w") as io:
             json.dump(obj=parsed_environment_info, fp=io, indent=1)

@@ -1,5 +1,6 @@
 """Simple wrapper around `asv run` for convenience."""
 
+import itertools
 import json
 import locale
 import os
