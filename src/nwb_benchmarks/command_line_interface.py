@@ -120,7 +120,6 @@ def main() -> None:
                     f"Response: {response.text}"
                 )
                 warnings.warn(message=message, stacklevel=2)
-                raise
     else:
         print(f"{command} is an invalid command.")
 
