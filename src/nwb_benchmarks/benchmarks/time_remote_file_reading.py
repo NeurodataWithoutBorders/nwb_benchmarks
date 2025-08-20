@@ -2,6 +2,8 @@
 
 import os
 
+from asv_runner.benchmarks.mark import skip_benchmark_if
+
 from nwb_benchmarks.core import (
     BaseBenchmark,
     create_lindi_reference_file_system,
@@ -23,17 +25,24 @@ from nwb_benchmarks.core import (
 )
 
 parameter_cases = dict(
-    IBLTestCase1=dict(
-        s3_url=get_s3_url(dandiset_id="000717", dandi_path="sub-mock/sub-mock_ses-ecephys1.nwb"),
-    ),
-    # IBLTestCase2 is not the best example for testing a theory about file read; should probably replace with simpler
-    IBLTestCase2=dict(
+    ICEphysTestCase=dict(
         s3_url=get_s3_url(
             dandiset_id="000717",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
+            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
         ),
     ),
-    ClassicRos3TestCase=dict(s3_url="https://dandiarchive.s3.amazonaws.com/ros3test.nwb"),
+    EPhysTestCase=dict(
+        s3_url=get_s3_url(
+            dandiset_id="000717",
+            dandi_path="sub-npI3_ses-20190421_behavior+ecephys/sub-npI3_ses-20190421_behavior+ecephys.nwb",
+        ),
+    ),
+    OPhysTestCase=dict(
+        s3_url=get_s3_url(
+            dandiset_id="000717",
+            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
+        ),
+    ),
 )
 
 
@@ -47,7 +56,7 @@ lindi_remote_rfs_parameter_cases = dict(
     EcephysTestCase=dict(
         s3_url=get_s3_url(
             dandiset_id="213889",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
+            dandi_path="sub-ecephys/c493119b-4b99-4b14-bc03-65bb28cfbd29.lindi.json",
         ),
     ),
     OphysTestCase=dict(
@@ -62,21 +71,11 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
         ),
     ),
-    # TODO: Just an example case for testing. Replace with real test case
-    # BaseExample=dict(
-    #     s3_url="https://lindi.neurosift.org/dandi/dandisets/000939/assets/56d875d6-a705-48d3-944c-53394a389c85/nwb.lindi.json",
-    # ),
 )
 
-
 zarr_parameter_cases = dict(
-    AIBSTestCase=dict(
-        s3_url=(
-            "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
-            "ecephys_625749_2022-08-03_15-15-06_nwb/"
-            "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
-        ),
-    ),
+    ZarrICEphysTestCase=dict(s3_url="s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/"),
+    ZarrOPhysTestCase=dict(s3_url="s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/"),
 )
 
 
@@ -150,6 +149,7 @@ class NWBFileReadBenchmark(BaseBenchmark):
         self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(s3_url=s3_url, retry=False)
 
 
+@skip_benchmark_if(True)
 class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the read of the Lindi HDF5 files with `pynwb` assuming that a local copy of the lindi
@@ -175,6 +175,7 @@ class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
         self.client = read_hdf5_lindi(rfs=self.lindi_file)
 
 
+@skip_benchmark_if(True)
 class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
     Time the creation of a local Lindi JSON reference filesystem for a remote NWB file
