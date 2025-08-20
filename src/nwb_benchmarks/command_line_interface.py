@@ -7,10 +7,12 @@ import pathlib
 import shutil
 import subprocess
 import sys
+import time
 import warnings
 
 import requests
 
+from .core import upload_results
 from .setup import customize_asv_machine_file, reduce_results
 
 
@@ -100,29 +102,9 @@ def main() -> None:
             raw_results_file_path=raw_results_file_path, raw_environment_info_file_path=raw_environment_info_file_path
         )
 
-        results_cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "results"
-        for results_file_path in results_cache_directory.rglob(pattern="*.json"):
-            with results_file_path.open("r") as file_stream:
-                json_content = json.load(file_stream)
-
-            filename = results_file_path.name
-            response = requests.post(
-                url=f"https://codycbakerphd.pythonanywhere.com/data/contribute?filename={filename}",
-                json={"json_content": json_content},
-                timeout=30,
-            )
-
-            if response.status_code == 200:
-                print(f"Results posted successfully!")
-            else:
-                message = (
-                    "Failed to post results. "
-                    "Please raise an issue on https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues."
-                    f"Status code: {response.status_code} "
-                    f"Response: {response.text}"
-                )
-                warnings.warn(message=message, stacklevel=2)
-                raise
+        upload_results()
+    elif command == "upload":
+        upload_results()
     else:
         print(f"{command} is an invalid command.")
 

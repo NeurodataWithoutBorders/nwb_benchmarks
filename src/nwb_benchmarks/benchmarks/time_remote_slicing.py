@@ -123,7 +123,7 @@ class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
     def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Track network activity for slicing into a h5py.Dataset with Fsspec"""
+        """Track network activity for slicing into a `h5py.Dataset` with `fsspec`."""
         self._temp = self.data_to_slice[slice_range]
 
 
