@@ -25,7 +25,7 @@ from ._streaming import (
     read_zarr_nwbfile,
     robust_ros3_read,
 )
-from ._upload import upload_results
+from ._results import upload_results, clean_results
 
 __all__ = [
     "BaseBenchmark",
@@ -52,4 +52,5 @@ __all__ = [
     "read_zarr",
     "read_zarr_nwbfile",
     "upload_results",
+    "clean_results",
 ]

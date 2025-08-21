@@ -48,6 +48,11 @@ If you want to get a full traceback to examine why a new test might be failing, 
 
     nwb_benchmarks run --debug
 
+Setting this flag will also override the `repeat` parameter of benchmarks and set it to 1, so that you can quickly
+iterate on the code and see the results of your changes without having to wait for the full suite to run.
+
+Setting this flag will also not write results to the local cached results directory or upload results to the central
+database automatically.
 
 Contributing Results
 --------------------

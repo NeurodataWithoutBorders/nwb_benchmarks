@@ -6,7 +6,7 @@ import shutil
 import subprocess
 import sys
 
-from .core import upload_results
+from .core import upload_results, clean_results
 from .setup import customize_asv_machine_file, reduce_results
 
 
@@ -66,7 +66,7 @@ def main() -> None:
             commit_hash,
         ]
         if debug_mode:
-            cmd.extend(["--verbose", "--show-stderr"])
+            cmd.extend(["--verbose", "--show-stderr", "--attribute", "repeat=1"])
         if bench_mode:
             cmd.extend(["--bench", specific_benchmark_pattern])
 
@@ -90,13 +90,18 @@ def main() -> None:
         assert len(globbed_json_file_paths) == 1, "A single intermediate result was not found, please raise an issue."
         raw_results_file_path = globbed_json_file_paths[0]
 
-        reduce_results(
-            raw_results_file_path=raw_results_file_path, raw_environment_info_file_path=raw_environment_info_file_path
-        )
-
-        upload_results()
+        if debug_mode:
+            raw_results_file_path.unlink()
+        else:
+            reduce_results(
+                raw_results_file_path=raw_results_file_path,
+                raw_environment_info_file_path=raw_environment_info_file_path
+            )
+            upload_results()
     elif command == "upload":
         upload_results()
+    elif command == "clean":
+        clean_results()
     else:
         print(f"{command} is an invalid command.")
 
