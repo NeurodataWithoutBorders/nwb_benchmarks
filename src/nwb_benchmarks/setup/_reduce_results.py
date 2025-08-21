@@ -101,17 +101,25 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
     results_cache_directory.mkdir(parents=True, exist_ok=True)
 
     parsed_results_file = (
-        results_cache_directory
-        / f"results_timestamp-{timestamp}_machine-{machine_id}_environment-{environment_id}.json"
+        results_cache_directory / f"results-{timestamp}_machine-{machine_id}_environment-{environment_id}_results.json"
     )
     with open(file=parsed_results_file, mode="w") as io:
         json.dump(obj=reduced_results_info, fp=io, indent=1)  # At least one level of indent makes it easier to read
+    print("Results written to:         ", parsed_results_file.absolute())
+
+    # Copy machine file to main results
+    machine_info_file_path = raw_results_file_path.parent / "machine.json"
+    machine_info_copy_file_path = results_cache_directory / f"machine-{machine_id}.json"
+    if not machine_info_copy_file_path.exists():
+        shutil.copyfile(src=machine_info_file_path, dst=machine_info_copy_file_path)
+    print("Machine info written to:    ", machine_info_copy_file_path.absolute())
 
     # Save parsed environment info within machine subdirectory of .asv
     parsed_environment_file_path = results_cache_directory / f"environment-{environment_id}.json"
     if not parsed_environment_file_path.exists():
         with open(file=parsed_environment_file_path, mode="w") as io:
             json.dump(obj=parsed_environment_info, fp=io, indent=1)
+    print("Environment info written to:", parsed_environment_file_path.absolute())
 
     # Network tests require admin permissions, which can alter write permissions of any files created
     if sys.platform in ["darwin", "linux"]:

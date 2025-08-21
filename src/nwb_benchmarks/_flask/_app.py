@@ -1,6 +1,10 @@
 import json
 import os
 import subprocess
+import time
+import typing
+import uuid
+from datetime import datetime
 from pathlib import Path
 
 import flask
@@ -8,7 +12,7 @@ import flask_restx
 
 app = flask.Flask(__name__)
 api = flask_restx.Api(
-    version="0.1",
+    version="0.2",
     title="upload-nwb-benchmarks-results",
     description="Automatic uploader of NWB Benchmark results.",
 )
@@ -25,7 +29,16 @@ contribute_parser.add_argument("test", type=bool, required=False, default=False,
 @data_namespace.route("/contribute")
 class Contribute(flask_restx.Resource):
     @data_namespace.expect(contribute_parser)
-    @data_namespace.doc(responses={200: "Success", 400: "Bad Request", 500: "Internal server error"})
+    @data_namespace.doc(
+        responses={
+            200: "Success",
+            400: "Bad Request",
+            500: "Internal server error",
+            521: "Repository path on server not found.",
+            522: "Error during local update. Check server logs for specifics.",
+            523: "Error during add/commit. Check server logs for specifics.",
+        }
+    )
     def post(self) -> int:
         arguments = contribute_parser.parse_args()
         filename = arguments["filename"]
@@ -35,11 +48,23 @@ class Contribute(flask_restx.Resource):
         json_content = payload["json_content"]
 
         manager = GitHubResultsManager()
-        manager.ensure_repo_exists()
+        result = manager.ensure_repo_up_to_date()
+        if result is not None:
+            return result
+
+        time.sleep(1)
+
         manager.write_file(filename=filename, json_content=json_content)
 
+        time.sleep(1)
+
         if test_mode is False:
-            manager.add_and_commit()
+            result = manager.add_and_commit()
+            if result is not None:
+                return result
+
+            time.sleep(1)
+
             manager.push()
 
         return 200
@@ -51,15 +76,13 @@ class GitHubResultsManager:
         self.cache_directory.mkdir(parents=True, exist_ok=True)
         self.repo_path = self.cache_directory / "nwb-benchmarks-results"
 
-    def ensure_repo_exists(self) -> None:
+    def ensure_repo_up_to_date(self) -> typing.Literal[521, 522] | None:
         """Clone repository if it doesn't exist locally."""
         if not self.repo_path.exists():
-            command = f"git clone {self.repo_url}"
-            cwd = self.cache_directory
-        else:
-            command = f"git pull"
-            cwd = self.repo_path
+            return 521
 
+        command = f"git pull"
+        cwd = self.repo_path
         result = subprocess.run(
             args=command,
             cwd=cwd,
@@ -68,7 +91,8 @@ class GitHubResultsManager:
         )
         if result.returncode != 0:
             message = f"Git command ({command}) failed: {result.stderr.decode()}"
-            raise RuntimeError(message)
+            print(f"ERROR: {message}")
+            return 522
 
     def write_file(self, filename: str, json_content: dict) -> None:
         """Write results JSON to a file in the cache directory."""
@@ -77,7 +101,7 @@ class GitHubResultsManager:
         with open(file=results_file_path, mode="w") as file_stream:
             json.dump(obj=json_content, fp=file_stream, indent=4)
 
-    def add_and_commit(self) -> None:
+    def add_and_commit(self) -> typing.Literal[523] | None:
         """Commit results to git repo."""
         command = f"git add . && git commit -m 'Add new benchmark results'"
         result = subprocess.run(
@@ -88,7 +112,8 @@ class GitHubResultsManager:
         )
         if result.returncode != 0:
             message = f"Git command ({command}) failed: {result.stderr.decode()}"
-            raise RuntimeError(message)
+            print(f"ERROR: {message}")
+            return 523
 
     def push(self):
         """Commit and push results to GitHub repository."""
