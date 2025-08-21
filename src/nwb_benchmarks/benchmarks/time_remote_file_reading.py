@@ -5,7 +5,6 @@ import os
 from nwb_benchmarks.core import (
     BaseBenchmark,
     create_lindi_reference_file_system,
-    get_s3_url,
     read_hdf5_fsspec_no_cache,
     read_hdf5_fsspec_with_cache,
     read_hdf5_lindi,
@@ -22,61 +21,11 @@ from nwb_benchmarks.core import (
     read_zarr_nwbfile,
 )
 
-parameter_cases = dict(
-    IBLTestCase1=dict(
-        s3_url=get_s3_url(dandiset_id="000717", dandi_path="sub-mock/sub-mock_ses-ecephys1.nwb"),
-    ),
-    # IBLTestCase2 is not the best example for testing a theory about file read; should probably replace with simpler
-    IBLTestCase2=dict(
-        s3_url=get_s3_url(
-            dandiset_id="000717",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
-        ),
-    ),
-    ClassicRos3TestCase=dict(s3_url="https://dandiarchive.s3.amazonaws.com/ros3test.nwb"),
-)
-
-
-# Parameters for LINDI when HDF5 files are remote without using an existing LINDI JSON reference file system on
-# the remote server (i.e., we create the LINDI JSON file for these in these tests)
-lindi_hdf5_parameter_cases = parameter_cases
-
-# Parameters for LINDI pointing to a remote LINDI reference file system JSON file. I.e., here we do not
-# to create the JSON but can load it directly from the remote store
-lindi_remote_rfs_parameter_cases = dict(
-    EcephysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="213889",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
-        ),
-    ),
-    OphysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
-        ),
-    ),
-    IcephysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="213889",
-            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
-        ),
-    ),
-    # TODO: Just an example case for testing. Replace with real test case
-    # BaseExample=dict(
-    #     s3_url="https://lindi.neurosift.org/dandi/dandisets/000939/assets/56d875d6-a705-48d3-944c-53394a389c85/nwb.lindi.json",
-    # ),
-)
-
-
-zarr_parameter_cases = dict(
-    AIBSTestCase=dict(
-        s3_url=(
-            "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
-            "ecephys_625749_2022-08-03_15-15-06_nwb/"
-            "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
-        ),
-    ),
+from .params_remote_file_reading import (
+    parameter_cases,
+    lindi_hdf5_parameter_cases,
+    lindi_remote_rfs_parameter_cases,
+    zarr_parameter_cases,
 )
 
 

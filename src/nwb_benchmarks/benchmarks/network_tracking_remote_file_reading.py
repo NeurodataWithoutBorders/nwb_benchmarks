@@ -8,7 +8,6 @@ from nwb_benchmarks import TSHARK_PATH
 from nwb_benchmarks.core import (
     BaseBenchmark,
     create_lindi_reference_file_system,
-    get_s3_url,
     network_activity_tracker,
     read_hdf5_fsspec_no_cache,
     read_hdf5_fsspec_with_cache,
@@ -26,61 +25,11 @@ from nwb_benchmarks.core import (
     read_zarr_nwbfile,
 )
 
-parameter_cases = dict(
-    IBLTestCase1=dict(
-        s3_url=get_s3_url(dandiset_id="000717", dandi_path="sub-mock/sub-mock_ses-ecephys1.nwb"),
-    ),
-    # IBLTestCase2 is not the best example for testing a theory about file read; should probably replace with simpler
-    IBLTestCase2=dict(
-        s3_url=get_s3_url(
-            dandiset_id="000717",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
-        ),
-    ),
-    ClassicRos3TestCase=dict(s3_url="https://dandiarchive.s3.amazonaws.com/ros3test.nwb"),
-)
-
-
-# Parameters for LINDI when HDF5 files are remote without using an existing LINDI JSON reference file system on
-# the remote server (i.e., we create the LINDI JSON file for these in these tests)
-lindi_hdf5_parameter_cases = parameter_cases
-
-# Parameters for LINDI pointing to a remote LINDI reference file system JSON file. I.e., here we do not
-# to create the JSON but can load it directly from the remote store
-lindi_remote_rfs_parameter_cases = dict(
-    EcephysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="213889",
-            dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
-        ),
-    ),
-    OphysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
-        ),
-    ),
-    IcephysTestCase=dict(
-        s3_url=get_s3_url(
-            dandiset_id="213889",
-            dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
-        ),
-    ),
-    # TODO: Just an example case for testing. Replace with real test case
-    # BaseExample=dict(
-    #     s3_url="https://lindi.neurosift.org/dandi/dandisets/000939/assets/56d875d6-a705-48d3-944c-53394a389c85/nwb.lindi.json",
-    # ),
-)
-
-
-zarr_parameter_cases = dict(
-    AIBSTestCase=dict(
-        s3_url=(
-            "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
-            "ecephys_625749_2022-08-03_15-15-06_nwb/"
-            "ecephys_625749_2022-08-03_15-15-06_experiment1_recording1.nwb.zarr/"
-        ),
-    ),
+from .params_remote_file_reading import (
+    parameter_cases,
+    lindi_hdf5_parameter_cases,
+    lindi_remote_rfs_parameter_cases,
+    zarr_parameter_cases,
 )
 
 
@@ -205,7 +154,7 @@ class Ros3NWBFileReadBenchmark(BaseBenchmark):
 @skip_benchmark_if(TSHARK_PATH is None)
 class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
-    Time the read of the Lindi HDF5 files with and without `pynwb` assuming that a local
+    Read the Lindi HDF5 files with and without `pynwb` assuming that a local
     copy of the lindi filesystem is available locally.
     """
 
@@ -235,8 +184,8 @@ class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
 @skip_benchmark_if(TSHARK_PATH is None)
 class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
     """
-    Time the creation of a local Lindi JSON reference filesystem for a remote NWB file
-    as well as reading the NWB file with PyNWB when the local reference filesystem does not
+    Create a local Lindi JSON reference filesystem for a remote NWB file
+    as well as read the NWB file with PyNWB when the local reference filesystem does not
     yet exist.
     """
 
@@ -273,23 +222,20 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
 
 @skip_benchmark_if(TSHARK_PATH is None)
 class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
-    """
-    Time the read of a remote NWB file with pynwb using lindi with a remote JSON reference
-    filesystem available.
-    """
+    """Benchmark reading a remote NWB file with PyNWB using LINDI with a remote LINDI JSON."""
 
     rounds = 1
     repeat = 3
     parameter_cases = lindi_remote_rfs_parameter_cases
 
-    def track_network_activity_time_read_lindi_nwbfile(self, s3_url: str):
-        """Read a remote NWB file with PyNWB using the remote LINDI JSON reference filesystem"""
+    def track_network_activity_during_read_lindi_nwbfile(self, s3_url: str):
+        """Read a remote NWB file with PyNWB & LINDI using the remote LINDI JSON"""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.nwbfile, self.io, self.client = read_hdf5_nwbfile_lindi(rfs=s3_url)
         return network_tracker.asv_network_statistics
 
-    def track_network_activity_time_read_lindi_jsonrfs(self, s3_url: str):
-        """Read a remote HDF5 file with LINDI using the remote LINDI JSON reference filesystem"""
+    def track_network_activity_during_read_lindi(self, s3_url: str):
+        """Read a remote HDF5 file with LINDI using the remote LINDI JSON"""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.client = read_hdf5_lindi(rfs=s3_url)
         return network_tracker.asv_network_statistics
@@ -297,6 +243,7 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
 
 @skip_benchmark_if(TSHARK_PATH is None)
 class ZarrDirectFileReadBenchmark(BaseBenchmark):
+    """Benchmark reading a Zarr file directly."""
     parameter_cases = zarr_parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
@@ -307,6 +254,7 @@ class ZarrDirectFileReadBenchmark(BaseBenchmark):
 
 @skip_benchmark_if(TSHARK_PATH is None)
 class ZarrForceNoConsolidatedDirectFileReadBenchmark(BaseBenchmark):
+    """Benchmark reading a Zarr file directly without consolidated metadata."""
     parameter_cases = zarr_parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
@@ -317,6 +265,7 @@ class ZarrForceNoConsolidatedDirectFileReadBenchmark(BaseBenchmark):
 
 @skip_benchmark_if(TSHARK_PATH is None)
 class ZarrNWBFileReadBenchmark(BaseBenchmark):
+    """Benchmark reading a Zarr file as an NWB file."""
     parameter_cases = zarr_parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
@@ -327,6 +276,7 @@ class ZarrNWBFileReadBenchmark(BaseBenchmark):
 
 @skip_benchmark_if(TSHARK_PATH is None)
 class ZarrForceNoConsolidatedNWBFileReadBenchmark(BaseBenchmark):
+    """Benchmark reading a Zarr file as an NWB file without consolidated metadata."""
     parameter_cases = zarr_parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
