@@ -1,4 +1,3 @@
-
 from nwb_benchmarks.core import get_s3_url
 
 parameter_cases = dict(

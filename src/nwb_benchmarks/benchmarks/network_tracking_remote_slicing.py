@@ -19,7 +19,11 @@ from nwb_benchmarks.core import (
     robust_ros3_read,
 )
 
-from .params_remote_slicing import parameter_cases, lindi_remote_rfs_parameter_cases, zarr_parameter_cases
+from .params_remote_slicing import (
+    lindi_remote_rfs_parameter_cases,
+    parameter_cases,
+    zarr_parameter_cases,
+)
 
 
 @skip_benchmark_if(TSHARK_PATH is None)

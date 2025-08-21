@@ -26,9 +26,9 @@ from nwb_benchmarks.core import (
 )
 
 from .params_remote_file_reading import (
-    parameter_cases,
     lindi_hdf5_parameter_cases,
     lindi_remote_rfs_parameter_cases,
+    parameter_cases,
     zarr_parameter_cases,
 )
 
@@ -244,6 +244,7 @@ class NWBLindiFileReadRemoteReferenceFileSystemBenchmark(BaseBenchmark):
 @skip_benchmark_if(TSHARK_PATH is None)
 class ZarrDirectFileReadBenchmark(BaseBenchmark):
     """Benchmark reading a Zarr file directly."""
+
     parameter_cases = zarr_parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
@@ -255,6 +256,7 @@ class ZarrDirectFileReadBenchmark(BaseBenchmark):
 @skip_benchmark_if(TSHARK_PATH is None)
 class ZarrForceNoConsolidatedDirectFileReadBenchmark(BaseBenchmark):
     """Benchmark reading a Zarr file directly without consolidated metadata."""
+
     parameter_cases = zarr_parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
@@ -266,6 +268,7 @@ class ZarrForceNoConsolidatedDirectFileReadBenchmark(BaseBenchmark):
 @skip_benchmark_if(TSHARK_PATH is None)
 class ZarrNWBFileReadBenchmark(BaseBenchmark):
     """Benchmark reading a Zarr file as an NWB file."""
+
     parameter_cases = zarr_parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):
@@ -277,6 +280,7 @@ class ZarrNWBFileReadBenchmark(BaseBenchmark):
 @skip_benchmark_if(TSHARK_PATH is None)
 class ZarrForceNoConsolidatedNWBFileReadBenchmark(BaseBenchmark):
     """Benchmark reading a Zarr file as an NWB file without consolidated metadata."""
+
     parameter_cases = zarr_parameter_cases
 
     def track_network_activity_during_read(self, s3_url: str):

@@ -22,9 +22,9 @@ from nwb_benchmarks.core import (
 )
 
 from .params_remote_file_reading import (
-    parameter_cases,
     lindi_hdf5_parameter_cases,
     lindi_remote_rfs_parameter_cases,
+    parameter_cases,
     zarr_parameter_cases,
 )
 
