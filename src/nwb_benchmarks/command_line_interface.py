@@ -6,7 +6,7 @@ import shutil
 import subprocess
 import sys
 
-from .core import upload_results, clean_results
+from .core import clean_results, upload_results
 from .setup import customize_asv_machine_file, reduce_results
 
 
@@ -95,7 +95,7 @@ def main() -> None:
         else:
             reduce_results(
                 raw_results_file_path=raw_results_file_path,
-                raw_environment_info_file_path=raw_environment_info_file_path
+                raw_environment_info_file_path=raw_environment_info_file_path,
             )
             upload_results()
     elif command == "upload":
