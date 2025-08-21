@@ -7,6 +7,7 @@ from ._network_profiler import NetworkProfiler
 from ._network_statistics import NetworkStatistics
 from ._network_tracker import network_activity_tracker
 from ._nwb_helpers import get_object_by_name
+from ._results import clean_results, upload_results
 from ._streaming import (
     create_lindi_reference_file_system,
     read_hdf5_fsspec_no_cache,
@@ -25,7 +26,6 @@ from ._streaming import (
     read_zarr_nwbfile,
     robust_ros3_read,
 )
-from ._upload import upload_results
 
 __all__ = [
     "BaseBenchmark",
@@ -52,4 +52,5 @@ __all__ = [
     "read_zarr",
     "read_zarr_nwbfile",
     "upload_results",
+    "clean_results",
 ]

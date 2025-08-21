@@ -5,10 +5,16 @@ import warnings
 
 import requests
 
+RESULTS_CACHE_DIR = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "results"
+
+
+def clean_results():
+    for results_file_path in RESULTS_CACHE_DIR.rglob(pattern="*.json"):
+        results_file_path.unlink(missing_ok=True)
+
 
 def upload_results():
-    results_cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "results"
-    for results_file_path in results_cache_directory.rglob(pattern="*.json"):
+    for results_file_path in RESULTS_CACHE_DIR.rglob(pattern="*.json"):
         with results_file_path.open("r") as file_stream:
             json_content = json.load(file_stream)
 
@@ -19,7 +25,7 @@ def upload_results():
             timeout=30,
         )
         if response.status_code == 200:
-            print(f"Results posted successfully!")
+            print(f"Results posted successfully! {filename}")
         else:
             message = (
                 "Failed to post results. "
