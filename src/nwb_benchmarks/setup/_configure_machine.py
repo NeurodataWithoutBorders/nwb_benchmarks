@@ -71,7 +71,8 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
     # Some info in ASV may be considered 'private'
     if len(asv_machine_info.keys()) != 2:
         message = (
-            "The ASV machine file should only contain two keys: 'version' and the machine name. "
+            f"\nThe ASV machine file at {default_asv_machine_file_path} should only contain two keys: "
+            "'version' and the machine name. "
             f"Found {len(asv_machine_info.keys())} keys: {list(asv_machine_info.keys())}' "
             "Please raise an issue at https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues/new to report."
         )
@@ -93,15 +94,16 @@ def generate_machine_file() -> str:
     """Generate a custom machine file and store in the NWB Benchmarks home directory."""
     machine_info = collect_machine_info()
 
-    nwb_benchmarks_home_directory = pathlib.Path.home() / ".nwb_benchmarks"
-    nwb_benchmarks_home_directory.mkdir(exist_ok=True)
-    machines_directory = nwb_benchmarks_home_directory / "machines"
+    cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks"
+    cache_directory.mkdir(exist_ok=True)
+    machines_directory = cache_directory / "machines"
     machines_directory.mkdir(exist_ok=True)
 
     checksum = get_dictionary_checksum(dictionary=machine_info)
-    machine_info_file_path = machines_directory / f"{checksum}.json"
+    machine_info_file_path = machines_directory / f"machine-{checksum}.json"
     with open(file=machine_info_file_path, mode="w") as file_stream:
         json.dump(obj=machine_info, fp=file_stream, indent=1)
+    print(f"\nMachine info written to:    {machine_info_file_path}")
 
     return checksum
 

@@ -16,3 +16,10 @@ Setup a completely fresh environment...
     conda activate nwb_benchmarks
 
 You will also need to install the custom network tracking software ``tshark`` using `their instructions <https://tshark.dev/setup/install>`_.
+
+On some platforms you will also need to set the envionment variable ``TSHARK_PATH`` to the location of the ``tshark``
+executable. For example, on Windows:
+
+.. code-block::
+
+    set TSHARK_PATH="C:\Program Files\Wireshark\tshark.exe"

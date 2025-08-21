@@ -6,20 +6,23 @@ import warnings
 
 import requests
 
-RESULTS_CACHE_DIR = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "results"
-MACHINES_DIR = pathlib.Path.home() / ".nwb_benchmarks" / "machines"
+from ..globals import ENVIRONMENTS_DIR, MACHINES_DIR, RESULTS_CACHE_DIR
 
 
 def clean_results():
     for results_file_path in itertools.chain(
-        RESULTS_CACHE_DIR.rglob(pattern="*.json"), MACHINES_DIR.rglob(pattern="*.json")
+        RESULTS_CACHE_DIR.rglob(pattern="*.json"),
+        MACHINES_DIR.rglob(pattern="*.json"),
+        ENVIRONMENTS_DIR.rglob(pattern="*.json"),
     ):
         results_file_path.unlink(missing_ok=True)
 
 
 def upload_results():
     for results_file_path in itertools.chain(
-        RESULTS_CACHE_DIR.rglob(pattern="*.json"), MACHINES_DIR.rglob(pattern="*.json")
+        RESULTS_CACHE_DIR.rglob(pattern="*.json"),
+        MACHINES_DIR.rglob(pattern="*.json"),
+        ENVIRONMENTS_DIR.rglob(pattern="*.json"),
     ):
         with results_file_path.open("r") as file_stream:
             json_content = json.load(file_stream)

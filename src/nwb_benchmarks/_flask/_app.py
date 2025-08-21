@@ -96,9 +96,19 @@ class GitHubResultsManager:
 
     def write_file(self, filename: str, json_content: dict) -> None:
         """Write results JSON to a file in the cache directory."""
-        results_file_path = self.cache_directory / "nwb-benchmarks-results" / filename
+        base_directory = self.cache_directory / "nwb-benchmarks-results"
+        if filename.startswith("environment-"):
+            directory = base_directory / "environments"
+        if filename.startswith("machine-"):
+            directory = base_directory / "machines"
+        elif filename.endswith("_results"):
+            directory = base_directory / "results"
+        else:
+            # Legacy outer collection
+            directory = base_directory
+        file_path = directory / filename
 
-        with open(file=results_file_path, mode="w") as file_stream:
+        with open(file=file_path, mode="w") as file_stream:
             json.dump(obj=json_content, fp=file_stream, indent=4)
 
     def add_and_commit(self) -> typing.Literal[523] | None:
