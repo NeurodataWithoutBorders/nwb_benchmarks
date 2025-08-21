@@ -1,16 +1,10 @@
 """Simple wrapper around `asv run` for convenience."""
 
-import json
 import locale
-import os
 import pathlib
 import shutil
 import subprocess
 import sys
-import time
-import warnings
-
-import requests
 
 from .core import upload_results
 from .setup import customize_asv_machine_file, reduce_results
