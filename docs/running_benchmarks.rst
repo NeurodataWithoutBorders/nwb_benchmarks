@@ -37,7 +37,7 @@ For example,
 
 .. code-block::
 
-    nwb_benchmarks run --bench time_remote_file_reading
+    nwb_benchmarks run --bench time_remote_file_reading.DirectFileReadBenchmark
 
 Debug mode
 ~~~~~~~~~~

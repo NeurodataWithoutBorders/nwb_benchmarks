@@ -1,6 +1,6 @@
 import pathlib
 
-MACHINE_FILE_VERSION = "1.0.0"
+MACHINE_FILE_VERSION = "1.1.0"
 DATABASE_VERSION = "1.0.0"
 
 CACHE_DIR = pathlib.Path.home() / ".cache" / "nwb_benchmarks"

@@ -34,7 +34,8 @@ dependencies = [
     "pynwb>=2.8.2",
     "hdmf>=3.14.5",
     "hdmf-zarr",
-    "friendlywords"
+    "friendlywords",
+    "typing_extensions",  # TODO: remove when dropping support for Python 3.10
 ]
 license = {file = "license.txt"}
 keywords = ["nwb", "benchmark"]

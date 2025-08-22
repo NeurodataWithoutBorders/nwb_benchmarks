@@ -86,7 +86,6 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
 
     reduced_results_info = dict(
         database_version=DATABASE_VERSION,
-        version=raw_results_info["version"],
         timestamp=timestamp,
         commit_hash=raw_results_info["commit_hash"],
         environment_id=environment_id,
