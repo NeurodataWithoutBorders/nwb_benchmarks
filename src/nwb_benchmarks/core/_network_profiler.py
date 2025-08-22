@@ -56,12 +56,31 @@ class NetworkProfiler:
     def stop_capture(self):
         """Stop the capture with tshark in a subprocess."""
         if self.__tshark_process is not None:
-            self.__tshark_process.terminate()
-            self.__tshark_process.kill()
-            del self.__tshark_process
-            self.__tshark_process = None
-        # if hasattr(self, "capture_file"):
-        #     del self.capture_file
+            try:
+                # First try to terminate gracefully
+                self.__tshark_process.terminate()
+                # Wait a short time for graceful termination
+                try:
+                    self.__tshark_process.wait(timeout=2.0)
+                except subprocess.TimeoutExpired:
+                    # If it doesn't terminate gracefully, force kill
+                    warnings.warn("TShark did not terminate gracefully, force killing it.")
+                    self.__tshark_process.kill()
+                    self.__tshark_process.wait(timeout=1.0)
+            except Exception:
+                # If anything goes wrong, just try to kill it
+                try:
+                    warnings.warn("Error stopping TShark process, force killing it.")
+                    self.__tshark_process.kill()
+                    self.__tshark_process.wait(timeout=1.0)
+                except Exception:
+                    warnings.warn("Error stopping and killing TShark process.")
+                    pass
+            finally:
+                self.__tshark_process = None
+
+        # Give tshark a moment to flush its output to the file
+        time.sleep(0.1)
 
     def get_packets_for_connections(self, pid_connections: list):
         """
