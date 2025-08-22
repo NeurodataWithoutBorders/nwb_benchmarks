@@ -4,6 +4,7 @@ import os
 import pathlib
 import subprocess
 import time
+import traceback
 import typing
 import uuid
 from datetime import datetime
@@ -51,7 +52,7 @@ class Contribute(flask_restx.Resource):
         payload = data_namespace.payload
         json_content = payload["json_content"]
 
-        manager = GitHubResultsManager()
+        manager = GitHubResultsManager(repo_name="nwb-benchmarks-results")
         result = manager.ensure_repo_up_to_date()
         if result is not None:
             return result
@@ -63,7 +64,7 @@ class Contribute(flask_restx.Resource):
         time.sleep(1)
 
         if test_mode is False:
-            result = manager.add_and_commit()
+            result = manager.add_and_commit(message="Add new benchmark results")
             if result is not None:
                 return result
 
@@ -75,28 +76,51 @@ class Contribute(flask_restx.Resource):
 
 
 @data_namespace.route("/update-database")
-class Contribute(flask_restx.Resource):
+class UpdateDataBase(flask_restx.Resource):
     @data_namespace.doc(
         responses={
             200: "Success",
             400: "Bad Request",
             500: "Internal server error",
+            521: "Repository path on server not found.",
+            522: "Error during local update. Check server logs for specifics.",
+            523: "Error during add/commit. Check server logs for specifics.",
         }
     )
     def post(self) -> int:
-        directory = Path.home() / ".cache" / "nwb-benchmarks" / "nwb-benchmarks-results"
-        output_directory = Path.home() / ".cache" / "nwb-benchmarks" / "nwb-benchmarks-database"
+        try:
+            directory = Path.home() / ".cache" / "nwb-benchmarks" / "nwb-benchmarks-results"
+            output_directory = Path.home() / ".cache" / "nwb-benchmarks" / "nwb-benchmarks-database"
 
-        repackage_as_parquet(directory=directory, output_directory=output_directory)
+            manager = GitHubResultsManager(repo_name="nwb-benchmarks-database")
+            result = manager.ensure_repo_up_to_date()
+            if result is not None:
+                return result
 
-        return 200
+            time.sleep(1)
+
+            repackage_as_parquet(directory=directory, output_directory=output_directory)
+
+            time.sleep(1)
+
+            result = manager.add_and_commit(message="Update benchmark databases")
+            if result is not None:
+                return result
+
+            time.sleep(1)
+
+            manager.push()
+
+            return 200
+        except Exception as exception:
+            return {"type": type(exception).__name__, "error": str(exception), "traceback": traceback.format_exc()}, 500
 
 
 class GitHubResultsManager:
-    def __init__(self):
+    def __init__(self, repo_name: str):
         self.cache_directory = Path.home() / ".cache" / "nwb-benchmarks"
         self.cache_directory.mkdir(parents=True, exist_ok=True)
-        self.repo_path = self.cache_directory / "nwb-benchmarks-results"
+        self.repo_path = self.cache_directory / repo_name
 
     def ensure_repo_up_to_date(self) -> typing.Literal[521, 522] | None:
         """Clone repository if it doesn't exist locally."""
@@ -133,12 +157,12 @@ class GitHubResultsManager:
         with open(file=file_path, mode="w") as file_stream:
             json.dump(obj=json_content, fp=file_stream, indent=4)
 
-    def add_and_commit(self) -> typing.Literal[523] | None:
+    def add_and_commit(self, message: str) -> typing.Literal[523] | None:
         """Commit results to git repo."""
-        command = f"git add . && git commit -m 'Add new benchmark results'"
+        command = f"git add . && git commit -m '{message}'"
         result = subprocess.run(
             args=command,
-            cwd=self.cache_directory / "nwb-benchmarks-results",
+            cwd=self.repo_path,
             capture_output=True,
             shell=True,
         )
@@ -150,9 +174,10 @@ class GitHubResultsManager:
     def push(self):
         """Commit and push results to GitHub repository."""
         command = "git push"
+        cwd = (self.repo_path,)
         result = subprocess.run(
             args=command,
-            cwd=self.cache_directory / "nwb-benchmarks-results",
+            cwd=cwd,
             capture_output=True,
             shell=True,
         )
@@ -346,7 +371,7 @@ def repackage_as_parquet(directory: pathlib.Path, output_directory: pathlib.Path
 
         machine_data_frame = machine.to_dataframe()
         machines_data_frames.append(machine_data_frame)
-    machines_database = polars.concat(items=data_frames, how="diagonal_relaxed")
+    machines_database = polars.concat(items=machines_data_frames, how="diagonal_relaxed")
 
     machines_database_file_path = output_directory / "machines.parquet"
     machines_database.write_parquet(file=machines_database_file_path)
