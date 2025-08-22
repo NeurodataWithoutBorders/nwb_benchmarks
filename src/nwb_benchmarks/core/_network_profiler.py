@@ -66,7 +66,13 @@ class NetworkProfiler:
                     # If it doesn't terminate gracefully, force kill
                     warnings.warn("TShark did not terminate gracefully, force killing it.")
                     self.__tshark_process.kill()
-                    self.__tshark_process.wait(timeout=1.0)
+                    try:
+                        self.__tshark_process.wait(timeout=2.0)
+                    except subprocess.TimeoutExpired:
+                        # If it doesn't terminate gracefully, force kill
+                        warnings.warn("TShark did not terminate gracefully again, force killing it.")
+                        self.__tshark_process.kill()
+                        self.__tshark_process.wait(timeout=1.0)
             except Exception:
                 # If anything goes wrong, just try to kill it
                 try:
@@ -77,6 +83,11 @@ class NetworkProfiler:
                     warnings.warn("Error stopping and killing TShark process.")
                     pass
             finally:
+                if self.__tshark_process.poll() is None:
+                    warnings.warn(
+                        f"TShark process (PID: {self.__tshark_process.pid}) is still running "
+                        "after termination attempts"
+                    )
                 self.__tshark_process = None
 
         # Give tshark a moment to flush its output to the file
