@@ -40,6 +40,8 @@ class SliceMixin:
 class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
     """Benchmark streaming access to slices of NWB data using fsspec without caching."""
 
+    rounds = 1
+    repeat = 3
     parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -51,6 +53,8 @@ class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
 class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
     """Benchmark streaming access to slices of NWB data using fsspec with caching."""
 
+    rounds = 1
+    repeat = 3
     parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -68,6 +72,8 @@ class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
 class RemfileNoCacheContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
     """Benchmark streaming access to slices of NWB data using Remfile without caching."""
 
+    rounds = 1
+    repeat = 3
     parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -79,6 +85,8 @@ class RemfileNoCacheContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
 class RemfileWithCacheContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
     """Benchmark streaming access to slices of NWB data using Remfile with caching."""
 
+    rounds = 1
+    repeat = 3
     parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -96,6 +104,8 @@ class RemfileWithCacheContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
 class Ros3ContinuousSliceBenchmark(BaseBenchmark):
     """Benchmark streaming access to slices of NWB data using the HDF5 ROS3 driver."""
 
+    rounds = 1
+    repeat = 3
     parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -117,6 +127,8 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
 class LindiRemoteJsonContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
     """Benchmark streaming access to slices of NWB data using LINDI with a remote JSON file."""
 
+    rounds = 1
+    repeat = 3
     parameter_cases = lindi_remote_rfs_parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -128,6 +140,8 @@ class LindiRemoteJsonContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
 class ZarrContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
     """Benchmark streaming access to slices of NWB data using Zarr."""
 
+    rounds = 1
+    repeat = 3
     parameter_cases = zarr_parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -145,6 +159,8 @@ class ZarrContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
 class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark, SliceMixin):
     """Benchmark streaming access to slices of NWB data using Zarr without consolidated metadata."""
 
+    rounds = 1
+    repeat = 3
     parameter_cases = zarr_parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
