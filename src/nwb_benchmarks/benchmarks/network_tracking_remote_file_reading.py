@@ -1,7 +1,6 @@
 """Basic benchmarks for profiling network statistics for streaming access to NWB files and their contents."""
 
 import os
-from time import sleep
 
 from asv_runner.benchmarks.mark import skip_benchmark_if
 
@@ -44,16 +43,14 @@ class FsspecNoCacheFileReadBenchmark(BaseBenchmark):
     def track_network_activity_during_read_h5py(self, s3_url: str):
         """Track network activity during reading HDF5 files with h5py using fsspec without caching."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            sleep(1)
-            # self.file, self.bytestream = read_hdf5_fsspec_no_cache(s3_url=s3_url)
+            self.file, self.bytestream = read_hdf5_fsspec_no_cache(s3_url=s3_url)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_read_pynwb(self, s3_url: str):
         """Track network activity during reading NWB files with h5py and PyNWB using fsspec without caching."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            sleep(1)
-            # self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
         return network_tracker.asv_network_statistics
 
 
