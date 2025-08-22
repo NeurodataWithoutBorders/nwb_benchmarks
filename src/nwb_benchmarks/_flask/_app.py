@@ -167,14 +167,15 @@ class GitHubResultsManager:
             shell=True,
         )
         if result.returncode != 0:
-            message = f"Git command ({command}) failed: {result.stderr.decode()}"
+            message = f"Git command ({command}) failed: {result.stderr.decode()}\ntraceback: {traceback.format_exc()}"
             print(f"ERROR: {message}")
-            return 523
+            raise RuntimeError(message)
+            # return 523
 
     def push(self):
         """Commit and push results to GitHub repository."""
         command = "git push"
-        cwd = (self.repo_path,)
+        cwd = self.repo_path
         result = subprocess.run(
             args=command,
             cwd=cwd,
