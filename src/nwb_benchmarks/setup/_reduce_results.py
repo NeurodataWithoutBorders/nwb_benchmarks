@@ -11,6 +11,9 @@ import sys
 import warnings
 from typing import Dict, List
 
+from ..globals import DATABASE_VERSION, MACHINES_DIR
+from ..utils import get_dictionary_checksum
+
 
 def _parse_environment_info(raw_environment_info: List[str]) -> Dict[str, List[[Dict[str, str]]]]:
     """Turn the results of `conda list` printout to a JSON dictionary."""
@@ -27,20 +30,18 @@ def _parse_environment_info(raw_environment_info: List[str]) -> Dict[str, List[[
     return parsed_environment
 
 
-def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_file_path: pathlib.Path):
+def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_environment_info_file_path: pathlib.Path):
     """Default ASV result file is very inefficient - this routine simplifies it for sharing."""
     with open(file=raw_results_file_path, mode="r") as io:
         raw_results_info = json.load(fp=io)
     with open(file=raw_environment_info_file_path, mode="r") as io:
         raw_environment_info = io.readlines()
     parsed_environment_info = _parse_environment_info(raw_environment_info=raw_environment_info)
+    environment_id = get_dictionary_checksum(dictionary=parsed_environment_info)
 
     # In timestamp, replace separators with underscores for file path
     unix_time_to_datetime = str(datetime.datetime.fromtimestamp(raw_results_info["date"] / 1e3))
     timestamp = unix_time_to_datetime.replace(" ", "-").replace(":", "-")
-
-    environment_hash = hashlib.sha1(string=bytes(json.dumps(obj=parsed_environment_info), "utf-8")).hexdigest()
-    machine_hash = raw_results_info["params"]["machine"]
 
     reduced_results = dict()
     for test_case, raw_results_list in raw_results_info["results"].items():
@@ -88,16 +89,16 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
 
     if len(reduced_results) == 0:
         raise ValueError(
-            "The results parser failed to find any succesful results! "
+            "The results parser failed to find any successful results! "
             "Please raise an issue and share your intermediate results file."
         )
 
     reduced_results_info = dict(
-        version=raw_results_info["version"],
+        database_version=DATABASE_VERSION,
         timestamp=timestamp,
         commit_hash=raw_results_info["commit_hash"],
-        environment_hash=environment_hash,
-        machine_hash=machine_hash,
+        environment_id=environment_id,
+        machine_id=machine_id,
         results=reduced_results,
     )
 
@@ -106,34 +107,29 @@ def reduce_results(raw_results_file_path: pathlib.Path, raw_environment_info_fil
     # 'processed' results go to ~/.cache/nwb_benchmarks/results
     results_cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "results"
     results_cache_directory.mkdir(parents=True, exist_ok=True)
+    environments_cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "environments"
+    environments_cache_directory.mkdir(exist_ok=True)
 
     parsed_results_file = (
         results_cache_directory
-        / f"results_timestamp-{timestamp}_machine-{machine_hash}_environment-{environment_hash}.json"
+        / f"timestamp-{timestamp}_environment-{environment_id}_machine-{machine_id}_results.json"
     )
-
     with open(file=parsed_results_file, mode="w") as io:
         json.dump(obj=reduced_results_info, fp=io, indent=1)  # At least one level of indent makes it easier to read
-    print("Results written to:         ", parsed_results_file.absolute())
-
-    # Copy machine file to main results
-    machine_info_file_path = raw_results_file_path.parent / "machine.json"
-    machine_info_copy_file_path = results_cache_directory / f"info_machine-{machine_hash}.json"
-    if not machine_info_copy_file_path.exists():
-        shutil.copyfile(src=machine_info_file_path, dst=machine_info_copy_file_path)
-    print("Machine info written to:    ", machine_info_copy_file_path.absolute())
+    print(f"\nResults written to:        {parsed_results_file}")
 
     # Save parsed environment info within machine subdirectory of .asv
-    parsed_environment_file_path = results_cache_directory / f"info_environment-{environment_hash}.json"
+    parsed_environment_file_path = results_cache_directory / f"environment-{environment_id}.json"
     if not parsed_environment_file_path.exists():
         with open(file=parsed_environment_file_path, mode="w") as io:
             json.dump(obj=parsed_environment_info, fp=io, indent=1)
-    print("Environment info written to:", parsed_environment_file_path.absolute())
+    print(f"\nEnvironment info written to: {parsed_environment_file_path}")
 
     # Network tests require admin permissions, which can alter write permissions of any files created
+    machine_file_path = MACHINES_DIR / f"machine-{machine_id}.json"
     if sys.platform in ["darwin", "linux"]:
         subprocess.run(["chmod", "-R", "+rw", parsed_results_file.absolute()])
-        subprocess.run(["chmod", "-R", "+rw", machine_info_file_path.absolute()])
+        subprocess.run(["chmod", "-R", "+rw", machine_file_path.absolute()])
         subprocess.run(["chmod", "-R", "+rw", parsed_environment_file_path.absolute()])
 
     raw_results_file_path.unlink()
