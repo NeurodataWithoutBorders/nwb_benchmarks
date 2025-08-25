@@ -169,8 +169,7 @@ class GitHubResultsManager:
         if result.returncode != 0:
             message = f"Git command ({command}) failed: {result.stderr.decode()}\ntraceback: {traceback.format_exc()}"
             print(f"ERROR: {message}")
-            raise RuntimeError(message)
-            # return 523
+            return 523
 
     def push(self):
         """Commit and push results to GitHub repository."""
