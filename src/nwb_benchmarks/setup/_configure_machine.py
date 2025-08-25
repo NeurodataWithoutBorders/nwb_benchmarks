@@ -1,5 +1,6 @@
 """Add information to the ASV machine parameters."""
 
+import datetime
 import hashlib
 import json
 import os
@@ -8,24 +9,34 @@ import platform
 import sys
 from typing import Any, Dict
 
+import friendlywords
 import psutil
 from numba import cuda
+
+from ..globals import MACHINE_FILE_VERSION, MACHINES_DIR
+from ..utils import get_dictionary_checksum
 
 
 def collect_machine_info() -> Dict[str, Dict[str, Any]]:
     """Collect attributes for uniquely identifying a system and providing metadata associated with performance."""
-    custom_machine_info = dict()
+    machine_info = dict()
 
-    custom_machine_info["os"] = dict(cpu_count=os.cpu_count())
-    custom_machine_info["sys"] = dict(platform=sys.platform)
-    custom_machine_info["platform"] = dict(
+    is_github_runner = os.getenv("GITHUB_ACTIONS", False)
+    timestamp = datetime.datetime.now().strftime(format="%Y%m%d%H%M%S")
+    machine_name = f"github-{timestamp}" if is_github_runner else generate_human_readable_machine_name()
+    machine_info["name"] = machine_name
+    machine_info["version"] = MACHINE_FILE_VERSION
+
+    machine_info["os"] = dict(cpu_count=os.cpu_count())
+    machine_info["sys"] = dict(platform=sys.platform)
+    machine_info["platform"] = dict(
         architecture=list(platform.architecture()),  # Must be cast as a list for later assertions against JSON
         machine=platform.machine(),
         platform=platform.platform(),
         processor=platform.processor(),
         system=platform.system(),
     )
-    custom_machine_info["psutil"] = dict(
+    machine_info["psutil"] = dict(
         number_of_processes=psutil.cpu_count(logical=False),
         number_of_threads=psutil.cpu_count(logical=True),
         total_virtual_memory=psutil.virtual_memory().total,
@@ -35,6 +46,7 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
     # TODO: psutil does have some socket stuff in .net_connections, is that useful at all?
 
     # GPU info - mostly taken from https://stackoverflow.com/a/62459332
+    machine_info["cuda"] = dict()
     try:
         device = cuda.get_current_device()
         gpu_attributes = [
@@ -43,49 +55,60 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
             if name.startswith("CU_DEVICE_ATTRIBUTE_")
         ]
         gpu_specifications = {gpu_attribute: getattr(device, gpu_attribute) for gpu_attribute in gpu_attributes}
-        custom_machine_info["cuda"] = dict(gpu_name=device.name.decode("utf-8"), gpu_specifications=gpu_specifications)
+        machine_info["cuda"] = dict(gpu_name=device.name.decode("utf-8"), gpu_specifications=gpu_specifications)
     except cuda.cudadrv.error.CudaSupportError:
         # No GPU detected by cuda; skipping section of custom machine info
         pass
     except Exception as exception:
         raise exception
 
-    return custom_machine_info
+    default_asv_machine_file_path = pathlib.Path.home() / ".asv-machine.json"
+    if default_asv_machine_file_path.exists():
+        with open(file=default_asv_machine_file_path, mode="r") as file_stream:
+            asv_machine_info = json.load(fp=file_stream)
+    machine_info["asv"] = asv_machine_info
 
+    # Some info in ASV may be considered 'private'
+    if len(asv_machine_info.keys()) != 2:
+        message = (
+            f"\nThe ASV machine file at {default_asv_machine_file_path} should only contain two keys: "
+            "'version' and the machine name. "
+            f"Found {len(asv_machine_info.keys())} keys: {list(asv_machine_info.keys())}' "
+            "Please raise an issue at https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues/new to report."
+        )
+        raise ValueError(message)
 
-def customize_asv_machine_file(file_path: pathlib.Path, overwrite: bool = False) -> None:
-    """Modify ASV machine file in-place with additional values."""
-    with open(file=file_path, mode="r") as io:
-        machine_file_info = json.load(fp=io)
+    asv_machine_key = next(key for key in asv_machine_info.keys() if key != "version")
+    asv_machine_info[asv_machine_key]["machine"] = machine_name
 
-    # Assume there's only one machine configured per installation
-    default_machine_name = next(key for key in machine_file_info.keys() if key != "version")
-
-    # Add flag for detecting if this modification script has been run on the file already
-    if not overwrite and machine_file_info[default_machine_name].get("custom", False):
-        return
-
-    custom_machine_info = collect_machine_info()
-
-    if overwrite and "defaults" in machine_file_info[default_machine_name]:
-        default_machine_info = machine_file_info[default_machine_name]["defaults"]
-    else:
-        default_machine_info = machine_file_info[default_machine_name]
-    custom_machine_info["defaults"] = default_machine_info  # Defaults tends to have blanks
-
-    # Required keys at the outer level
-    # The 'machine' key is really the 'ID' of the machines logs
-    # Needs to be unique for a combined results database
-    custom_machine_info.update(custom=True)
-    custom_machine_hash = hashlib.sha1(
-        string=bytes(json.dumps(obj=custom_machine_info, sort_keys=True), "utf-8")
-    ).hexdigest()
-    custom_machine_info.update(machine=custom_machine_hash)
-
-    custom_file_info = {
-        custom_machine_hash: custom_machine_info,
-        "version": machine_file_info["version"],
+    anonymized_asv_machine_info = {
+        machine_name: asv_machine_info[asv_machine_key],
+        "version": asv_machine_info["version"],
     }
+    machine_info["asv"] = anonymized_asv_machine_info
 
-    with open(file=file_path, mode="w") as io:
-        json.dump(fp=io, obj=custom_file_info, indent=1)
+    return machine_info
+
+
+def generate_machine_file() -> str:
+    """Generate a custom machine file and store in the NWB Benchmarks home directory."""
+    machine_info = collect_machine_info()
+
+    checksum = get_dictionary_checksum(dictionary=machine_info)
+    machine_info_file_path = MACHINES_DIR / f"machine-{checksum}.json"
+    with open(file=machine_info_file_path, mode="w") as file_stream:
+        json.dump(obj=machine_info, fp=file_stream, indent=1)
+    print(f"\nMachine info written to:    {machine_info_file_path}")
+
+    return checksum
+
+
+def generate_human_readable_machine_name() -> str:
+    """
+    There are about 4 million possible combinations of predicate/objects in `friendlywords`.
+
+    GitHub Actions runners get unique names based on the timestamp of the run.
+    Natural collisions should be able to be disambiguated by the peripheral machine info.
+    """
+    name = "".join(word.capitalize() for word in friendlywords.generate(command="po", as_list=True))
+    return name
