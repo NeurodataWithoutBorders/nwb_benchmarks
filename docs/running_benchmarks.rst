@@ -37,7 +37,7 @@ For example,
 
 .. code-block::
 
-    nwb_benchmarks run --bench time_remote_file_reading
+    nwb_benchmarks run --bench time_remote_file_reading.DirectFileReadBenchmark
 
 Debug mode
 ~~~~~~~~~~
@@ -48,7 +48,7 @@ If you want to get a full traceback to examine why a new test might be failing, 
 
     nwb_benchmarks run --debug
 
-Setting this flag will also override the `repeat` parameter of benchmarks and set it to 1, so that you can quickly
+Setting this flag will also override the ``repeat`` parameter of benchmarks and set it to 1, so that you can quickly
 iterate on the code and see the results of your changes without having to wait for the full suite to run.
 
 Setting this flag will also not write results to the local cached results directory or upload results to the central
@@ -70,11 +70,12 @@ If this fails, you can contribute your results manually by:
     git commit -m "New results from ...." .
     git push
 
-Then, open a PR to merge the results to the `main` branch of the central repo.
+Then, open a PR to merge the results to the ``main`` branch of the central repo.
 
 .. note::
 
-    When running tests with `sudo` the new results may be owned by `root`. To avoid having to run pre-commit hooks in sudo you may need to change the owner of the results first, e.g., via ``sudo chown -R <new_owner> results
+    When running tests with ``sudo`` the new results may be owned by ``root``. To avoid having to run pre-commit hooks
+in sudo you may need to change the owner of the results first, e.g., via ``sudo chown -R <new_owner> results``.
 
 .. note::
 

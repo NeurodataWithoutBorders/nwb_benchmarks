@@ -1,5 +1,7 @@
 """Simple wrapper around `asv run` for convenience."""
 
+import itertools
+import json
 import locale
 import pathlib
 import shutil
@@ -7,7 +9,7 @@ import subprocess
 import sys
 
 from .core import clean_results, upload_results
-from .setup import customize_asv_machine_file, reduce_results
+from .setup import generate_machine_file, reduce_results
 
 
 def main() -> None:
@@ -25,8 +27,8 @@ def main() -> None:
     if bench_mode:
         specific_benchmark_pattern = flags_list[flags_list.index("--bench") + 1]
 
-    default_asv_machine_file_path = pathlib.Path.home() / ".asv-machine.json"
     if command == "run":
+        # Create .asv directory at GitHub repository root
         asv_root = pathlib.Path(__file__).parent.parent.parent / ".asv"
         asv_root.mkdir(exist_ok=True)
         intermediate_results_folder = asv_root / "intermediate_results"
@@ -36,13 +38,13 @@ def main() -> None:
                 shutil.rmtree(path=intermediate_results_folder)
             except PermissionError:
                 raise FileExistsError(
-                    f"Unable to auotmatically remove {intermediate_results_folder} - please manually delete and "
+                    f"Unable to automatically remove {intermediate_results_folder} - please manually delete and "
                     "try to run the benchmarks again."
                 )
 
         aws_machine_process = subprocess.Popen(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
         aws_machine_process.wait()
-        customize_asv_machine_file(file_path=default_asv_machine_file_path)
+        machine_id = generate_machine_file()
 
         commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
 
@@ -94,6 +96,7 @@ def main() -> None:
             raw_results_file_path.unlink()
         else:
             reduce_results(
+                machine_id=machine_id,
                 raw_results_file_path=raw_results_file_path,
                 raw_environment_info_file_path=raw_environment_info_file_path,
             )
