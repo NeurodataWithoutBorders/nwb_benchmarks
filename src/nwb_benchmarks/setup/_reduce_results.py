@@ -11,7 +11,7 @@ import sys
 import warnings
 from typing import Dict, List
 
-from ..globals import DATABASE_VERSION
+from ..globals import DATABASE_VERSION, MACHINES_DIR
 from ..utils import get_dictionary_checksum
 
 
@@ -98,8 +98,6 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
     # 'processed' results go to ~/.cache/nwb_benchmarks/results
     results_cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "results"
     results_cache_directory.mkdir(parents=True, exist_ok=True)
-    machines_cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "machines"
-    machines_cache_directory.mkdir(exist_ok=True)
     environments_cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "environments"
     environments_cache_directory.mkdir(exist_ok=True)
 
@@ -119,7 +117,7 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
     print(f"\nEnvironment info written to: {parsed_environment_file_path}")
 
     # Network tests require admin permissions, which can alter write permissions of any files created
-    machine_file_path = machines_cache_directory / f"machine-{machine_id}.json"
+    machine_file_path = MACHINES_DIR / f"machine-{machine_id}.json"
     if sys.platform in ["darwin", "linux"]:
         subprocess.run(["chmod", "-R", "+rw", parsed_results_file.absolute()])
         subprocess.run(["chmod", "-R", "+rw", machine_file_path.absolute()])

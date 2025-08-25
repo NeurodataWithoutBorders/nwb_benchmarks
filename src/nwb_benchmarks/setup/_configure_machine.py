@@ -13,7 +13,7 @@ import friendlywords
 import psutil
 from numba import cuda
 
-from ..globals import MACHINE_FILE_VERSION
+from ..globals import MACHINE_FILE_VERSION, MACHINES_DIR
 from ..utils import get_dictionary_checksum
 
 
@@ -94,13 +94,8 @@ def generate_machine_file() -> str:
     """Generate a custom machine file and store in the NWB Benchmarks home directory."""
     machine_info = collect_machine_info()
 
-    cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks"
-    cache_directory.mkdir(exist_ok=True)
-    machines_directory = cache_directory / "machines"
-    machines_directory.mkdir(exist_ok=True)
-
     checksum = get_dictionary_checksum(dictionary=machine_info)
-    machine_info_file_path = machines_directory / f"machine-{checksum}.json"
+    machine_info_file_path = MACHINES_DIR / f"machine-{checksum}.json"
     with open(file=machine_info_file_path, mode="w") as file_stream:
         json.dump(obj=machine_info, fp=file_stream, indent=1)
     print(f"\nMachine info written to:    {machine_info_file_path}")
