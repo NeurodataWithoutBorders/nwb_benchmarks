@@ -21,8 +21,8 @@ from nwb_benchmarks.core import (
     read_hdf5_remfile,
     read_hdf5_remfile_with_cache,
     read_hdf5_ros3,
-    read_zarr_s3_protocol,
     read_zarr_nwbfile_s3_protocol,
+    read_zarr_s3_protocol,
 )
 
 from .params_remote_file_reading import (
