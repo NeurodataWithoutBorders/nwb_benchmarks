@@ -58,10 +58,11 @@ class BaseBenchmark:
                 cartesian_param for cartesian_param in cartesian_params if cartesian_param not in desired_params
             ]
 
-            for method_name, method in vars(cls).items():
-                if any(method_name.startswith(prefix) for prefix in ["time_", "track_"]):  # Add more when needed
+            for attr_name in dir(cls):
+                attr = getattr(cls, attr_name)
+                if callable(attr) and any(attr_name.startswith(prefix) for prefix in ["time_", "track_"]):  # Add more when needed
                     setattr(
-                        cls, method_name, asv_runner.benchmarks.mark.skip_for_params(non_cartesian_exclusion)(method)
+                        cls, attr_name, asv_runner.benchmarks.mark.skip_for_params(non_cartesian_exclusion)(attr)
                     )
 
         return instance
