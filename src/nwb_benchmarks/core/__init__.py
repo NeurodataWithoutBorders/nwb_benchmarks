@@ -22,8 +22,10 @@ from ._streaming import (
     read_hdf5_remfile,
     read_hdf5_remfile_with_cache,
     read_hdf5_ros3,
-    read_zarr,
-    read_zarr_nwbfile,
+    read_zarr_s3_protocol,
+    read_zarr_nwbfile_s3_protocol,
+    read_zarr_https_protocol,
+    read_zarr_nwbfile_https_protocol,
     robust_ros3_read,
 )
 
@@ -49,8 +51,10 @@ __all__ = [
     "get_s3_url",
     "get_object_by_name",
     "robust_ros3_read",
-    "read_zarr",
-    "read_zarr_nwbfile",
+    "read_zarr_s3_protocol",
+    "read_zarr_nwbfile_s3_protocol",
+    "read_zarr_https_protocol",
+    "read_zarr_nwbfile_https_protocol",
     "upload_results",
     "clean_results",
 ]

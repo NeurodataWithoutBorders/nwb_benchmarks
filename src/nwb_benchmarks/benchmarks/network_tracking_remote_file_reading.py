@@ -21,8 +21,8 @@ from nwb_benchmarks.core import (
     read_hdf5_remfile,
     read_hdf5_remfile_with_cache,
     read_hdf5_ros3,
-    read_zarr,
-    read_zarr_nwbfile,
+    read_zarr_s3_protocol,
+    read_zarr_nwbfile_s3_protocol,
 )
 
 from .params_remote_file_reading import (
@@ -249,7 +249,7 @@ class ZarrDirectFileReadBenchmark(BaseBenchmark):
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=False)
+            self.zarr_file = read_zarr_s3_protocol(s3_url=s3_url, open_without_consolidated_metadata=False)
         return network_tracker.asv_network_statistics
 
 
@@ -261,7 +261,7 @@ class ZarrForceNoConsolidatedDirectFileReadBenchmark(BaseBenchmark):
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=True)
+            self.zarr_file = read_zarr_s3_protocol(s3_url=s3_url, open_without_consolidated_metadata=True)
         return network_tracker.asv_network_statistics
 
 
@@ -273,7 +273,7 @@ class ZarrNWBFileReadBenchmark(BaseBenchmark):
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
+            self.nwbfile, self.io = read_zarr_nwbfile_s3_protocol(s3_url=s3_url, mode="r")
         return network_tracker.asv_network_statistics
 
 
@@ -285,5 +285,5 @@ class ZarrForceNoConsolidatedNWBFileReadBenchmark(BaseBenchmark):
 
     def track_network_activity_during_read(self, s3_url: str):
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")
+            self.nwbfile, self.io = read_zarr_nwbfile_s3_protocol(s3_url=s3_url, mode="r-")
         return network_tracker.asv_network_statistics

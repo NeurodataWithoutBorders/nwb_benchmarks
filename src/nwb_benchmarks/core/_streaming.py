@@ -228,28 +228,42 @@ def read_hdf5_nwbfile_lindi(rfs: Union[dict, str]) -> Tuple[pynwb.NWBFile, pynwb
     return (nwbfile, io, client)
 
 
-def read_zarr(s3_url: str, open_without_consolidated_metadata: bool = False) -> zarr.Group:
+def read_zarr_s3_protocol(s3_url: str, open_without_consolidated_metadata: bool = False) -> zarr.Group:
     """
-    Open a Zarr file from an S3 URL using the built-in fsspec support in Zarr.
+    Open a Zarr file from an S3 URL with s3 protocol using the built-in fsspec support in Zarr.
 
     Returns
     -------
     file : zarr.Group
        The zarr.Group object representing the opened file
     """
-    io_kwargs = dict()
-    if s3_url.startswith("s3://"):
-        io_kwargs["storage_options"] = dict(anon=True)
+    ros3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
     if open_without_consolidated_metadata:
-        zarrfile = zarr.open(store=s3_url, mode="r", **io_kwargs)
+        zarrfile = zarr.open(store=ros3_form, mode="r", storage_options=dict(anon=True))
     else:
-        zarrfile = zarr.open_consolidated(store=s3_url, mode="r", **io_kwargs)
+        zarrfile = zarr.open_consolidated(store=ros3_form, mode="r", storage_options=dict(anon=True))
     return zarrfile
 
 
-def read_zarr_nwbfile(s3_url: str, mode: str) -> Tuple[pynwb.NWBFile, hdmf_zarr.NWBZarrIO]:
+def read_zarr_https_protocol(s3_url: str, open_without_consolidated_metadata: bool = False) -> zarr.Group:
     """
-    Read a Zarr NWB file from an S3 URL using the built-in fsspec support in Zarr.
+    Open a Zarr file from an S3 URL with https protocol using the built-in fsspec support in Zarr.
+
+    Returns
+    -------
+    file : zarr.Group
+       The zarr.Group object representing the opened file
+    """
+    if open_without_consolidated_metadata:
+        zarrfile = zarr.open(store=s3_url, mode="r")
+    else:
+        zarrfile = zarr.open_consolidated(store=s3_url, mode="r")
+    return zarrfile
+
+
+def read_zarr_nwbfile_s3_protocol(s3_url: str, mode: str) -> Tuple[pynwb.NWBFile, hdmf_zarr.NWBZarrIO]:
+    """
+    Read a Zarr NWB file from an S3 URL with s3 protocol using the built-in fsspec support in Zarr.
 
     Note: `r-` indicated reading without consolidated metadata, while `r` indicated reading with consolidated.
           `r` should only be used in a benchmark for files that actually have consolidated metadata available,
@@ -264,9 +278,29 @@ def read_zarr_nwbfile(s3_url: str, mode: str) -> Tuple[pynwb.NWBFile, hdmf_zarr.
         The open IO object used to open the file.
     """
 
-    io_kwargs = dict()
-    if s3_url.startswith("s3://"):
-        io_kwargs["storage_options"] = dict(anon=True)
-    io = hdmf_zarr.NWBZarrIO(s3_url, mode=mode, **io_kwargs)
+    ros3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    io = hdmf_zarr.NWBZarrIO(ros3_form, mode=mode, storage_options=dict(anon=True))
+    nwbfile = io.read()
+    return (nwbfile, io)
+
+
+def read_zarr_nwbfile_https_protocol(s3_url: str, mode: str) -> Tuple[pynwb.NWBFile, hdmf_zarr.NWBZarrIO]:
+    """
+    Read a Zarr NWB file from an S3 URL with https protocol using the built-in fsspec support in Zarr.
+
+    Note: `r-` indicated reading without consolidated metadata, while `r` indicated reading with consolidated.
+          `r` should only be used in a benchmark for files that actually have consolidated metadata available,
+          for files without consolidated metadata, `hdmf_zarr` automatically reads without consolidated
+          metadata if no consolidated metadata is present.
+
+    Returns
+    -------
+    NWBFile : pynwb.NWBFile
+        The remote NWBFile object.
+    NWBZarrIO : hdmf_zarr.NWBZarrIO
+        The open IO object used to open the file.
+    """
+
+    io = hdmf_zarr.NWBZarrIO(s3_url, mode=mode)
     nwbfile = io.read()
     return (nwbfile, io)
