@@ -50,6 +50,9 @@ class NetworkProfiler:
         """Start the capture with tshark in a subprocess."""
         tshark_path = tshark_path or "tshark"
         tsharkCall = [str(tshark_path), "-w", str(self.capture_file_path)]
+        networkInterface = os.environ.get("NWB_BENCHMARKS_NETWORK_INTERFACE")
+        if networkInterface:
+            tsharkCall.extend(["-i", networkInterface])
         self.__tshark_process = subprocess.Popen(tsharkCall, stderr=subprocess.DEVNULL)
         time.sleep(0.2)  # not sure if this is needed but just to be safe
 
