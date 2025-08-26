@@ -4,6 +4,7 @@ Class definition for capturing network traffic when remotely reading data from a
 NOTE: This requires sudo/root access on  macOS and AIX.
 """
 
+import os
 import pathlib
 import subprocess
 import tempfile
@@ -26,6 +27,8 @@ class NetworkProfiler:
             self.capture_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
             self.capture_file_path = pathlib.Path(self.capture_file.name)
 
+        print("Using capture file:", self.capture_file_path)
+
     def __del__(self):
         """Stop capture and cleanup temporary file."""
         self.stop_capture()
@@ -39,11 +42,16 @@ class NetworkProfiler:
         """List of all packets captured."""
         if self.__packets is None:
             try:
-                cap = pyshark.FileCapture(self.capture_file_path)
+                print("Getting packets...")
+                start_time = time.time()
+                cap = pyshark.FileCapture(self.capture_file_path, use_json=True)
                 self.__packets = [packet for packet in cap]
+                end_time = time.time()
+                print("Packets captured:", len(self.__packets))
+                print(f"Time taken to read packets: {end_time - start_time:.1f} seconds")
                 del cap
-            except Exception:
-                pass
+            except Exception as e:
+                print("Error getting packets:", e)
         return self.__packets
 
     def start_capture(self, tshark_path: Union[pathlib.Path, None] = None):
@@ -51,43 +59,37 @@ class NetworkProfiler:
         tshark_path = tshark_path or "tshark"
         tsharkCall = [str(tshark_path), "-w", str(self.capture_file_path)]
         self.__tshark_process = subprocess.Popen(tsharkCall, stderr=subprocess.DEVNULL)
-        time.sleep(0.2)  # not sure if this is needed but just to be safe
+        time.sleep(1.0)  # Give TShark a moment to start
 
     def stop_capture(self):
         """Stop the capture with tshark in a subprocess."""
         if self.__tshark_process is not None:
             try:
                 # First try to terminate gracefully
+                print("Attempting to terminate TShark...")
                 self.__tshark_process.terminate()
-                # Wait a short time for graceful termination
                 try:
+                    # Wait a short time for graceful termination
                     self.__tshark_process.wait(timeout=2.0)
                 except subprocess.TimeoutExpired:
-                    # If it doesn't terminate gracefully, force kill
+                    # If it doesn't terminate gracefully, force kill it
                     warnings.warn("TShark did not terminate gracefully, force killing it.")
                     self.__tshark_process.kill()
-                    try:
-                        self.__tshark_process.wait(timeout=2.0)
-                    except subprocess.TimeoutExpired:
-                        # If it doesn't terminate gracefully, force kill
-                        warnings.warn("TShark did not terminate gracefully again, force killing it.")
-                        self.__tshark_process.kill()
-                        self.__tshark_process.wait(timeout=1.0)
+                    self.__tshark_process.wait(timeout=2.0)
             except Exception:
-                # If anything goes wrong, just try to kill it
-                try:
-                    warnings.warn("Error stopping TShark process, force killing it.")
-                    self.__tshark_process.kill()
-                    self.__tshark_process.wait(timeout=1.0)
-                except Exception:
-                    warnings.warn("Error stopping and killing TShark process.")
-                    pass
+                # If anything goes wrong, force kill it
+                warnings.warn("Error terminating TShark process, force killing it.")
+                self.__tshark_process.kill()
+                self.__tshark_process.wait(timeout=2.0)
             finally:
+                # Check to see if the process is still running
                 if self.__tshark_process.poll() is None:
                     warnings.warn(
                         f"TShark process (PID: {self.__tshark_process.pid}) is still running "
-                        "after termination attempts"
+                        "after termination attempts. Please check and terminate it manually if needed."
                     )
+                else:
+                    print("TShark process terminated successfully!")
                 self.__tshark_process = None
 
         # Give tshark a moment to flush its output to the file
@@ -109,6 +111,6 @@ class NetworkProfiler:
                     ports = int(str(packet.tcp.srcport)), int(str(packet.tcp.dstport))
                     if ports in pid_connections:
                         pid_packets.append(packet)
-        except Exception:  # pyshark.capture.capture.TSharkCrashException:
-            pass
+        except Exception as e:  # pyshark.capture.capture.TSharkCrashException:
+            print("Error filtering packets:", e)
         return pid_packets
