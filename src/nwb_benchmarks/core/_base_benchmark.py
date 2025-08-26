@@ -29,6 +29,7 @@ class BaseBenchmark:
     ...and this will be unpacked into the expected form by ASV.
     """
 
+    rounds = 1
     parameter_cases: Union[Dict[str, Dict[str, Any]], None] = None
 
     def __new__(cls, *args, **kwargs) -> Self:

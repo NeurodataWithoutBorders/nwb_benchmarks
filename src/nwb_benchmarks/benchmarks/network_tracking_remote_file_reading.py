@@ -37,8 +37,6 @@ from .params_remote_file_reading import (
 class FsspecNoCacheFileReadBenchmark(BaseBenchmark):
     """Benchmark reading a remote NWB file using fsspec without caching."""
 
-    rounds = 1
-    repeat = 3
     parameter_cases = parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
@@ -59,8 +57,6 @@ class FsspecNoCacheFileReadBenchmark(BaseBenchmark):
 class FsspecWithCacheFileReadBenchmark(BaseBenchmark):
     """Benchmark reading a remote NWB file using fsspec with caching."""
 
-    rounds = 1
-    repeat = 3
     parameter_cases = parameter_cases
 
     def teardown(self, s3_url: str):
@@ -88,8 +84,6 @@ class FsspecWithCacheFileReadBenchmark(BaseBenchmark):
 class RemfileNoCacheFileReadBenchmark(BaseBenchmark):
     """Benchmark reading a remote NWB file using Remfile without caching."""
 
-    rounds = 1
-    repeat = 3
     parameter_cases = parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
@@ -110,8 +104,6 @@ class RemfileNoCacheFileReadBenchmark(BaseBenchmark):
 class RemfileWithCacheFileReadBenchmark(BaseBenchmark):
     """Benchmark reading a remote NWB file using Remfile with caching."""
 
-    rounds = 1
-    repeat = 3
     parameter_cases = parameter_cases
 
     def teardown(self, s3_url: str):
@@ -139,8 +131,6 @@ class RemfileWithCacheFileReadBenchmark(BaseBenchmark):
 class Ros3FileReadBenchmark(BaseBenchmark):
     """Benchmark reading a remote NWB file using the HDF5 ROS3 driver."""
 
-    rounds = 1
-    repeat = 3
     parameter_cases = parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
@@ -163,8 +153,6 @@ class Ros3FileReadBenchmark(BaseBenchmark):
 class LindiCreateLocalJsonFileBenchmark(BaseBenchmark):
     """Benchmark creating a local LINDI JSON file for a remote HDF5 file."""
 
-    rounds = 1
-    repeat = 3
     parameter_cases = lindi_hdf5_parameter_cases
 
     def setup(self, s3_url: str):
@@ -188,8 +176,6 @@ class LindiCreateLocalJsonFileBenchmark(BaseBenchmark):
 class LindiReadLocalJsonFileBenchmark(BaseBenchmark):
     """Benchmark reading a remote NWB file using LINDI with a local LINDI JSON file."""
 
-    rounds = 1
-    repeat = 3
     parameter_cases = lindi_remote_rfs_parameter_cases
 
     def setup(self, s3_url: str):
@@ -221,8 +207,6 @@ class LindiReadLocalJsonFileBenchmark(BaseBenchmark):
 class LindiReadRemoteJsonFileBenchmark(BaseBenchmark):
     """Benchmark reading a remote NWB file using LINDI with a remote LINDI JSON file."""
 
-    rounds = 1
-    repeat = 3
     parameter_cases = lindi_remote_rfs_parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
@@ -243,8 +227,6 @@ class LindiReadRemoteJsonFileBenchmark(BaseBenchmark):
 class ZarrFileReadBenchmark(BaseBenchmark):
     """Benchmark reading a remote Zarr file."""
 
-    rounds = 1
-    repeat = 3
     parameter_cases = zarr_parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
@@ -265,8 +247,6 @@ class ZarrFileReadBenchmark(BaseBenchmark):
 class ZarrForceNoConsolidatedFileReadBenchmark(BaseBenchmark):
     """Benchmark reading a remote Zarr file without consolidated metadata."""
 
-    rounds = 1
-    repeat = 3
     parameter_cases = zarr_parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
