@@ -60,9 +60,9 @@ class BaseBenchmark:
 
             for attr_name in dir(cls):
                 attr = getattr(cls, attr_name)
-                if callable(attr) and any(attr_name.startswith(prefix) for prefix in ["time_", "track_"]):  # Add more when needed
-                    setattr(
-                        cls, attr_name, asv_runner.benchmarks.mark.skip_for_params(non_cartesian_exclusion)(attr)
-                    )
+                if callable(attr) and any(
+                    attr_name.startswith(prefix) for prefix in ["time_", "track_"]
+                ):  # Add more when needed
+                    setattr(cls, attr_name, asv_runner.benchmarks.mark.skip_for_params(non_cartesian_exclusion)(attr))
 
         return instance
