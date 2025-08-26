@@ -30,6 +30,7 @@ class BaseBenchmark:
     """
 
     rounds = 1
+    repeat = 1
     parameter_cases: Union[Dict[str, Dict[str, Any]], None] = None
 
     def __new__(cls, *args, **kwargs) -> Self:
