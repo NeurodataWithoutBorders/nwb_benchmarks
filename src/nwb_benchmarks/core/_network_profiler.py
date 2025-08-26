@@ -4,6 +4,7 @@ Class definition for capturing network traffic when remotely reading data from a
 NOTE: This requires sudo/root access on  macOS and AIX.
 """
 
+import os
 import pathlib
 import subprocess
 import tempfile
