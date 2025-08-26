@@ -71,7 +71,8 @@ lindi_remote_rfs_parameter_cases = dict(
     # ),
 )
 
-# TODO test non-consolidated metadata vs consolidated metadata
+# TODO Test non-consolidated metadata vs consolidated metadata
+# TODO Consider using s3 protocol instead of https - not sure it will make much difference
 zarr_parameter_cases = dict(
     EcephysTestCase=dict(
         # DANDI: 000719 sub-npI3_ses-20190421_behavior+ecephys_rechunk.nwb.zarr

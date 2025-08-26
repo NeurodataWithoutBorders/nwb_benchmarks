@@ -237,10 +237,13 @@ def read_zarr(s3_url: str, open_without_consolidated_metadata: bool = False) -> 
     file : zarr.Group
        The zarr.Group object representing the opened file
     """
+    io_kwargs = dict()
+    if s3_url.startswith("s3://"):
+        io_kwargs["storage_options"] = dict(anon=True)
     if open_without_consolidated_metadata:
-        zarrfile = zarr.open(store=s3_url, mode="r", storage_options=dict(anon=True))
+        zarrfile = zarr.open(store=s3_url, mode="r", **io_kwargs)
     else:
-        zarrfile = zarr.open_consolidated(store=s3_url, mode="r", storage_options=dict(anon=True))
+        zarrfile = zarr.open_consolidated(store=s3_url, mode="r", **io_kwargs)
     return zarrfile
 
 
@@ -260,6 +263,10 @@ def read_zarr_nwbfile(s3_url: str, mode: str) -> Tuple[pynwb.NWBFile, hdmf_zarr.
     NWBZarrIO : hdmf_zarr.NWBZarrIO
         The open IO object used to open the file.
     """
-    io = hdmf_zarr.NWBZarrIO(s3_url, mode=mode, storage_options=dict(anon=True))
+
+    io_kwargs = dict()
+    if s3_url.startswith("s3://"):
+        io_kwargs["storage_options"] = dict(anon=True)
+    io = hdmf_zarr.NWBZarrIO(s3_url, mode=mode, **io_kwargs)
     nwbfile = io.read()
     return (nwbfile, io)
