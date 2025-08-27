@@ -7,16 +7,47 @@ Also, please ensure prior to running the benchmark that all code changes have be
 
 For the most stable results, only run the benchmarks on the ``main`` branch.
 
-To run the full benchmark suite, including network tracking tests (which require ``sudo`` on Mac and AIX platforms due to the
-use `psutil net_connections <https://psutil.readthedocs.io/en/latest/#psutil.net_connections>`_), simply call...
+To run the full benchmark suite, including network tracking tests (which require ``sudo`` on Mac and Linux platforms due to the
+use of `psutil net_connections <https://psutil.readthedocs.io/en/latest/#psutil.net_connections>`_), first determine which network
+interface you want to monitor (e.g., ``en0``, ``eth0``, etc.). You can typically find this information via your system settings,
+or by running commands like ``ifconfig`` or ``ip addr`` in your terminal. On Linux/MacOS, this command will return the default
+network interface name for internet connectivity:
+
+.. code-block::
+
+    route get default | awk '/interface:/{print $NF}'
+
+On Windows, in Powershell, you can use:
+
+.. code-block::
+
+    Get-NetAdapter | Where-Object {$_.Status -eq "Up"}
+
+and select the appropriate interface name from the output.
+
+Then, set the environment variable ``NWB_BENCHMARKS_NETWORK_INTERFACE`` to the desired network interface.
+For example, in a Unix-like terminal (Linux or macOS), you can do:
+
+.. code-block::
+
+    export NWB_BENCHMARKS_NETWORK_INTERFACE=en0
+
+On Windows, you can use:
+
+.. code-block::
+
+    $env:NWB_BENCHMARKS_NETWORK_INTERFACE="Ethernet"
+
+On Windows, or if ``tshark`` is not installed on the path, you may also need to set the ``TSHARK_PATH`` environment
+variable to the absolute path to the ``tshark`` executable (e.g., ``tshark.exe``) on your system.
+
+Then, simply call...
 
 .. code-block::
 
     sudo -E nwb_benchmarks run
 
 Or drop the ``sudo`` if on Windows.
-
-When running on Windows or if ``tshark`` is not installed on the path, then you may also need to set the ``TSHARK_PATH`` environment variable beforehand, which should be the absolute path to the ``tshark`` executable (e.g., ``tshark.exe``) on your system.
 
 Many of the current tests can take several minutes to complete; the entire suite will take many times that. Grab some coffee, read a book, or better yet (when the suite becomes larger) just leave it to run overnight.
 
