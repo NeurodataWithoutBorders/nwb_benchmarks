@@ -3,6 +3,7 @@
 from ._base_benchmark import BaseBenchmark
 from ._capture_connections import CaptureConnections
 from ._dandi import get_s3_url
+from ._download import download_file
 from ._network_profiler import NetworkProfiler
 from ._network_statistics import NetworkStatistics
 from ._network_tracker import network_activity_tracker
@@ -49,6 +50,7 @@ __all__ = [
     "read_hdf5_lindi",
     "read_hdf5_nwbfile_lindi",
     "get_s3_url",
+    "download_file",
     "get_object_by_name",
     "robust_ros3_read",
     "read_zarr_s3_protocol",

@@ -1,5 +1,6 @@
 """Basic benchmarks for profiling network statistics for streaming access to slices of data stored in NWB files."""
 
+from abc import ABC, abstractmethod
 from typing import Tuple
 
 from asv_runner.benchmarks.mark import skip_benchmark_if
@@ -26,8 +27,31 @@ from .params_remote_slicing import (
 )
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
+class ContinuousSliceBenchmark(BaseBenchmark, ABC):
+    """Base class for benchmarking slice access to NWB data."""
+
+    @abstractmethod
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Set up the benchmark by loading the NWB file and preparing data for slicing.
+
+        This method must be implemented by subclasses to define how to:
+        - Load the NWB file from the given s3_url
+        - Get the neurodata object by name
+        - Set self.data_to_slice to the data that will be sliced
+        """
+        pass
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Track network activity during slice access."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self._temp = self.data_to_slice[slice_range]
+        return network_tracker.asv_network_statistics
+
+
+class FsspecNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using fsspec without caching."""
+
     parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -35,18 +59,11 @@ class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self._temp = self.data_to_slice[slice_range]
-        return network_tracker.asv_network_statistics
 
+class FsspecWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using fsspec with caching."""
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
-
-    def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.tmpdir.cleanup()
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(
@@ -55,14 +72,14 @@ class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self._temp = self.data_to_slice[slice_range]
-        return network_tracker.asv_network_statistics
+    def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        if hasattr(self, "tmpdir"):
+            self.tmpdir.cleanup()
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class RemfileContinuousSliceBenchmark(BaseBenchmark):
+class RemfileNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using Remfile without caching."""
+
     parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -70,18 +87,11 @@ class RemfileContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self._temp = self.data_to_slice[slice_range]
-        return network_tracker.asv_network_statistics
 
+class RemfileWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using Remfile with caching."""
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class RemfileContinuousSliceBenchmarkWithCache(BaseBenchmark):
     parameter_cases = parameter_cases
-
-    def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.tmpdir.cleanup()
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_remfile_with_cache(
@@ -90,14 +100,14 @@ class RemfileContinuousSliceBenchmarkWithCache(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self._temp = self.data_to_slice[slice_range]
-        return network_tracker.asv_network_statistics
+    def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        if hasattr(self, "tmpdir"):
+            self.tmpdir.cleanup()
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class Ros3ContinuousSliceBenchmark(BaseBenchmark):
+class Ros3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using the HDF5 ROS3 driver."""
+
     parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -105,7 +115,10 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
+    @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Track network activity during slice access, retrying reads robustly."""
+        # NOTE: This function overrides ContinuousSliceBenchmark.track_network_activity_during_slice
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp, self.retries = robust_ros3_read(
                 command=self.data_to_slice.__getitem__, command_args=(slice_range,)
@@ -114,12 +127,8 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark(BaseBenchmark):
-    """
-    Time the read of a data slice from a remote NWB file with pynwb using lindi with a remote JSON reference
-    filesystem available.
-    """
+class LindiRemoteJsonContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using LINDI with a remote JSON file."""
 
     parameter_cases = lindi_remote_rfs_parameter_cases
 
@@ -128,14 +137,10 @@ class LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark(BaseBenchma
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self._temp = self.data_to_slice[slice_range]
-        return network_tracker.asv_network_statistics
 
+class ZarrContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using Zarr."""
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class ZarrContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -143,22 +148,13 @@ class ZarrContinuousSliceBenchmark(BaseBenchmark):
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self._temp = self.data_to_slice[slice_range]
-        return network_tracker.asv_network_statistics
 
+class ZarrForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using Zarr without consolidated metadata."""
 
-@skip_benchmark_if(TSHARK_PATH is None)
-class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io = read_zarr_nwbfile_s3_protocol(s3_url=s3_url, mode="r-")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
-
-    def track_network_activity_during_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self._temp = self.data_to_slice[slice_range]
-        return network_tracker.asv_network_statistics

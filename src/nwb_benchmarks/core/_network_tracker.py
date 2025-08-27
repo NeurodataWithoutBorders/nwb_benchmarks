@@ -107,6 +107,9 @@ class NetworkTracker:
         self.network_statistics = NetworkStatistics.get_statistics(packets=self.pid_packets)
         self.network_statistics["network_total_time_in_seconds"] = network_total_time
 
+        stop_processing_time = time.time()
+        print(f"Total time taken to process capture: {stop_processing_time - stop_capture_time:.1f} seconds")
+
         # Very special structure required by ASV
         # 'samples' is the value tracked in our results
         # 'number' is simply required, but needs to be None for custom track_ functions
