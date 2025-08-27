@@ -39,7 +39,7 @@ class NetworkStatistics:
     @staticmethod
     def total_transfer_time_in_seconds(packets: list) -> float:
         """Sum of all time_delta's between packets."""
-        return float(np.sum([float(packet.tcp.time_delta) for packet in packets]))
+        return float(np.sum([float(packet.tcp.Timestamps.time_delta) for packet in packets]))
 
     @staticmethod
     def amount_downloaded_in_number_of_packets(packets: list, local_addresses: list = None) -> int:
