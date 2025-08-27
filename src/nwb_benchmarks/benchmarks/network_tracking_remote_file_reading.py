@@ -10,11 +10,15 @@ from nwb_benchmarks.core import (
     create_lindi_reference_file_system,
     download_file,
     network_activity_tracker,
-    read_hdf5_fsspec_no_cache,
-    read_hdf5_fsspec_with_cache,
+    read_hdf5_fsspec_https_no_cache,
+    read_hdf5_fsspec_https_with_cache,
+    read_hdf5_fsspec_s3_no_cache,
+    read_hdf5_fsspec_s3_with_cache,
     read_hdf5_lindi,
-    read_hdf5_nwbfile_fsspec_no_cache,
-    read_hdf5_nwbfile_fsspec_with_cache,
+    read_hdf5_nwbfile_fsspec_https_no_cache,
+    read_hdf5_nwbfile_fsspec_https_with_cache,
+    read_hdf5_nwbfile_fsspec_s3_no_cache,
+    read_hdf5_nwbfile_fsspec_s3_with_cache,
     read_hdf5_nwbfile_lindi,
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_remfile_with_cache,
@@ -22,8 +26,10 @@ from nwb_benchmarks.core import (
     read_hdf5_remfile,
     read_hdf5_remfile_with_cache,
     read_hdf5_ros3,
-    read_zarr_nwbfile_s3_protocol,
     read_zarr_s3_protocol,
+    read_zarr_https_protocol,
+    read_zarr_nwbfile_s3_protocol,
+    read_zarr_nwbfile_https_protocol,
 )
 
 from .params_remote_file_reading import (
@@ -34,28 +40,48 @@ from .params_remote_file_reading import (
 )
 
 
-class FsspecNoCacheFileReadBenchmark(BaseBenchmark):
-    """Benchmark reading a remote NWB file using fsspec without caching."""
+class FsspecHttpsNoCacheFileReadBenchmark(BaseBenchmark):
+    """Benchmark reading a remote NWB file using fsspec & https protocol without caching."""
 
     parameter_cases = parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_read_h5py(self, s3_url: str):
-        """Track network activity during reading HDF5 files with h5py using fsspec without caching."""
+        """Track network activity during reading HDF5 files with h5py using fsspec & https without caching."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.file, self.bytestream = read_hdf5_fsspec_no_cache(s3_url=s3_url)
+            self.file, self.bytestream = read_hdf5_fsspec_https_no_cache(s3_url=s3_url)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_read_pynwb(self, s3_url: str):
-        """Track network activity during reading NWB files with h5py and PyNWB using fsspec without caching."""
+        """Track network activity during reading NWB files with h5py and PyNWB using fsspec & https without caching."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_https_no_cache(s3_url=s3_url)
         return network_tracker.asv_network_statistics
 
 
-class FsspecWithCacheFileReadBenchmark(BaseBenchmark):
-    """Benchmark reading a remote NWB file using fsspec with caching."""
+class FsspecS3NoCacheFileReadBenchmark(BaseBenchmark):
+    """Benchmark reading a remote NWB file using fsspec & S3 protocol without caching."""
+
+    parameter_cases = parameter_cases
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_activity_during_read_h5py(self, s3_url: str):
+        """Track network activity during reading HDF5 files with h5py using fsspec & S3 without caching."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.file, self.bytestream = read_hdf5_fsspec_s3_no_cache(s3_url=s3_url)
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_activity_during_read_pynwb(self, s3_url: str):
+        """Track network activity during reading NWB files with h5py and PyNWB using fsspec & S3 without caching."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_s3_no_cache(s3_url=s3_url)
+        return network_tracker.asv_network_statistics
+
+
+class FsspecHttpsWithCacheFileReadBenchmark(BaseBenchmark):
+    """Benchmark reading a remote NWB file using fsspec & https protocol with caching."""
 
     parameter_cases = parameter_cases
 
@@ -66,16 +92,43 @@ class FsspecWithCacheFileReadBenchmark(BaseBenchmark):
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_read_h5py(self, s3_url: str):
-        """Track network activity during reading HDF5 files with h5py using fsspec with caching."""
+        """Track network activity during reading HDF5 files with h5py using fsspec & https with caching."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_with_cache(s3_url=s3_url)
+            self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_https_with_cache(s3_url=s3_url)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_activity_during_read_pynwb(self, s3_url: str):
-        """Track network activity during reading NWB files with h5py and PyNWB using fsspec with caching."""
+        """Track network activity during reading NWB files with h5py and PyNWB using fsspec & https with caching."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(
+            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_https_with_cache(
+                s3_url=s3_url
+            )
+        return network_tracker.asv_network_statistics
+
+
+class FsspecS3WithCacheFileReadBenchmark(BaseBenchmark):
+    """Benchmark reading a remote NWB file using fsspec & S3 protocol with caching."""
+
+    parameter_cases = parameter_cases
+
+    def teardown(self, s3_url: str):
+        """Clean up temporary directories."""
+        if hasattr(self, "tmpdir"):
+            self.tmpdir.cleanup()
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_activity_during_read_h5py(self, s3_url: str):
+        """Track network activity during reading HDF5 files with h5py using fsspec & S3 with caching."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_s3_with_cache(s3_url=s3_url)
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_activity_during_read_pynwb(self, s3_url: str):
+        """Track network activity during reading NWB files with h5py and PyNWB using fsspec & S3 with caching."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_s3_with_cache(
                 s3_url=s3_url
             )
         return network_tracker.asv_network_statistics
@@ -224,23 +277,37 @@ class LindiReadRemoteJsonFileBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
-class ZarrFileReadBenchmark(BaseBenchmark):
+class ZarrS3ProtocolFileReadBenchmark(BaseBenchmark):
     """Benchmark reading a remote Zarr file."""
 
     parameter_cases = zarr_parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_zarr(self, s3_url: str):
+    def track_network_activity_during_read_zarr_s3(self, s3_url: str):
         """Track network activity during reading Zarr files with Zarr-Python."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.zarr_file = read_zarr_s3_protocol(s3_url=s3_url, open_without_consolidated_metadata=True)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb(self, s3_url: str):
+    def track_network_activity_during_read_zarr_https(self, s3_url: str):
+        """Track network activity during reading Zarr files with Zarr-Python."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.zarr_file = read_zarr_https_protocol(s3_url=s3_url, open_without_consolidated_metadata=True)
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_activity_during_read_pynwb_s3(self, s3_url: str):
         """Track network activity during reading NWB files with Zarr-Python and PyNWB."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.nwbfile, self.io = read_zarr_nwbfile_s3_protocol(s3_url=s3_url, mode="r")
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_activity_during_read_pynwb_https(self, s3_url: str):
+        """Track network activity during reading NWB files with Zarr-Python and PyNWB."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(s3_url=s3_url, mode="r")
         return network_tracker.asv_network_statistics
 
 
@@ -250,15 +317,29 @@ class ZarrForceNoConsolidatedFileReadBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_zarr(self, s3_url: str):
-        """Track network activity during reading Zarr files with Zarr-Python without consolidated metadata."""
+    def track_network_activity_during_read_zarr_s3(self, s3_url: str):
+        """Track network activity during reading Zarr files with Zarr-Python and S3 w/o consolidated metadata."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.zarr_file = read_zarr(s3_url=s3_url, open_without_consolidated_metadata=True)
+            self.zarr_file = read_zarr_s3_protocol(s3_url=s3_url, open_without_consolidated_metadata=True)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb(self, s3_url: str):
-        """Track network activity during reading NWB files with Zarr-Python and PyNWB without consolidated metadata."""
+    def track_network_activity_during_read_zarr_https(self, s3_url: str):
+        """Track network activity during reading Zarr files with Zarr-Python and HTTPS w/o consolidated metadata."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.zarr_file = read_zarr_https_protocol(s3_url=s3_url, open_without_consolidated_metadata=True)
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_activity_during_read_pynwb_s3(self, s3_url: str):
+        """Track network activity during reading NWB files with Zarr-Python, PyNWB, and S3 w/o consolidated metadata."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.nwbfile, self.io = read_zarr_nwbfile_s3_protocol(s3_url=s3_url, mode="r-")
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_activity_during_read_pynwb_https(self, s3_url: str):
+        """Track network activity during reading NWB files with Zarr-Python, PyNWB, and HTTPS w/o consolidated metadata."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(s3_url=s3_url, mode="r-")
         return network_tracker.asv_network_statistics

@@ -96,6 +96,7 @@ class NetworkTracker:
         # compute the total time
         stop_capture_time = time.time()
         network_total_time = stop_capture_time - self.__start_capture_time
+        print(f"Network time: {network_total_time:.1f} seconds")
 
         # get the connections for the PID of this process or the PID set by the user
         if pid is None:

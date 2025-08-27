@@ -19,6 +19,7 @@ import zarr
 from fsspec.asyn import reset_lock
 from fsspec.implementations.cached import CachingFileSystem
 from fsspec.implementations.http import HTTPFile
+from s3fs.core import S3File
 
 # Useful if running in verbose model
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
@@ -27,10 +28,10 @@ warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 AWS_REGION = "us-east-2"  # DANDI is hosted on us-east-2
 
 
-def read_hdf5_fsspec_no_cache(
+def read_hdf5_fsspec_https_no_cache(
     s3_url: str,
 ) -> Tuple[h5py.File, HTTPFile]:
-    """Load the raw HDF5 file from an S3 URL using fsspec without a cache; does not formally read the NWB file."""
+    """Load the raw HDF5 file using fsspec with an HTTPS filesystem without a cache; does not load into pynwb."""
     reset_lock()
     fsspec.get_filesystem_class("https").clear_instance_cache()
     filesystem = fsspec.filesystem("https")
@@ -40,10 +41,10 @@ def read_hdf5_fsspec_no_cache(
     return (file, byte_stream)
 
 
-def read_hdf5_fsspec_with_cache(
+def read_hdf5_fsspec_https_with_cache(
     s3_url: str,
 ) -> Tuple[h5py.File, HTTPFile, tempfile.TemporaryDirectory]:
-    """Load the raw HDF5 file from an S3 URL using fsspec without a cache; does not formally read the NWB file."""
+    """Load the raw HDF5 file using fsspec with an HTTPS filesystem without a cache; does not load into pynwb."""
     reset_lock()
     fsspec.get_filesystem_class("https").clear_instance_cache()
     filesystem = fsspec.filesystem("https")
@@ -57,21 +58,74 @@ def read_hdf5_fsspec_with_cache(
     return (file, byte_stream, tmpdir)
 
 
-def read_hdf5_nwbfile_fsspec_no_cache(
+def read_hdf5_fsspec_s3_no_cache(
+    s3_url: str,
+) -> Tuple[h5py.File, S3File]:
+    """Load the raw HDF5 file using fsspec with an S3 filesystem without a cache; does not load into pynwb."""
+    reset_lock()
+    fsspec.get_filesystem_class("s3").clear_instance_cache()
+    filesystem = fsspec.filesystem("s3", anon=True)
+    s3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+
+    byte_stream = filesystem.open(path=s3_form, mode="rb")
+    file = h5py.File(name=byte_stream, aws_region=bytes(AWS_REGION, "ascii"))
+    return (file, byte_stream)
+
+
+def read_hdf5_fsspec_s3_with_cache(
+    s3_url: str,
+) -> Tuple[h5py.File, S3File, tempfile.TemporaryDirectory]:
+    """Load the raw HDF5 file using fsspec with an S3 filesystem without a cache; does not load into pynwb."""
+    reset_lock()
+    fsspec.get_filesystem_class("s3").clear_instance_cache()
+    filesystem = fsspec.filesystem("s3", anon=True)
+    tmpdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+    filesystem = CachingFileSystem(
+        fs=filesystem,
+        cache_storage=tmpdir.name,  # Local folder for the cache
+    )
+    s3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+
+    byte_stream = filesystem.open(path=s3_form, mode="rb")
+    file = h5py.File(name=byte_stream)
+    return (file, byte_stream, tmpdir)
+
+
+def read_hdf5_nwbfile_fsspec_https_no_cache(
     s3_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, HTTPFile]:
-    """Read an HDF5 NWB file from an S3 URL using fsspec without a cache."""
-    (file, byte_stream) = read_hdf5_fsspec_no_cache(s3_url=s3_url)
+    """Read an HDF5 NWB file using fsspec with an HTTPS filesystem without a cache."""
+    (file, byte_stream) = read_hdf5_fsspec_https_no_cache(s3_url=s3_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream)
 
 
-def read_hdf5_nwbfile_fsspec_with_cache(
+def read_hdf5_nwbfile_fsspec_https_with_cache(
     s3_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, HTTPFile, tempfile.TemporaryDirectory]:
-    """Read an HDF5 NWB file from an S3 URL using fsspec without a cache."""
-    (file, byte_stream, tmpdir) = read_hdf5_fsspec_with_cache(s3_url=s3_url)
+    """Read an HDF5 NWB file using fsspec with an HTTPS filesystem without a cache."""
+    (file, byte_stream, tmpdir) = read_hdf5_fsspec_https_with_cache(s3_url=s3_url)
+    io = pynwb.NWBHDF5IO(file=file)
+    nwbfile = io.read()
+    return (nwbfile, io, file, byte_stream, tmpdir)
+
+
+def read_hdf5_nwbfile_fsspec_s3_no_cache(
+    s3_url: str,
+) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, S3File]:
+    """Read an HDF5 NWB file using fsspec with an S3 filesystem without a cache."""
+    (file, byte_stream) = read_hdf5_fsspec_s3_no_cache(s3_url=s3_url)
+    io = pynwb.NWBHDF5IO(file=file)
+    nwbfile = io.read()
+    return (nwbfile, io, file, byte_stream)
+
+
+def read_hdf5_nwbfile_fsspec_s3_with_cache(
+    s3_url: str,
+) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, S3File, tempfile.TemporaryDirectory]:
+    """Read an HDF5 NWB file using fsspec with an S3 filesystem without a cache."""
+    (file, byte_stream, tmpdir) = read_hdf5_fsspec_s3_with_cache(s3_url=s3_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream, tmpdir)
@@ -237,11 +291,11 @@ def read_zarr_s3_protocol(s3_url: str, open_without_consolidated_metadata: bool 
     file : zarr.Group
        The zarr.Group object representing the opened file
     """
-    ros3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    s3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
     if open_without_consolidated_metadata:
-        zarrfile = zarr.open(store=ros3_form, mode="r", storage_options=dict(anon=True))
+        zarrfile = zarr.open(store=s3_form, mode="r", storage_options=dict(anon=True))
     else:
-        zarrfile = zarr.open_consolidated(store=ros3_form, mode="r", storage_options=dict(anon=True))
+        zarrfile = zarr.open_consolidated(store=s3_form, mode="r", storage_options=dict(anon=True))
     return zarrfile
 
 
@@ -278,8 +332,8 @@ def read_zarr_nwbfile_s3_protocol(s3_url: str, mode: str) -> Tuple[pynwb.NWBFile
         The open IO object used to open the file.
     """
 
-    ros3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
-    io = hdmf_zarr.NWBZarrIO(ros3_form, mode=mode, storage_options=dict(anon=True))
+    s3_form = s3_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    io = hdmf_zarr.NWBZarrIO(s3_form, mode=mode, storage_options=dict(anon=True))
     nwbfile = io.read()
     return (nwbfile, io)
 

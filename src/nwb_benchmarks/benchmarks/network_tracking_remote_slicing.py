@@ -10,13 +10,16 @@ from nwb_benchmarks.core import (
     BaseBenchmark,
     get_object_by_name,
     network_activity_tracker,
-    read_hdf5_nwbfile_fsspec_no_cache,
-    read_hdf5_nwbfile_fsspec_with_cache,
+    read_hdf5_nwbfile_fsspec_https_no_cache,
+    read_hdf5_nwbfile_fsspec_https_with_cache,
+    read_hdf5_nwbfile_fsspec_s3_no_cache,
+    read_hdf5_nwbfile_fsspec_s3_with_cache,
     read_hdf5_nwbfile_lindi,
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_remfile_with_cache,
     read_hdf5_nwbfile_ros3,
     read_zarr_nwbfile_s3_protocol,
+    read_zarr_nwbfile_https_protocol,
     robust_ros3_read,
 )
 
@@ -49,24 +52,52 @@ class ContinuousSliceBenchmark(BaseBenchmark, ABC):
         return network_tracker.asv_network_statistics
 
 
-class FsspecNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using fsspec without caching."""
+class FsspecHttpsNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using fsspec & https without caching."""
 
     parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_https_no_cache(s3_url=s3_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
 
-class FsspecWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using fsspec with caching."""
+class FsspecS3NoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using fsspec & S3 without caching."""
 
     parameter_cases = parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_s3_no_cache(s3_url=s3_url)
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+
+class FsspecHttpsWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using fsspec & https with caching."""
+
+    parameter_cases = parameter_cases
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_https_with_cache(
+            s3_url=s3_url
+        )
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+    def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        if hasattr(self, "tmpdir"):
+            self.tmpdir.cleanup()
+
+
+class FsspecS3WithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using fsspec & S3 with caching."""
+
+    parameter_cases = parameter_cases
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_s3_with_cache(
             s3_url=s3_url
         )
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
@@ -138,8 +169,8 @@ class LindiRemoteJsonContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
 
-class ZarrContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using Zarr."""
+class ZarrS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using Zarr and S3 protocol."""
 
     parameter_cases = zarr_parameter_cases
 
@@ -149,12 +180,34 @@ class ZarrContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
 
-class ZarrForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using Zarr without consolidated metadata."""
+class ZarrHttpsContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using Zarr and HTTPS protocol."""
+
+    parameter_cases = zarr_parameter_cases
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(s3_url=s3_url, mode="r")
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+
+class ZarrS3ForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using Zarr and S3 protocol without consolidated metadata."""
 
     parameter_cases = zarr_parameter_cases
 
     def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io = read_zarr_nwbfile_s3_protocol(s3_url=s3_url, mode="r-")
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+
+class ZarrHttpsForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """Benchmark streaming access to slices of NWB data using Zarr and HTTPS protocol without consolidated metadata."""
+
+    parameter_cases = zarr_parameter_cases
+
+    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(s3_url=s3_url, mode="r-")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
