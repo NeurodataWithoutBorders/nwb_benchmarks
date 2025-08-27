@@ -37,8 +37,8 @@ def upload_results():
             print(f"Results posted successfully! {filename}")
         else:
             message = (
-                "Failed to post results. "
-                "Please raise an issue on https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues."
+                f"Failed to post results. {filename} "
+                "Please raise an issue on https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues. "
                 f"Status code: {response.status_code} "
                 f"Response: {response.text}"
             )

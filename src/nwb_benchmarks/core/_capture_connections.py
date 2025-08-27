@@ -49,7 +49,7 @@ class CaptureConnections(Thread):
         while self.__run_capture_connections:
             # using psutil, we can grab each connection's source and destination ports
             # and their process ID
-            for connection in psutil.net_connections():  # NOTE: This requires sudo/root access on  macOS and AIX
+            for connection in psutil.net_connections():  # NOTE: This requires sudo/root access on macOS and Linux
                 if connection.laddr and connection.raddr and connection.pid:
                     # if local address, remote address and PID are in the connection
                     # add them to our global dictionary

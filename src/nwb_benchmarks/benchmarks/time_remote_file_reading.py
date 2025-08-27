@@ -2,9 +2,12 @@
 
 import os
 
+from asv_runner.benchmarks.mark import skip_benchmark
+
 from nwb_benchmarks.core import (
     BaseBenchmark,
     create_lindi_reference_file_system,
+    download_file,
     read_hdf5_fsspec_no_cache,
     read_hdf5_fsspec_with_cache,
     read_hdf5_lindi,
@@ -107,13 +110,18 @@ class LindiFileReadLocalReferenceFileSystemBenchmark(BaseBenchmark):
 
     rounds = 1
     repeat = 3
-    parameter_cases = lindi_hdf5_parameter_cases
+    parameter_cases = lindi_remote_rfs_parameter_cases
 
     def setup(self, s3_url: str):
         """Create the local JSON LINDI reference filesystem if it does not exist"""
         self.lindi_file = os.path.basename(s3_url) + ".lindi.json"
-        if not os.path.exists(self.lindi_file):
-            create_lindi_reference_file_system(s3_url=s3_url, outfile_path=self.lindi_file)
+        self.teardown(s3_url=s3_url)
+        download_file(s3_url=s3_url, local_path=self.lindi_file)
+
+    def teardown(self, s3_url: str):
+        """Delete the local LINDI JSON file if it exists."""
+        if os.path.exists(self.lindi_file):
+            os.remove(self.lindi_file)
 
     def time_read_lindi_nwbfile(self, s3_url: str):
         """Read the NWB file with pynwb using LINDI with the local reference filesystem JSON"""
@@ -145,10 +153,14 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
         if os.path.exists(self.lindi_file):
             os.remove(self.lindi_file)
 
+    # TODO This benchmark takes a long time to index all of the chunks for these files! Do not run until ready
+    @skip_benchmark
     def time_create_lindi_reference_file_system(self, s3_url: str):
         """Create a local Lindi JSON reference filesystem from a remote HDF5 file"""
         create_lindi_reference_file_system(s3_url=s3_url, outfile_path=self.lindi_file)
 
+    # TODO This benchmark takes a long time to index all of the chunks for these files! Do not run until ready
+    @skip_benchmark
     def time_create_lindi_reference_file_system_and_read_nwbfile(self, s3_url: str):
         """
         Create a local Lindi JSON reference filesystem from a remote HDF5 file
@@ -157,6 +169,8 @@ class NWBLindiFileCreateLocalReferenceFileSystemBenchmark(BaseBenchmark):
         create_lindi_reference_file_system(s3_url=s3_url, outfile_path=self.lindi_file)
         self.nwbfile, self.io, self.client = read_hdf5_nwbfile_lindi(rfs=self.lindi_file)
 
+    # TODO This benchmark takes a long time to index all of the chunks for these files! Do not run until ready
+    @skip_benchmark
     def time_create_lindi_reference_file_system_and_read_jsonrfs(self, s3_url: str):
         """
         Create a local Lindi JSON reference filesystem  from a remote HDF5 file and
