@@ -18,8 +18,8 @@ from nwb_benchmarks.core import (
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_remfile_with_cache,
     read_hdf5_nwbfile_ros3,
-    read_zarr_nwbfile_s3_protocol,
     read_zarr_nwbfile_https_protocol,
+    read_zarr_nwbfile_s3_protocol,
     robust_ros3_read,
 )
 
