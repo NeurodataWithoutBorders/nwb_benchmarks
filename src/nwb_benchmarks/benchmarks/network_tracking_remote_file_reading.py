@@ -56,7 +56,9 @@ class FsspecHttpsNoCacheFileReadBenchmark(BaseBenchmark):
     def track_network_activity_during_read_pynwb(self, https_url: str):
         """Track network activity during reading NWB files with h5py and PyNWB using fsspec & https without caching."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_https_no_cache(https_url=https_url)
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_https_no_cache(
+                https_url=https_url
+            )
         return network_tracker.asv_network_statistics
 
 
@@ -76,7 +78,9 @@ class FsspecS3NoCacheFileReadBenchmark(BaseBenchmark):
     def track_network_activity_during_read_pynwb(self, https_url: str):
         """Track network activity during reading NWB files with h5py and PyNWB using fsspec & S3 without caching."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_s3_no_cache(https_url=https_url)
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_s3_no_cache(
+                https_url=https_url
+            )
         return network_tracker.asv_network_statistics
 
 

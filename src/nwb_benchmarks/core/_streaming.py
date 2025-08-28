@@ -220,7 +220,9 @@ def read_hdf5_ros3(https_url: str, retry: bool = True) -> Tuple[h5py.File, Union
     return (file, retries)
 
 
-def read_hdf5_nwbfile_ros3(https_url: str, retry: bool = True) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, Union[int, None]]:
+def read_hdf5_nwbfile_ros3(
+    https_url: str, retry: bool = True
+) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, Union[int, None]]:
     """
     Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py.
 
