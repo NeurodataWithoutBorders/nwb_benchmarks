@@ -2,7 +2,7 @@
 
 from ._base_benchmark import BaseBenchmark
 from ._capture_connections import CaptureConnections
-from ._dandi import get_s3_url
+from ._dandi import get_https_url
 from ._download import download_file
 from ._network_profiler import NetworkProfiler
 from ._network_statistics import NetworkStatistics
@@ -57,7 +57,7 @@ __all__ = [
     "read_hdf5_lindi",
     "read_hdf5_nwbfile_lindi",
     "read_hdf5_ros3",
-    "get_s3_url",
+    "get_https_url",
     "download_file",
     "get_object_by_name",
     "robust_ros3_read",
