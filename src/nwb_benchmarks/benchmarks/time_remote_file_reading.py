@@ -176,7 +176,7 @@ class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
         """Download the LINDI JSON file."""
         self.lindi_file = os.path.basename(https_url) + ".lindi.json"
         self.teardown(https_url=https_url)
-        download_file(https_url=https_url, local_path=self.lindi_file)
+        download_file(url=https_url, local_path=self.lindi_file)
 
     def teardown(self, https_url: str):
         """Delete the LINDI JSON file if it exists."""
