@@ -5,13 +5,18 @@ from typing import Tuple
 from nwb_benchmarks.core import (
     BaseBenchmark,
     get_object_by_name,
-    read_hdf5_nwbfile_fsspec_no_cache,
-    read_hdf5_nwbfile_fsspec_with_cache,
+    network_activity_tracker,
+    read_hdf5_nwbfile_fsspec_https_no_cache,
+    read_hdf5_nwbfile_fsspec_https_with_cache,
+    read_hdf5_nwbfile_fsspec_s3_no_cache,
+    read_hdf5_nwbfile_fsspec_s3_with_cache,
     read_hdf5_nwbfile_lindi,
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_remfile_with_cache,
     read_hdf5_nwbfile_ros3,
-    read_zarr_nwbfile,
+    read_zarr_nwbfile_https_protocol,
+    read_zarr_nwbfile_s3_protocol,
+    robust_ros3_read,
 )
 
 from .params_remote_slicing import (
@@ -26,12 +31,12 @@ class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
     repeat = 3
     parameter_cases = parameter_cases
 
-    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(s3_url=s3_url)
+    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_https_no_cache(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def time_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         """Track network activity for slicing into a h5py.Dataset with Fsspec"""
         self._temp = self.data_to_slice[slice_range]
 
@@ -41,17 +46,17 @@ class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
     repeat = 3
     parameter_cases = parameter_cases
 
-    def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def teardown(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         self.tmpdir.cleanup()
 
-    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(
-            s3_url=s3_url
+    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_https_with_cache(
+            https_url=https_url
         )
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def time_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         """Track network activity for slicing into a `h5py.Dataset` with `fsspec`."""
         self._temp = self.data_to_slice[slice_range]
 
@@ -61,12 +66,12 @@ class RemfileNoCacheContinuousSliceBenchmark(BaseBenchmark):
     repeat = 3
     parameter_cases = parameter_cases
 
-    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(s3_url=s3_url)
+    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def time_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         """Track network activity for slicing into a h5py.Dataset with RemFile"""
         self._temp = self.data_to_slice[slice_range]
 
@@ -76,17 +81,17 @@ class RemfileWithCacheContinuousSliceBenchmark(BaseBenchmark):
     repeat = 3
     parameter_cases = parameter_cases
 
-    def teardown(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def teardown(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         self.tmpdir.cleanup()
 
-    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_remfile_with_cache(
-            s3_url=s3_url
+            https_url=https_url
         )
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def time_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         """Track network activity for slicing into a h5py.Dataset with RemFile"""
         self._temp = self.data_to_slice[slice_range]
 
@@ -96,12 +101,12 @@ class Ros3ContinuousSliceBenchmark(BaseBenchmark):
     repeat = 3
     parameter_cases = parameter_cases
 
-    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(s3_url=s3_url)
+    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def time_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         """Track network activity for slicing into a h5py.Dataset with Ros3"""
         self._temp = self.data_to_slice[slice_range]
 
@@ -116,12 +121,12 @@ class LindiFileReadRemoteReferenceFileSystemContinuousSliceBenchmark(BaseBenchma
     repeat = 3
     parameter_cases = lindi_remote_rfs_parameter_cases
 
-    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.client = read_hdf5_nwbfile_lindi(rfs=s3_url)
+    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io, self.client = read_hdf5_nwbfile_lindi(rfs=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def time_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         """Track network activity for slicing into a LindiDataset"""
         self._temp = self.data_to_slice[slice_range]
 
@@ -135,12 +140,12 @@ class ZarrContinuousSliceBenchmark(BaseBenchmark):
     repeat = 3
     parameter_cases = zarr_parameter_cases
 
-    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r")
+    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(https_url=https_url, mode="r")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def time_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         """Track network activity for slicing into a Zarr dataset"""
         self._temp = self.data_to_slice[slice_range]
 
@@ -154,11 +159,11 @@ class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
     repeat = 3
     parameter_cases = zarr_parameter_cases
 
-    def setup(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_nwbfile(s3_url=s3_url, mode="r-")
+    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(https_url=https_url, mode="r-")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def time_slice(self, s3_url: str, object_name: str, slice_range: Tuple[slice]):
+    def time_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         """Track network activity for slicing into a Zarr dataset"""
         self._temp = self.data_to_slice[slice_range]

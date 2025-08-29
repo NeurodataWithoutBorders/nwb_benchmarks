@@ -1,7 +1,7 @@
 from dandi.dandiapi import DandiAPIClient
 
 
-def get_s3_url(dandiset_id: str, dandi_path: str) -> str:
+def get_https_url(dandiset_id: str, dandi_path: str) -> str:
     """
     Helper function to get S3 url form that fsspec/remfile expect from basic info about a file on DANDI.
 
@@ -25,5 +25,5 @@ def get_s3_url(dandiset_id: str, dandi_path: str) -> str:
     dandiset = client.get_dandiset(dandiset_id=dandiset_id)
     asset = dandiset.get_asset_by_path(path=dandi_path)
 
-    s3_url = asset.get_content_url(follow_redirects=1, strip_query=True)
-    return s3_url
+    https_url = asset.get_content_url(follow_redirects=1, strip_query=True)
+    return https_url

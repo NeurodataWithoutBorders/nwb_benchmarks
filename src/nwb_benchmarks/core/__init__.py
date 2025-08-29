@@ -2,7 +2,7 @@
 
 from ._base_benchmark import BaseBenchmark
 from ._capture_connections import CaptureConnections
-from ._dandi import get_s3_url
+from ._dandi import get_https_url
 from ._download import download_file
 from ._network_profiler import NetworkProfiler
 from ._network_statistics import NetworkStatistics
@@ -11,11 +11,15 @@ from ._nwb_helpers import get_object_by_name
 from ._results import clean_results, upload_results
 from ._streaming import (
     create_lindi_reference_file_system,
-    read_hdf5_fsspec_no_cache,
-    read_hdf5_fsspec_with_cache,
+    read_hdf5_fsspec_https_no_cache,
+    read_hdf5_fsspec_https_with_cache,
+    read_hdf5_fsspec_s3_no_cache,
+    read_hdf5_fsspec_s3_with_cache,
     read_hdf5_lindi,
-    read_hdf5_nwbfile_fsspec_no_cache,
-    read_hdf5_nwbfile_fsspec_with_cache,
+    read_hdf5_nwbfile_fsspec_https_no_cache,
+    read_hdf5_nwbfile_fsspec_https_with_cache,
+    read_hdf5_nwbfile_fsspec_s3_no_cache,
+    read_hdf5_nwbfile_fsspec_s3_with_cache,
     read_hdf5_nwbfile_lindi,
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_remfile_with_cache,
@@ -23,8 +27,10 @@ from ._streaming import (
     read_hdf5_remfile,
     read_hdf5_remfile_with_cache,
     read_hdf5_ros3,
-    read_zarr,
-    read_zarr_nwbfile,
+    read_zarr_https_protocol,
+    read_zarr_nwbfile_https_protocol,
+    read_zarr_nwbfile_s3_protocol,
+    read_zarr_s3_protocol,
     robust_ros3_read,
 )
 
@@ -34,11 +40,14 @@ __all__ = [
     "NetworkProfiler",
     "NetworkStatistics",
     "network_activity_tracker",
-    "read_hdf5_fsspec_no_cache",
-    "read_hdf5_fsspec_with_cache",
-    "read_hdf5_nwbfile_fsspec_no_cache",
-    "read_hdf5_nwbfile_fsspec_with_cache",
-    "read_hdf5_ros3",
+    "read_hdf5_fsspec_https_no_cache",
+    "read_hdf5_fsspec_https_with_cache",
+    "read_hdf5_fsspec_s3_no_cache",
+    "read_hdf5_fsspec_s3_with_cache",
+    "read_hdf5_nwbfile_fsspec_https_no_cache",
+    "read_hdf5_nwbfile_fsspec_https_with_cache",
+    "read_hdf5_nwbfile_fsspec_s3_no_cache",
+    "read_hdf5_nwbfile_fsspec_s3_with_cache",
     "read_hdf5_nwbfile_ros3",
     "read_hdf5_remfile",
     "read_hdf5_remfile_with_cache",
@@ -47,12 +56,15 @@ __all__ = [
     "create_lindi_reference_file_system",
     "read_hdf5_lindi",
     "read_hdf5_nwbfile_lindi",
-    "get_s3_url",
+    "read_hdf5_ros3",
+    "get_https_url",
     "download_file",
     "get_object_by_name",
     "robust_ros3_read",
-    "read_zarr",
-    "read_zarr_nwbfile",
+    "read_zarr_s3_protocol",
+    "read_zarr_nwbfile_s3_protocol",
+    "read_zarr_https_protocol",
+    "read_zarr_nwbfile_https_protocol",
     "upload_results",
     "clean_results",
 ]
