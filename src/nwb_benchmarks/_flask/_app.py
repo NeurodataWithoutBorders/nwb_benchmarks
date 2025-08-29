@@ -145,9 +145,9 @@ class GitHubResultsManager:
         base_directory = self.cache_directory / "nwb-benchmarks-results"
         if filename.startswith("environment-"):
             directory = base_directory / "environments"
-        if filename.startswith("machine-"):
+        elif filename.startswith("machine-"):
             directory = base_directory / "machines"
-        elif filename.endswith("_results"):
+        elif filename.stem.endswith("_results"):
             directory = base_directory / "results"
         else:
             # Legacy outer collection
