@@ -39,40 +39,40 @@ class Contribute(flask_restx.Resource):
             200: "Success",
             400: "Bad Request",
             500: "Internal server error",
-            521: "Repository path on server not found.",
-            522: "Error during local update. Check server logs for specifics.",
-            523: "Error during add/commit. Check server logs for specifics.",
         }
     )
     def post(self) -> int:
-        arguments = contribute_parser.parse_args()
-        filename = arguments["filename"]
-        test_mode = arguments["test"]
+        try:
+            arguments = contribute_parser.parse_args()
+            filename = arguments["filename"]
+            test_mode = arguments["test"]
 
-        payload = data_namespace.payload
-        json_content = payload["json_content"]
+            payload = data_namespace.payload
+            json_content = payload["json_content"]
 
-        manager = GitHubResultsManager(repo_name="nwb-benchmarks-results")
-        result = manager.ensure_repo_up_to_date()
-        if result is not None:
-            return result
-
-        time.sleep(1)
-
-        manager.write_file(filename=filename, json_content=json_content)
-
-        time.sleep(1)
-
-        if test_mode is False:
-            result = manager.add_and_commit(message="Add new benchmark results")
+            manager = GitHubResultsManager(repo_name="nwb-benchmarks-results")
+            result = manager.ensure_repo_up_to_date()
             if result is not None:
                 return result
 
             time.sleep(1)
 
-            manager.push()
+            manager.write_file(filename=filename, json_content=json_content)
 
-        return 200
+            time.sleep(1)
+
+            if test_mode is False:
+                result = manager.add_and_commit(message="Add new benchmark results")
+                if result is not None:
+                    return result
+
+                time.sleep(1)
+
+                manager.push()
+
+            return 200
+        except Exception as exception:
+            return {"type": type(exception).__name__, "error": str(exception), "traceback": traceback.format_exc()}, 500
 
 
 @data_namespace.route("/update-database")
