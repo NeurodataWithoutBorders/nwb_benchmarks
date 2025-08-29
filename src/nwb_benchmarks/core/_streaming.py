@@ -64,9 +64,9 @@ def read_hdf5_h5py_fsspec_s3_no_cache(
     reset_lock()
     fsspec.get_filesystem_class("s3").clear_instance_cache()
     filesystem = fsspec.filesystem("s3", anon=True)
-    https_url = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    s3_form = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
 
-    byte_stream = filesystem.open(path=https_url, mode="rb")
+    byte_stream = filesystem.open(path=s3_form, mode="rb")
     file = h5py.File(name=byte_stream, aws_region=bytes(AWS_REGION, "ascii"))
     return (file, byte_stream)
 
@@ -83,9 +83,9 @@ def read_hdf5_h5py_fsspec_s3_with_cache(
         fs=filesystem,
         cache_storage=tmpdir.name,  # Local folder for the cache
     )
-    https_url = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    s3_form = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
 
-    byte_stream = filesystem.open(path=https_url, mode="rb")
+    byte_stream = filesystem.open(path=s3_form, mode="rb")
     file = h5py.File(name=byte_stream)
     return (file, byte_stream, tmpdir)
 
@@ -208,15 +208,15 @@ def read_hdf5_h5py_ros3(https_url: str, retry: bool = True) -> Tuple[h5py.File, 
     retries : int
         The number of retries, if `retry` is `True`.
     """
-    rohttps_url = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    s3_form = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
     if retry:
         file, retries = robust_ros3_read(
             command=h5py.File,
-            command_kwargs=dict(name=rohttps_url, driver="ros3", aws_region=bytes(AWS_REGION, "ascii")),
+            command_kwargs=dict(name=s3_form, driver="ros3", aws_region=bytes(AWS_REGION, "ascii")),
         )
     else:
         retries = None
-        file = h5py.File(name=rohttps_url, driver="ros3", aws_region=bytes(AWS_REGION, "ascii"))
+        file = h5py.File(name=s3_form, driver="ros3", aws_region=bytes(AWS_REGION, "ascii"))
     return (file, retries)
 
 
@@ -234,8 +234,8 @@ def read_hdf5_pynwb_ros3(https_url: str, retry: bool = True) -> Tuple[pynwb.NWBF
     retries : int
         The number of retries, if `retry` is `True`.
     """
-    rohttps_url = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
-    io = pynwb.NWBHDF5IO(path=rohttps_url, mode="r", driver="ros3", aws_region=AWS_REGION)
+    s3_form = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    io = pynwb.NWBHDF5IO(path=s3_form, mode="r", driver="ros3", aws_region=AWS_REGION)
 
     if retry:
         nwbfile, retries = robust_ros3_read(command=io.read)
@@ -307,11 +307,11 @@ def read_zarr_zarrpython_s3(https_url: str, open_without_consolidated_metadata: 
     file : zarr.Group
        The zarr.Group object representing the opened file
     """
-    https_url = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    s3_form = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
     if open_without_consolidated_metadata:
-        zarrfile = zarr.open(store=https_url, mode="r", storage_options=dict(anon=True))
+        zarrfile = zarr.open(store=s3_form, mode="r", storage_options=dict(anon=True))
     else:
-        zarrfile = zarr.open_consolidated(store=https_url, mode="r", storage_options=dict(anon=True))
+        zarrfile = zarr.open_consolidated(store=s3_form, mode="r", storage_options=dict(anon=True))
     return zarrfile
 
 
