@@ -50,9 +50,10 @@ def main() -> None:
 
         # Save latest environment list from conda (most thorough)
         # subprocess tends to have issues inheriting `conda` entrypoint
+        shell = sys.platform == "win32"  # Use shell on Windows
         raw_environment_info_file_path = asv_root / ".raw_environment_info.txt"
         with open(file=raw_environment_info_file_path, mode="w") as stdout:
-            environment_info_process = subprocess.Popen(args=["conda", "list"], stdout=stdout, shell=True)
+            environment_info_process = subprocess.Popen(args=["conda", "list"], stdout=stdout, shell=shell)
             environment_info_process.wait()
 
         if not raw_environment_info_file_path.exists():

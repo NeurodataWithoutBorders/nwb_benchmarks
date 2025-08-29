@@ -1,5 +1,6 @@
 """Add information to the ASV machine parameters."""
 
+import copy
 import datetime
 import hashlib
 import json
@@ -90,15 +91,28 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
     return machine_info
 
 
+def get_machine_file_checksum(machine_info: dict) -> str:
+    """Get the checksum of the machine info after removing the machine name."""
+    stable_machine_info = copy.deepcopy(x=machine_info)
+    stable_machine_info["name"] = ""
+    asv_machine_key = next(key for key in stable_machine_info["asv"].keys() if key != "version")
+    stable_machine_info["asv"] = {"": machine_info["asv"][asv_machine_key]}
+    stable_machine_info["asv"][""]["machine"] = ""
+    checksum = get_dictionary_checksum(dictionary=stable_machine_info)
+
+    return checksum
+
+
 def generate_machine_file() -> str:
     """Generate a custom machine file and store in the NWB Benchmarks home directory."""
     machine_info = collect_machine_info()
 
-    checksum = get_dictionary_checksum(dictionary=machine_info)
+    checksum = get_machine_file_checksum(machine_info=machine_info)
+
     machine_info_file_path = MACHINES_DIR / f"machine-{checksum}.json"
     with open(file=machine_info_file_path, mode="w") as file_stream:
         json.dump(obj=machine_info, fp=file_stream, indent=1)
-    print(f"\nMachine info written to:    {machine_info_file_path}")
+    print(f"\nMachine info written to:    {machine_info_file_path}\n")
 
     return checksum
 
