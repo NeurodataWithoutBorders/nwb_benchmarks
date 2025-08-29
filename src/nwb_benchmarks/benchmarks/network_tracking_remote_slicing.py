@@ -1,4 +1,10 @@
-"""Basic benchmarks for profiling network statistics for streaming access to slices of data stored in NWB files."""
+"""
+Basic benchmarks for profiling network statistics for streaming access to slices of data stored in NWB files.
+
+The benchmarks should be consistent with the timing benchmarks - each function should be the same but wrapped in a
+network activity tracker. In fact, almost all of the benchmarking classes should be the same, except for the ROS3
+benchmark where robust_ros3_read is used which is not in the timing benchmarks.
+"""
 
 from abc import ABC, abstractmethod
 from typing import Tuple
@@ -10,16 +16,16 @@ from nwb_benchmarks.core import (
     BaseBenchmark,
     get_object_by_name,
     network_activity_tracker,
-    read_hdf5_nwbfile_fsspec_https_no_cache,
-    read_hdf5_nwbfile_fsspec_https_with_cache,
-    read_hdf5_nwbfile_fsspec_s3_no_cache,
-    read_hdf5_nwbfile_fsspec_s3_with_cache,
-    read_hdf5_nwbfile_lindi,
-    read_hdf5_nwbfile_remfile,
-    read_hdf5_nwbfile_remfile_with_cache,
-    read_hdf5_nwbfile_ros3,
-    read_zarr_nwbfile_https_protocol,
-    read_zarr_nwbfile_s3_protocol,
+    read_hdf5_pynwb_fsspec_https_no_cache,
+    read_hdf5_pynwb_fsspec_https_with_cache,
+    read_hdf5_pynwb_fsspec_s3_no_cache,
+    read_hdf5_pynwb_fsspec_s3_with_cache,
+    read_hdf5_pynwb_lindi,
+    read_hdf5_pynwb_remfile_no_cache,
+    read_hdf5_pynwb_remfile_with_cache,
+    read_hdf5_pynwb_ros3,
+    read_zarr_pynwb_https,
+    read_zarr_pynwb_s3,
     robust_ros3_read,
 )
 
@@ -31,7 +37,11 @@ from .params_remote_slicing import (
 
 
 class ContinuousSliceBenchmark(BaseBenchmark, ABC):
-    """Base class for benchmarking slice access to NWB data."""
+    """
+    Base class for benchmarking slice access to NWB data.
+
+    Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
+    """
 
     @abstractmethod
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
@@ -44,112 +54,119 @@ class ContinuousSliceBenchmark(BaseBenchmark, ABC):
         """
         pass
 
+    def teardown(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        if hasattr(self, "tmpdir"):
+            self.tmpdir.cleanup()
+
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Track network activity during slice access."""
+    def track_network_during_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        """Slice a range of a dataset in a remote NWB file."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp = self.data_to_slice[slice_range]
         return network_tracker.asv_network_statistics
 
 
-class FsspecHttpsNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using fsspec & https without caching."""
+class HDF5PyNWBFsspecHttpsNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with HTTPS without
+    cache.
+    """
 
     parameter_cases = parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_https_no_cache(https_url=https_url)
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_https_no_cache(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
 
-class FsspecS3NoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using fsspec & S3 without caching."""
+class HDF5PyNWBFsspecHttpsWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with HTTPS with cache.
+    """
 
     parameter_cases = parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_s3_no_cache(https_url=https_url)
-        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
-        self.data_to_slice = self.neurodata_object.data
-
-
-class FsspecHttpsWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using fsspec & https with caching."""
-
-    parameter_cases = parameter_cases
-
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_https_with_cache(
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_https_with_cache(
             https_url=https_url
         )
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def teardown(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        if hasattr(self, "tmpdir"):
-            self.tmpdir.cleanup()
 
-
-class FsspecS3WithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using fsspec & S3 with caching."""
+class HDF5PyNWBFsspecS3NoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with S3 without cache.
+    """
 
     parameter_cases = parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_s3_with_cache(
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(https_url=https_url)
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+
+
+class HDF5PyNWBFsspecS3WithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with S3 with cache.
+    """
+
+    parameter_cases = parameter_cases
+
+    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_s3_with_cache(
             https_url=https_url
         )
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def teardown(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        if hasattr(self, "tmpdir"):
-            self.tmpdir.cleanup()
 
-
-class RemfileNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using Remfile without caching."""
+class HDF5PyNWBRemfileNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile without cache.
+    """
 
     parameter_cases = parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(https_url=https_url)
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
 
-class RemfileWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using Remfile with caching."""
+class HDF5PyNWBRemfileWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile with cache.
+    """
 
     parameter_cases = parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_remfile_with_cache(
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_remfile_with_cache(
             https_url=https_url
         )
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
-    def teardown(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        if hasattr(self, "tmpdir"):
-            self.tmpdir.cleanup()
 
-
-class Ros3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using the HDF5 ROS3 driver."""
+class HDF5PyNWBROS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and the ROS3 driver.
+    """
 
     parameter_cases = parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, _ = read_hdf5_nwbfile_ros3(https_url=https_url)
+        self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def track_network_during_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         """Track network activity during slice access, retrying reads robustly."""
-        # NOTE: This function overrides ContinuousSliceBenchmark.track_network_activity_during_slice
+        # NOTE: This function overrides ContinuousSliceBenchmark.track_network_during_slice
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp, self.retries = robust_ros3_read(
                 command=self.data_to_slice.__getitem__, command_args=(slice_range,)
@@ -158,56 +175,74 @@ class Ros3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
         return network_tracker.asv_network_statistics
 
 
-class LindiRemoteJsonContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using LINDI with a remote JSON file."""
+class LindiLocalJSONContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote HDF5 NWB files by reading the local LINDI JSON files with
+    lindi and pynwb.
+
+    This downloads the already created remote LINDI JSON files during setup.
+
+    This should be about the same as reading a data slice from an NWB file that is instantiated with a remote LINDI JSON
+    file because, in that case, the first thing that LINDI does is download the remote file to a temporary directory.
+    """
 
     parameter_cases = lindi_remote_rfs_parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.client = read_hdf5_nwbfile_lindi(rfs=https_url)
+        self.nwbfile, self.io, self.client = read_hdf5_pynwb_lindi(rfs=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
 
-class ZarrS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using Zarr and S3 protocol."""
+class ZarrPyNWBHTTPSContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with HTTPS.
+    """
 
     parameter_cases = zarr_parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_nwbfile_s3_protocol(https_url=https_url, mode="r")
+        self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
 
-class ZarrHttpsContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using Zarr and HTTPS protocol."""
+class ZarrPyNWBHTTPSForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with HTTPS and without using
+    consolidated metadata.
+    """
 
     parameter_cases = zarr_parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(https_url=https_url, mode="r")
+        self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r-")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
 
-class ZarrS3ForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using Zarr and S3 protocol without consolidated metadata."""
+class ZarrPyNWBS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with S3.
+    """
 
     parameter_cases = zarr_parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_nwbfile_s3_protocol(https_url=https_url, mode="r-")
+        self.nwbfile, self.io = read_zarr_pynwb_s3(https_url=https_url, mode="r")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
 
-class ZarrHttpsForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """Benchmark streaming access to slices of NWB data using Zarr and HTTPS protocol without consolidated metadata."""
+class ZarrPyNWBS3ForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with S3 and without using
+    consolidated metadata.
+    """
 
     parameter_cases = zarr_parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(https_url=https_url, mode="r-")
+        self.nwbfile, self.io = read_zarr_pynwb_s3(https_url=https_url, mode="r-")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data

@@ -3,7 +3,6 @@ Module with helper functions for streaming read access to remote files using var
 fsspec, remfile, ros3, lindi
 """
 
-import json
 import tempfile
 import time
 import warnings
@@ -28,7 +27,7 @@ warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 AWS_REGION = "us-east-2"  # DANDI is hosted on us-east-2
 
 
-def read_hdf5_fsspec_https_no_cache(
+def read_hdf5_h5py_fsspec_https_no_cache(
     https_url: str,
 ) -> Tuple[h5py.File, HTTPFile]:
     """Load the raw HDF5 file using fsspec with an HTTPS filesystem without a cache; does not load into pynwb."""
@@ -41,7 +40,7 @@ def read_hdf5_fsspec_https_no_cache(
     return (file, byte_stream)
 
 
-def read_hdf5_fsspec_https_with_cache(
+def read_hdf5_h5py_fsspec_https_with_cache(
     https_url: str,
 ) -> Tuple[h5py.File, HTTPFile, tempfile.TemporaryDirectory]:
     """Load the raw HDF5 file using fsspec with an HTTPS filesystem without a cache; does not load into pynwb."""
@@ -58,21 +57,21 @@ def read_hdf5_fsspec_https_with_cache(
     return (file, byte_stream, tmpdir)
 
 
-def read_hdf5_fsspec_s3_no_cache(
+def read_hdf5_h5py_fsspec_s3_no_cache(
     https_url: str,
 ) -> Tuple[h5py.File, S3File]:
     """Load the raw HDF5 file using fsspec with an S3 filesystem without a cache; does not load into pynwb."""
     reset_lock()
     fsspec.get_filesystem_class("s3").clear_instance_cache()
     filesystem = fsspec.filesystem("s3", anon=True)
-    s3_url = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    s3_form = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
 
-    byte_stream = filesystem.open(path=s3_url, mode="rb")
+    byte_stream = filesystem.open(path=s3_form, mode="rb")
     file = h5py.File(name=byte_stream, aws_region=bytes(AWS_REGION, "ascii"))
     return (file, byte_stream)
 
 
-def read_hdf5_fsspec_s3_with_cache(
+def read_hdf5_h5py_fsspec_s3_with_cache(
     https_url: str,
 ) -> Tuple[h5py.File, S3File, tempfile.TemporaryDirectory]:
     """Load the raw HDF5 file using fsspec with an S3 filesystem without a cache; does not load into pynwb."""
@@ -84,70 +83,62 @@ def read_hdf5_fsspec_s3_with_cache(
         fs=filesystem,
         cache_storage=tmpdir.name,  # Local folder for the cache
     )
-    s3_url = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    s3_form = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
 
-    byte_stream = filesystem.open(path=s3_url, mode="rb")
+    byte_stream = filesystem.open(path=s3_form, mode="rb")
     file = h5py.File(name=byte_stream)
     return (file, byte_stream, tmpdir)
 
 
-def read_hdf5_nwbfile_fsspec_https_no_cache(
+def read_hdf5_pynwb_fsspec_https_no_cache(
     https_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, HTTPFile]:
     """Read an HDF5 NWB file using fsspec with an HTTPS filesystem without a cache."""
-    (file, byte_stream) = read_hdf5_fsspec_https_no_cache(https_url=https_url)
+    (file, byte_stream) = read_hdf5_h5py_fsspec_https_no_cache(https_url=https_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream)
 
 
-def read_hdf5_nwbfile_fsspec_https_with_cache(
+def read_hdf5_pynwb_fsspec_https_with_cache(
     https_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, HTTPFile, tempfile.TemporaryDirectory]:
-    """Read an HDF5 NWB file using fsspec with an HTTPS filesystem without a cache."""
-    (file, byte_stream, tmpdir) = read_hdf5_fsspec_https_with_cache(https_url=https_url)
+    """Read an HDF5 NWB file using fsspec with an HTTPS filesystem with a cache."""
+    (file, byte_stream, tmpdir) = read_hdf5_h5py_fsspec_https_with_cache(https_url=https_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream, tmpdir)
 
 
-def read_hdf5_nwbfile_fsspec_s3_no_cache(
+def read_hdf5_pynwb_fsspec_s3_no_cache(
     https_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, S3File]:
     """Read an HDF5 NWB file using fsspec with an S3 filesystem without a cache."""
-    (file, byte_stream) = read_hdf5_fsspec_s3_no_cache(https_url=https_url)
+    (file, byte_stream) = read_hdf5_h5py_fsspec_s3_no_cache(https_url=https_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream)
 
 
-def read_hdf5_nwbfile_fsspec_s3_with_cache(
+def read_hdf5_pynwb_fsspec_s3_with_cache(
     https_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, S3File, tempfile.TemporaryDirectory]:
-    """Read an HDF5 NWB file using fsspec with an S3 filesystem without a cache."""
-    (file, byte_stream, tmpdir) = read_hdf5_fsspec_s3_with_cache(https_url=https_url)
+    """Read an HDF5 NWB file using fsspec with an S3 filesystem with a cache."""
+    (file, byte_stream, tmpdir) = read_hdf5_h5py_fsspec_s3_with_cache(https_url=https_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream, tmpdir)
 
 
-def read_hdf5_remfile(https_url: str) -> Tuple[h5py.File, remfile.File]:
-    """Load the raw HDF5 file from an S3 URL using remfile; does not formally read the NWB file."""
+def read_hdf5_h5py_remfile_no_cache(https_url: str) -> Tuple[h5py.File, remfile.File]:
+    """Load the raw HDF5 file from an S3 URL using remfile without a cache; does not formally read the NWB file."""
     byte_stream = remfile.File(url=https_url)
     file = h5py.File(name=byte_stream)
     return (file, byte_stream)
 
 
-def read_hdf5_nwbfile_remfile(https_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File]:
-    """Read an HDF5 NWB file from an S3 URL using remfile."""
-    (file, byte_stream) = read_hdf5_remfile(https_url=https_url)
-    io = pynwb.NWBHDF5IO(file=file)
-    nwbfile = io.read()
-    return (nwbfile, io, file, byte_stream)
-
-
-def read_hdf5_remfile_with_cache(https_url: str) -> Tuple[h5py.File, remfile.File, tempfile.TemporaryDirectory]:
-    """Load the raw HDF5 file from an S3 URL using remfile; does not formally read the NWB file."""
+def read_hdf5_h5py_remfile_with_cache(https_url: str) -> Tuple[h5py.File, remfile.File, tempfile.TemporaryDirectory]:
+    """Load the raw HDF5 file from an S3 URL using remfile with a cache; does not formally read the NWB file."""
     tmpdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
     disk_cache = remfile.DiskCache(tmpdir.name)
     byte_stream = remfile.File(url=https_url, disk_cache=disk_cache)
@@ -155,11 +146,19 @@ def read_hdf5_remfile_with_cache(https_url: str) -> Tuple[h5py.File, remfile.Fil
     return (file, byte_stream, tmpdir)
 
 
-def read_hdf5_nwbfile_remfile_with_cache(
+def read_hdf5_pynwb_remfile_no_cache(https_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File]:
+    """Read an HDF5 NWB file from an S3 URL using remfile without a cache."""
+    (file, byte_stream) = read_hdf5_h5py_remfile_no_cache(https_url=https_url)
+    io = pynwb.NWBHDF5IO(file=file)
+    nwbfile = io.read()
+    return (nwbfile, io, file, byte_stream)
+
+
+def read_hdf5_pynwb_remfile_with_cache(
     https_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File, tempfile.TemporaryDirectory]:
-    """Read an HDF5 NWB file from an S3 URL using remfile."""
-    (file, byte_stream, tmpdir) = read_hdf5_remfile_with_cache(https_url=https_url)
+    """Read an HDF5 NWB file from an S3 URL using remfile with a cache."""
+    (file, byte_stream, tmpdir) = read_hdf5_h5py_remfile_with_cache(https_url=https_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream, tmpdir)
@@ -198,7 +197,7 @@ def robust_ros3_read(
     raise TimeoutError(f"Unable to complete the command ({command.__name__}) after {max_retries} attempts!")
 
 
-def read_hdf5_ros3(https_url: str, retry: bool = True) -> Tuple[h5py.File, Union[int, None]]:
+def read_hdf5_h5py_ros3(https_url: str, retry: bool = True) -> Tuple[h5py.File, Union[int, None]]:
     """
     Load the raw HDF5 file from an S3 URL using ROS3 driver; does not formally read the NWB file.
 
@@ -209,20 +208,19 @@ def read_hdf5_ros3(https_url: str, retry: bool = True) -> Tuple[h5py.File, Union
     retries : int
         The number of retries, if `retry` is `True`.
     """
-    ros3_url = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    s3_form = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
     if retry:
         file, retries = robust_ros3_read(
-            command=h5py.File, command_kwargs=dict(name=ros3_url, driver="ros3", aws_region=bytes(AWS_REGION, "ascii"))
+            command=h5py.File,
+            command_kwargs=dict(name=s3_form, driver="ros3", aws_region=bytes(AWS_REGION, "ascii")),
         )
     else:
         retries = None
-        file = h5py.File(name=ros3_url, driver="ros3", aws_region=bytes(AWS_REGION, "ascii"))
+        file = h5py.File(name=s3_form, driver="ros3", aws_region=bytes(AWS_REGION, "ascii"))
     return (file, retries)
 
 
-def read_hdf5_nwbfile_ros3(
-    https_url: str, retry: bool = True
-) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, Union[int, None]]:
+def read_hdf5_pynwb_ros3(https_url: str, retry: bool = True) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, Union[int, None]]:
     """
     Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py.
 
@@ -236,8 +234,8 @@ def read_hdf5_nwbfile_ros3(
     retries : int
         The number of retries, if `retry` is `True`.
     """
-    ros3_url = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
-    io = pynwb.NWBHDF5IO(path=ros3_url, mode="r", driver="ros3", aws_region=AWS_REGION)
+    s3_form = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    io = pynwb.NWBHDF5IO(path=s3_form, mode="r", driver="ros3", aws_region=AWS_REGION)
 
     if retry:
         nwbfile, retries = robust_ros3_read(command=io.read)
@@ -261,7 +259,7 @@ def create_lindi_reference_file_system(https_url: str, outfile_path: str):
     client.write_lindi_file(filename=outfile_path)
 
 
-def read_hdf5_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
+def read_hdf5_h5py_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
     """Open an HDF5 file from an S3 URL using Lindi.
 
     :param rfs: The LINDI reference file system file. This can be a dictionary or a URL or path to a .lindi.json file.
@@ -271,37 +269,20 @@ def read_hdf5_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
     return client
 
 
-def read_hdf5_nwbfile_lindi(rfs: Union[dict, str]) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, lindi.LindiH5pyFile]:
+def read_hdf5_pynwb_lindi(rfs: Union[dict, str]) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, lindi.LindiH5pyFile]:
     """
     Read an HDF5 NWB file from an S3 URL using LINDI.
 
     :param rfs: The LINDI reference file system file. This can be a dictionary or a URL or path to a .lindi.json file.
     """
-    client = read_hdf5_lindi(rfs=rfs)
+    client = read_hdf5_h5py_lindi(rfs=rfs)
     # Open using pynwb
     io = pynwb.NWBHDF5IO(file=client, mode="r")
     nwbfile = io.read()
     return (nwbfile, io, client)
 
 
-def read_zarr_s3_protocol(https_url: str, open_without_consolidated_metadata: bool = False) -> zarr.Group:
-    """
-    Open a Zarr file from an S3 URL with s3 protocol using the built-in fsspec support in Zarr.
-
-    Returns
-    -------
-    file : zarr.Group
-       The zarr.Group object representing the opened file
-    """
-    s3_url = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
-    if open_without_consolidated_metadata:
-        zarrfile = zarr.open(store=s3_url, mode="r", storage_options=dict(anon=True))
-    else:
-        zarrfile = zarr.open_consolidated(store=s3_url, mode="r", storage_options=dict(anon=True))
-    return zarrfile
-
-
-def read_zarr_https_protocol(https_url: str, open_without_consolidated_metadata: bool = False) -> zarr.Group:
+def read_zarr_zarrpython_https(https_url: str, open_without_consolidated_metadata: bool = False) -> zarr.Group:
     """
     Open a Zarr file from an S3 URL with https protocol using the built-in fsspec support in Zarr.
 
@@ -317,30 +298,24 @@ def read_zarr_https_protocol(https_url: str, open_without_consolidated_metadata:
     return zarrfile
 
 
-def read_zarr_nwbfile_s3_protocol(https_url: str, mode: str) -> Tuple[pynwb.NWBFile, hdmf_zarr.NWBZarrIO]:
+def read_zarr_zarrpython_s3(https_url: str, open_without_consolidated_metadata: bool = False) -> zarr.Group:
     """
-    Read a Zarr NWB file from an S3 URL with s3 protocol using the built-in fsspec support in Zarr.
-
-    Note: `r-` indicated reading without consolidated metadata, while `r` indicated reading with consolidated.
-          `r` should only be used in a benchmark for files that actually have consolidated metadata available,
-          for files without consolidated metadata, `hdmf_zarr` automatically reads without consolidated
-          metadata if no consolidated metadata is present.
+    Open a Zarr file from an S3 URL with s3 protocol using the built-in fsspec support in Zarr.
 
     Returns
     -------
-    NWBFile : pynwb.NWBFile
-        The remote NWBFile object.
-    NWBZarrIO : hdmf_zarr.NWBZarrIO
-        The open IO object used to open the file.
+    file : zarr.Group
+       The zarr.Group object representing the opened file
     """
+    s3_form = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    if open_without_consolidated_metadata:
+        zarrfile = zarr.open(store=s3_form, mode="r", storage_options=dict(anon=True))
+    else:
+        zarrfile = zarr.open_consolidated(store=s3_form, mode="r", storage_options=dict(anon=True))
+    return zarrfile
 
-    s3_url = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
-    io = hdmf_zarr.NWBZarrIO(s3_url, mode=mode, storage_options=dict(anon=True))
-    nwbfile = io.read()
-    return (nwbfile, io)
 
-
-def read_zarr_nwbfile_https_protocol(https_url: str, mode: str) -> Tuple[pynwb.NWBFile, hdmf_zarr.NWBZarrIO]:
+def read_zarr_pynwb_https(https_url: str, mode: str) -> Tuple[pynwb.NWBFile, hdmf_zarr.NWBZarrIO]:
     """
     Read a Zarr NWB file from an S3 URL with https protocol using the built-in fsspec support in Zarr.
 
@@ -358,5 +333,28 @@ def read_zarr_nwbfile_https_protocol(https_url: str, mode: str) -> Tuple[pynwb.N
     """
 
     io = hdmf_zarr.NWBZarrIO(https_url, mode=mode)
+    nwbfile = io.read()
+    return (nwbfile, io)
+
+
+def read_zarr_pynwb_s3(https_url: str, mode: str) -> Tuple[pynwb.NWBFile, hdmf_zarr.NWBZarrIO]:
+    """
+    Read a Zarr NWB file from an S3 URL with s3 protocol using the built-in fsspec support in Zarr.
+
+    Note: `r-` indicated reading without consolidated metadata, while `r` indicated reading with consolidated.
+          `r` should only be used in a benchmark for files that actually have consolidated metadata available,
+          for files without consolidated metadata, `hdmf_zarr` automatically reads without consolidated
+          metadata if no consolidated metadata is present.
+
+    Returns
+    -------
+    NWBFile : pynwb.NWBFile
+        The remote NWBFile object.
+    NWBZarrIO : hdmf_zarr.NWBZarrIO
+        The open IO object used to open the file.
+    """
+
+    s3_form = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
+    io = hdmf_zarr.NWBZarrIO(s3_form, mode=mode, storage_options=dict(anon=True))
     nwbfile = io.read()
     return (nwbfile, io)
