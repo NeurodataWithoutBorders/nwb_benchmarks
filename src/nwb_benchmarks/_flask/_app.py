@@ -143,11 +143,12 @@ class GitHubResultsManager:
     def write_file(self, filename: pathlib.Path, json_content: dict) -> None:
         """Write results JSON to a file in the cache directory."""
         base_directory = self.cache_directory / "nwb-benchmarks-results"
-        if filename.startswith("environment-"):
+        filestem: str = filename.stem
+        if filestem.startswith("environment-"):
             directory = base_directory / "environments"
-        elif filename.startswith("machine-"):
+        elif filestem.startswith("machine-"):
             directory = base_directory / "machines"
-        elif filename.stem.endswith("_results"):
+        elif filestem.endswith("_results"):
             directory = base_directory / "results"
         else:
             # Legacy outer collection
