@@ -211,7 +211,8 @@ def read_hdf5_h5py_ros3(https_url: str, retry: bool = True) -> Tuple[h5py.File, 
     rohttps_url = https_url.replace("https://dandiarchive.s3.amazonaws.com", "s3://dandiarchive")
     if retry:
         file, retries = robust_ros3_read(
-            command=h5py.File, command_kwargs=dict(name=rohttps_url, driver="ros3", aws_region=bytes(AWS_REGION, "ascii"))
+            command=h5py.File,
+            command_kwargs=dict(name=rohttps_url, driver="ros3", aws_region=bytes(AWS_REGION, "ascii")),
         )
     else:
         retries = None
@@ -312,7 +313,6 @@ def read_zarr_zarrpython_s3(https_url: str, open_without_consolidated_metadata: 
     else:
         zarrfile = zarr.open_consolidated(store=https_url, mode="r", storage_options=dict(anon=True))
     return zarrfile
-
 
 
 def read_zarr_pynwb_https(https_url: str, mode: str) -> Tuple[pynwb.NWBFile, hdmf_zarr.NWBZarrIO]:
