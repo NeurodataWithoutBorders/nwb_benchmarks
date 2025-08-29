@@ -75,19 +75,19 @@ lindi_remote_rfs_parameter_cases = dict(
 zarr_parameter_cases = dict(
     EcephysTestCase=dict(
         # DANDI: 000719 sub-npI3_ses-20190421_behavior+ecephys_rechunk.nwb.zarr
-        https_url="s3://dandiarchive/zarr/d097af6b-8fd8-4d83-b649-fc6518e95d25/",
+        https_url="https://dandiarchive.s3.amazonaws.com/zarr/d097af6b-8fd8-4d83-b649-fc6518e95d25/",
         object_name="ElectricalSeries",
         slice_range=(slice(0, 30_000), slice(0, 384)),
     ),
     OphysTestCase=dict(
         # DANDI: 000719 sub-R6_ses-20200206T210000_behavior+ophys_DirectoryStore_rechunked.nwb.zarr
-        https_url="s3://dandiarchive/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/",
+        https_url="https://dandiarchive.s3.amazonaws.com/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/",
         object_name="TwoPhotonSeries",
         slice_range=(slice(0, 3), slice(0, 796), slice(0, 512)),
     ),
     IcephysTestCase=dict(
         # DANDI: 000719 icephys_DS_11_21_24/sub-1214579789_ses-1214621812_icephys_DirectoryStore.nwb.zarr
-        https_url="s3://dandiarchive/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/",
+        https_url="https://dandiarchive.s3.amazonaws.com/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/",
         object_name="data_00002_AD0",
         slice_range=(slice(0, 30_000),),
     ),
