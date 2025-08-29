@@ -57,24 +57,24 @@ An example of this philosophy in practice would be as follows. In this example w
 
 .. code-block:: python
 
-    from nwb_benchmarks.core import read_hdf5_nwbfile_remfile
+    from nwb_benchmarks.core import read_hdf5_h5py_remfile_no_cache
 
-    class NWBFileReadBenchmark:
+    class HDF5H5pyFileReadBenchmark:
         param_names = ["https_url"]
         params = [
             "https://dandiarchive.s3.amazonaws.com/ros3test.nwb",  # The original small test NWB file
         ]
 
-        def time_read_hdf5_nwbfile_remfile(self, https_url: str):
-            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(https_url=https_url)
+        def time_read_hdf5_h5py_remfile_no_cache(self, https_url: str):
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_h5py_remfile_no_cache(https_url=https_url)
 
 as well as how long it takes to slice ~20 MB of data from the contents of a remote NWB file that has a large amount of series data...
 
 .. code-block:: python
 
-    from nwb_benchmarks.core import get_https_url, read_hdf5_nwbfile_remfile
+    from nwb_benchmarks.core import get_https_url, read_hdf5_pynwb_remfile_no_cache
 
-    class RemfileContinuousSliceBenchmark:
+    class HDF5PyNWBRemfileNoCacheContinuousSliceBenchmark:
         param_names = ["https_url", "object_name", "slice_range"]
         params = (
             [
@@ -88,31 +88,31 @@ as well as how long it takes to slice ~20 MB of data from the contents of a remo
         )
 
         def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(https_url=https_url)
-            self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name="ElectricalSeriesAp")
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(https_url=https_url)
+            self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
             self.data_to_slice = self.neurodata_object.data
 
         def time_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
             """Note: store as self._temp to avoid tracking garbage collection as well."""
             self._temp = self.data_to_slice[slice_range]
 
-Notice how the ``read_hdf5_nwbfile_remfile`` function (which reads an HDF5-backend ``pynwb.NWBFile`` object into memory using the ``remfile`` method) was used as both the main operation being timed in the first case, then reused in the ``setup`` of the of the second. By following the redirection of the function to its definition, we find it is itself a compound of another helper function for ``remfile`` usage...
+Notice how the ``read_hdf5_pynwb_remfile_no_cache`` function (which reads an HDF5-backend ``pynwb.NWBFile`` object into memory using the ``remfile`` method) was used as both the main operation being timed in the first case, then reused in the ``setup`` of the second. By following the redirection of the function to its definition, we find it is itself a compound of another helper function for ``remfile`` usage...
 
 .. code-block:: python
 
     # In nwb_benchmarks/core/_streaming.py
 
-    def read_hdf5_remfile(https_url: str) -> Tuple[h5py.File, remfile.File]:
-        """Load the raw HDF5 file from an S3 URL using remfile; does not formally read the NWB file."""
+    def read_hdf5_h5py_remfile_no_cache(https_url: str) -> Tuple[h5py.File, remfile.File]:
+        """Load the raw HDF5 file from an S3 URL using remfile without a cache; does not formally read the NWB file."""
         byte_stream = remfile.File(url=https_url)
         file = h5py.File(name=byte_stream)
         return (file, byte_stream)
 
 
-    def read_hdf5_nwbfile_remfile(https_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File]:
-        """Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py."""
-        (file, byte_stream) = read_hdf5_remfile(https_url=https_url)
-        io = pynwb.NWBHDF5IO(file=file, aws_region="us-east-2")
+    def read_hdf5_pynwb_remfile_no_cache(https_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File]:
+        """Read an HDF5 NWB file from an S3 URL using remfile without a cache."""
+        (file, byte_stream) = read_hdf5_h5py_remfile_no_cache(https_url=https_url)
+        io = pynwb.NWBHDF5IO(file=file)
         nwbfile = io.read()
         return (nwbfile, io, file, byte_stream)
 
