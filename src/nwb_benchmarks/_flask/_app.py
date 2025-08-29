@@ -44,7 +44,7 @@ class Contribute(flask_restx.Resource):
     def post(self) -> int:
         try:
             arguments = contribute_parser.parse_args()
-            filename = arguments["filename"]
+            filename = pathlib.Path(arguments["filename"])
             test_mode = arguments["test"]
 
             payload = data_namespace.payload
@@ -140,7 +140,7 @@ class GitHubResultsManager:
             print(f"ERROR: {message}")
             return 522
 
-    def write_file(self, filename: str, json_content: dict) -> None:
+    def write_file(self, filename: pathlib.Path, json_content: dict) -> None:
         """Write results JSON to a file in the cache directory."""
         base_directory = self.cache_directory / "nwb-benchmarks-results"
         if filename.startswith("environment-"):
