@@ -112,7 +112,7 @@ def generate_machine_file() -> str:
     machine_info_file_path = MACHINES_DIR / f"machine-{checksum}.json"
     with open(file=machine_info_file_path, mode="w") as file_stream:
         json.dump(obj=machine_info, fp=file_stream, indent=1)
-    print(f"\nMachine info written to:    {machine_info_file_path}")
+    print(f"\nMachine info written to:    {machine_info_file_path}\n")
 
     return checksum
 
