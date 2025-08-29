@@ -92,6 +92,7 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
 
 
 def get_machine_file_checksum(machine_info: dict) -> str:
+    """Get the checksum of the machine info after removing the machine name."""
     stable_machine_info = copy.deepcopy(x=machine_info)
     stable_machine_info["name"] = ""
     asv_machine_key = next(key for key in stable_machine_info["asv"].keys() if key != "version")
