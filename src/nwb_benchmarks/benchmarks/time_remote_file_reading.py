@@ -219,11 +219,11 @@ class DirectZarrFileReadBenchmark(BaseBenchmark):
 
     def time_read_zarr(self, https_url: str):
         """Read a Zarr file using consolidated metadata (if available)"""
-        self.zarr_file = read_zarr(https_url=https_url, open_without_consolidated_metadata=False)
+        self.zarr_file = read_zarr_https_protocol(https_url=https_url, open_without_consolidated_metadata=False)
 
     def time_read_zarr_force_no_consolidated(self, https_url: str):
         """Read a Zarr file without using consolidated metadata"""
-        self.zarr_file = read_zarr(https_url=https_url, open_without_consolidated_metadata=True)
+        self.zarr_file = read_zarr_https_protocol(https_url=https_url, open_without_consolidated_metadata=True)
 
 
 class NWBZarrFileReadBenchmark(BaseBenchmark):
