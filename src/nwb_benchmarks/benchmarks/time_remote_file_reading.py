@@ -8,11 +8,16 @@ from nwb_benchmarks.core import (
     BaseBenchmark,
     create_lindi_reference_file_system,
     download_file,
-    read_hdf5_fsspec_no_cache,
-    read_hdf5_fsspec_with_cache,
+    network_activity_tracker,
+    read_hdf5_fsspec_https_no_cache,
+    read_hdf5_fsspec_https_with_cache,
+    read_hdf5_fsspec_s3_no_cache,
+    read_hdf5_fsspec_s3_with_cache,
     read_hdf5_lindi,
-    read_hdf5_nwbfile_fsspec_no_cache,
-    read_hdf5_nwbfile_fsspec_with_cache,
+    read_hdf5_nwbfile_fsspec_https_no_cache,
+    read_hdf5_nwbfile_fsspec_https_with_cache,
+    read_hdf5_nwbfile_fsspec_s3_no_cache,
+    read_hdf5_nwbfile_fsspec_s3_with_cache,
     read_hdf5_nwbfile_lindi,
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_remfile_with_cache,
@@ -20,8 +25,10 @@ from nwb_benchmarks.core import (
     read_hdf5_remfile,
     read_hdf5_remfile_with_cache,
     read_hdf5_ros3,
-    read_zarr,
-    read_zarr_nwbfile,
+    read_zarr_https_protocol,
+    read_zarr_nwbfile_https_protocol,
+    read_zarr_nwbfile_s3_protocol,
+    read_zarr_s3_protocol,
 )
 
 from .params_remote_file_reading import (
@@ -51,10 +58,10 @@ class DirectFileReadBenchmark(BaseBenchmark):
             self.tmpdir.cleanup()
 
     def time_read_hdf5_fsspec_no_cache(self, https_url: str):
-        self.file, self.bytestream = read_hdf5_fsspec_no_cache(https_url=https_url)
+        self.file, self.bytestream = read_hdf5_fsspec_https_no_cache(https_url=https_url)
 
     def time_read_hdf5_fsspec_with_cache(self, https_url: str):
-        self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_with_cache(https_url=https_url)
+        self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_https_with_cache(https_url=https_url)
 
     def time_read_hdf5_remfile(self, https_url: str):
         self.file, self.bytestream = read_hdf5_remfile(https_url=https_url)
@@ -83,10 +90,10 @@ class NWBFileReadBenchmark(BaseBenchmark):
             self.tmpdir.cleanup()
 
     def time_read_hdf5_nwbfile_fsspec_no_cache(self, https_url: str):
-        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(https_url=https_url)
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_https_no_cache(https_url=https_url)
 
     def time_read_hdf5_nwbfile_fsspec_with_cache(self, https_url: str):
-        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_https_with_cache(
             https_url=https_url
         )
 
@@ -232,8 +239,8 @@ class NWBZarrFileReadBenchmark(BaseBenchmark):
 
     def time_read_zarr_nwbfile(self, https_url: str):
         """Read NWB file with PyNWB using Zarr with consolidated metadata. (if available)"""
-        self.nwbfile, self.io = read_zarr_nwbfile(https_url=https_url, mode="r")
+        self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(https_url=https_url, mode="r")
 
     def time_read_zarr_nwbfile_force_no_consolidated(self, https_url: str):
         """Read NWB file with PyNWB using Zarr without consolidated metadata."""
-        self.nwbfile, self.io = read_zarr_nwbfile(https_url=https_url, mode="r-")
+        self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(https_url=https_url, mode="r-")

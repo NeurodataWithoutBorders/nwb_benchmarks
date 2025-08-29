@@ -5,13 +5,18 @@ from typing import Tuple
 from nwb_benchmarks.core import (
     BaseBenchmark,
     get_object_by_name,
-    read_hdf5_nwbfile_fsspec_no_cache,
-    read_hdf5_nwbfile_fsspec_with_cache,
+    network_activity_tracker,
+    read_hdf5_nwbfile_fsspec_https_no_cache,
+    read_hdf5_nwbfile_fsspec_https_with_cache,
+    read_hdf5_nwbfile_fsspec_s3_no_cache,
+    read_hdf5_nwbfile_fsspec_s3_with_cache,
     read_hdf5_nwbfile_lindi,
     read_hdf5_nwbfile_remfile,
     read_hdf5_nwbfile_remfile_with_cache,
     read_hdf5_nwbfile_ros3,
-    read_zarr_nwbfile,
+    read_zarr_nwbfile_https_protocol,
+    read_zarr_nwbfile_s3_protocol,
+    robust_ros3_read,
 )
 
 from .params_remote_slicing import (
@@ -27,7 +32,7 @@ class FsspecNoCacheContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_no_cache(https_url=https_url)
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_https_no_cache(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
@@ -45,7 +50,7 @@ class FsspecWithCacheContinuousSliceBenchmark(BaseBenchmark):
         self.tmpdir.cleanup()
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_with_cache(
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_https_with_cache(
             https_url=https_url
         )
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
@@ -136,7 +141,7 @@ class ZarrContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_nwbfile(https_url=https_url, mode="r")
+        self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(https_url=https_url, mode="r")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
@@ -155,7 +160,7 @@ class ZarrForceNoConsolidatedContinuousSliceBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_nwbfile(https_url=https_url, mode="r-")
+        self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(https_url=https_url, mode="r-")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
