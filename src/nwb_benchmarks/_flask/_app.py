@@ -147,7 +147,7 @@ class GitHubResultsManager:
             directory = base_directory / "environments"
         elif filename.startswith("machine-"):
             directory = base_directory / "machines"
-        elif filename.endswith("_results"):
+        elif filename.stem.endswith("_results"):
             directory = base_directory / "results"
         else:
             # Legacy outer collection
