@@ -112,7 +112,7 @@ def generate_machine_file() -> str:
     machine_info_file_path = MACHINES_DIR / f"machine-{checksum}.json"
     if machine_info_file_path.exists():
         print(f"\nMachine info exists at:    {machine_info_file_path}\n")
-        return
+        return checksum
 
     with open(file=machine_info_file_path, mode="w") as file_stream:
         json.dump(obj=machine_info, fp=file_stream, indent=1)
