@@ -151,7 +151,7 @@ generate a new token for this purpose. Then open a console on PythonAnywhere and
     git config --local user.name "github-actions[bot]"
     cd ..
     git clone https://<token>@github.com/neurodatawithoutborders/nwb-benchmarks-database
-    cd nwb-benchmarks-results
+    cd nwb-benchmarks-database
     git config --local user.email "github-actions[bot]@users.noreply.github.com"
     git config --local user.name "github-actions[bot]"
     cd ..
