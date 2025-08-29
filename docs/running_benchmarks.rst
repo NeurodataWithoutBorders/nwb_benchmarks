@@ -58,7 +58,7 @@ Additional Flags
 Subset of the Suite
 ~~~~~~~~~~~~~~~~~~~
 
-To run only a single benchmark suite or a single cast within a benchmark, use the command...
+To run only a single benchmark suite or a single case within a benchmark, use the command...
 
 .. code-block::
 
