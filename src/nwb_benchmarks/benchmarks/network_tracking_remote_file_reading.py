@@ -1,8 +1,13 @@
-"""Basic benchmarks for profiling network statistics for streaming access to NWB files and their contents."""
+"""
+Basic benchmarks for profiling network statistics for streaming access to NWB files and their contents.
+
+The benchmarks should be consistent with the timing benchmarks - each function should be the same but wrapped in a
+network activity tracker.
+"""
 
 import os
 
-from asv_runner.benchmarks.mark import skip_benchmark_if
+from asv_runner.benchmarks.mark import skip_benchmark, skip_benchmark_if
 
 from nwb_benchmarks import TSHARK_PATH
 from nwb_benchmarks.core import (
@@ -10,26 +15,26 @@ from nwb_benchmarks.core import (
     create_lindi_reference_file_system,
     download_file,
     network_activity_tracker,
-    read_hdf5_fsspec_https_no_cache,
-    read_hdf5_fsspec_https_with_cache,
-    read_hdf5_fsspec_s3_no_cache,
-    read_hdf5_fsspec_s3_with_cache,
-    read_hdf5_lindi,
-    read_hdf5_nwbfile_fsspec_https_no_cache,
-    read_hdf5_nwbfile_fsspec_https_with_cache,
-    read_hdf5_nwbfile_fsspec_s3_no_cache,
-    read_hdf5_nwbfile_fsspec_s3_with_cache,
-    read_hdf5_nwbfile_lindi,
-    read_hdf5_nwbfile_remfile,
-    read_hdf5_nwbfile_remfile_with_cache,
-    read_hdf5_nwbfile_ros3,
-    read_hdf5_remfile,
-    read_hdf5_remfile_with_cache,
-    read_hdf5_ros3,
-    read_zarr_https_protocol,
-    read_zarr_nwbfile_https_protocol,
-    read_zarr_nwbfile_s3_protocol,
-    read_zarr_s3_protocol,
+    read_hdf5_h5py_fsspec_https_no_cache,
+    read_hdf5_h5py_fsspec_https_with_cache,
+    read_hdf5_h5py_fsspec_s3_no_cache,
+    read_hdf5_h5py_fsspec_s3_with_cache,
+    read_hdf5_h5py_lindi,
+    read_hdf5_h5py_remfile_no_cache,
+    read_hdf5_h5py_remfile_with_cache,
+    read_hdf5_h5py_ros3,
+    read_hdf5_pynwb_fsspec_https_no_cache,
+    read_hdf5_pynwb_fsspec_https_with_cache,
+    read_hdf5_pynwb_fsspec_s3_no_cache,
+    read_hdf5_pynwb_fsspec_s3_with_cache,
+    read_hdf5_pynwb_lindi,
+    read_hdf5_pynwb_remfile_no_cache,
+    read_hdf5_pynwb_remfile_with_cache,
+    read_hdf5_pynwb_ros3,
+    read_zarr_pynwb_https,
+    read_zarr_pynwb_s3,
+    read_zarr_zarrpython_https,
+    read_zarr_zarrpython_s3,
 )
 
 from .params_remote_file_reading import (
@@ -40,175 +45,150 @@ from .params_remote_file_reading import (
 )
 
 
-class FsspecHttpsNoCacheFileReadBenchmark(BaseBenchmark):
-    """Benchmark reading a remote NWB file using fsspec & https protocol without caching."""
+class HDF5H5pyFileReadBenchmark(BaseBenchmark):
+    """
+    Track the network activity during read of remote HDF5 files with h5py using each streaming method.
 
-    parameter_cases = parameter_cases
+    There is no formal parsing of the `pynwb.NWBFile` object.
 
-    @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_h5py(self, https_url: str):
-        """Track network activity during reading HDF5 files with h5py using fsspec & https without caching."""
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.file, self.bytestream = read_hdf5_fsspec_https_no_cache(https_url=https_url)
-        return network_tracker.asv_network_statistics
-
-    @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb(self, https_url: str):
-        """Track network activity during reading NWB files with h5py and PyNWB using fsspec & https without caching."""
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_https_no_cache(
-                https_url=https_url
-            )
-        return network_tracker.asv_network_statistics
-
-
-class FsspecS3NoCacheFileReadBenchmark(BaseBenchmark):
-    """Benchmark reading a remote NWB file using fsspec & S3 protocol without caching."""
-
-    parameter_cases = parameter_cases
-
-    @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_h5py(self, https_url: str):
-        """Track network activity during reading HDF5 files with h5py using fsspec & S3 without caching."""
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.file, self.bytestream = read_hdf5_fsspec_s3_no_cache(https_url=https_url)
-        return network_tracker.asv_network_statistics
-
-    @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb(self, https_url: str):
-        """Track network activity during reading NWB files with h5py and PyNWB using fsspec & S3 without caching."""
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_fsspec_s3_no_cache(
-                https_url=https_url
-            )
-        return network_tracker.asv_network_statistics
-
-
-class FsspecHttpsWithCacheFileReadBenchmark(BaseBenchmark):
-    """Benchmark reading a remote NWB file using fsspec & https protocol with caching."""
+    Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
+    """
 
     parameter_cases = parameter_cases
 
     def teardown(self, https_url: str):
-        """Clean up temporary directories."""
+        # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
         if hasattr(self, "tmpdir"):
             self.tmpdir.cleanup()
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_h5py(self, https_url: str):
-        """Track network activity during reading HDF5 files with h5py using fsspec & https with caching."""
+    def track_network_read_hdf5_h5py_fsspec_https_no_cache(self, https_url: str):
+        """Read remote HDF5 file using h5py and fsspec with HTTPS without cache."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_https_with_cache(https_url=https_url)
+            self.file, self.bytestream = read_hdf5_h5py_fsspec_https_no_cache(https_url=https_url)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb(self, https_url: str):
-        """Track network activity during reading NWB files with h5py and PyNWB using fsspec & https with caching."""
+    def track_network_read_hdf5_h5py_fsspec_https_with_cache(self, https_url: str):
+        """Read remote HDF5 file using h5py and fsspec with HTTPS with cache."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_https_with_cache(
-                https_url=https_url
-            )
-        return network_tracker.asv_network_statistics
-
-
-class FsspecS3WithCacheFileReadBenchmark(BaseBenchmark):
-    """Benchmark reading a remote NWB file using fsspec & S3 protocol with caching."""
-
-    parameter_cases = parameter_cases
-
-    def teardown(self, https_url: str):
-        """Clean up temporary directories."""
-        if hasattr(self, "tmpdir"):
-            self.tmpdir.cleanup()
-
-    @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_h5py(self, https_url: str):
-        """Track network activity during reading HDF5 files with h5py using fsspec & S3 with caching."""
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.file, self.bytestream, self.tmpdir = read_hdf5_fsspec_s3_with_cache(https_url=https_url)
+            self.file, self.bytestream, self.tmpdir = read_hdf5_h5py_fsspec_https_with_cache(https_url=https_url)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb(self, https_url: str):
-        """Track network activity during reading NWB files with h5py and PyNWB using fsspec & S3 with caching."""
+    def track_network_read_hdf5_h5py_fsspec_s3_no_cache(self, https_url: str):
+        """Read remote HDF5 file using h5py and fsspec with S3 without cache."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_fsspec_s3_with_cache(
-                https_url=https_url
-            )
-        return network_tracker.asv_network_statistics
-
-
-class RemfileNoCacheFileReadBenchmark(BaseBenchmark):
-    """Benchmark reading a remote NWB file using Remfile without caching."""
-
-    parameter_cases = parameter_cases
-
-    @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_h5py(self, https_url: str):
-        """Track network activity during reading HDF5 files with h5py using Remfile without caching."""
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.file, self.bytestream = read_hdf5_remfile(https_url=https_url)
+            self.file, self.bytestream = read_hdf5_h5py_fsspec_s3_no_cache(https_url=https_url)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb(self, https_url: str):
-        """Track network activity during reading NWB files with h5py and PyNWB using Remfile without caching."""
+    def track_network_read_hdf5_h5py_fsspec_s3_with_cache(self, https_url: str):
+        """Read remote HDF5 file using h5py and fsspec with S3 with cache."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_nwbfile_remfile(https_url=https_url)
-        return network_tracker.asv_network_statistics
-
-
-class RemfileWithCacheFileReadBenchmark(BaseBenchmark):
-    """Benchmark reading a remote NWB file using Remfile with caching."""
-
-    parameter_cases = parameter_cases
-
-    def teardown(self, https_url: str):
-        """Clean up temporary directories."""
-        if hasattr(self, "tmpdir"):
-            self.tmpdir.cleanup()
-
-    @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_h5py(self, https_url: str):
-        """Track network activity during reading HDF5 files with h5py using Remfile with caching."""
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.file, self.bytestream, self.tmpdir = read_hdf5_remfile_with_cache(https_url=https_url)
+            self.file, self.bytestream, self.tmpdir = read_hdf5_h5py_fsspec_s3_with_cache(https_url=https_url)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb(self, https_url: str):
-        """Track network activity during reading NWB files with h5py and PyNWB using Remfile with caching."""
+    def track_network_read_hdf5_h5py_remfile_no_cache(self, https_url: str):
+        """Read remote HDF5 file using h5py and remfile without cache."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_nwbfile_remfile_with_cache(
-                https_url=https_url
-            )
-        return network_tracker.asv_network_statistics
-
-
-class Ros3FileReadBenchmark(BaseBenchmark):
-    """Benchmark reading a remote NWB file using the HDF5 ROS3 driver."""
-
-    parameter_cases = parameter_cases
-
-    @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_h5py(self, https_url: str):
-        """Track network activity during reading HDF5 files with h5py using the ROS3 driver."""
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.file, retries = read_hdf5_ros3(https_url=https_url)
-        network_tracker.asv_network_statistics.update(retries=retries)
+            self.file, self.bytestream = read_hdf5_h5py_remfile_no_cache(https_url=https_url)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb(self, https_url: str):
-        """Track network activity during reading NWB files with h5py and PyNWB using the ROS3 driver."""
+    def track_network_read_hdf5_h5py_remfile_with_cache(self, https_url: str):
+        """Read remote HDF5 file using h5py and remfile with cache."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, retries = read_hdf5_nwbfile_ros3(https_url=https_url)
+            self.file, self.bytestream, self.tmpdir = read_hdf5_h5py_remfile_with_cache(https_url=https_url)
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_h5py_ros3(self, https_url: str):
+        """Read remote HDF5 file using h5py and the ROS3 HDF5 driver."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.file, retries = read_hdf5_h5py_ros3(https_url=https_url, retry=True)
         network_tracker.asv_network_statistics.update(retries=retries)
         return network_tracker.asv_network_statistics
 
 
-class LindiCreateLocalJsonFileBenchmark(BaseBenchmark):
-    """Benchmark creating a local LINDI JSON file for a remote HDF5 file."""
+class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
+    """
+    Track the network activity during read of remote HDF5 NWB files with pynwb using each streaming method.
+
+    Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
+    """
+
+    parameter_cases = parameter_cases
+
+    def teardown(self, https_url: str):
+        # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
+        if hasattr(self, "tmpdir"):
+            self.tmpdir.cleanup()
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_fsspec_https_no_cache(self, https_url: str):
+        """Read remote NWB file using pynwb and fsspec with HTTPS without cache."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_https_no_cache(
+                https_url=https_url
+            )
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_fsspec_https_with_cache(self, https_url: str):
+        """Read remote NWB file using pynwb and fsspec with HTTPS with cache."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_https_with_cache(
+                https_url=https_url
+            )
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_fsspec_s3_no_cache(self, https_url: str):
+        """Read remote NWB file using pynwb and fsspec with S3 without cache."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(https_url=https_url)
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_fsspec_s3_with_cache(self, https_url: str):
+        """Read remote NWB file using pynwb and fsspec with S3 with cache."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_s3_with_cache(
+                https_url=https_url
+            )
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_remfile_no_cache(self, https_url: str):
+        """Read remote NWB file using pynwb and remfile without cache."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(https_url=https_url)
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_remfile_with_cache(self, https_url: str):
+        """Read remote NWB file using pynwb and remfile with cache."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_remfile_with_cache(
+                https_url=https_url
+            )
+        return network_tracker.asv_network_statistics
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_ros3(self, https_url: str):
+        """Read remote NWB file using pynwb and the ROS3 HDF5 driver."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, retries = read_hdf5_pynwb_ros3(https_url=https_url, retry=True)
+        network_tracker.asv_network_statistics.update(retries=retries)
+        return network_tracker.asv_network_statistics
+
+
+class LindiCreateLocalJSONFileBenchmark(BaseBenchmark):
+    """
+    Track the network activity during read of remote HDF5 files and the creation of a LINDI JSON file using lindi.
+    """
 
     parameter_cases = lindi_hdf5_parameter_cases
 
@@ -222,128 +202,151 @@ class LindiCreateLocalJsonFileBenchmark(BaseBenchmark):
             os.remove(self.lindi_file)
 
     # TODO This benchmark takes a long time to index all of the chunks for these files! Do not run until ready
-    @skip_benchmark_if(True)
-    def track_network_activity_create_lindi_json_file(self, https_url: str):
-        """Track network activity during the creation of a LINDI JSON file."""
+    @skip_benchmark
+    def track_network_read_create_lindi_json(self, https_url: str):
+        """Read a remote HDF5 file to create a LINDI JSON file."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             create_lindi_reference_file_system(https_url=https_url, outfile_path=self.lindi_file)
         return network_tracker.asv_network_statistics
 
 
-class LindiReadLocalJsonFileBenchmark(BaseBenchmark):
-    """Benchmark reading a remote NWB file using LINDI with a local LINDI JSON file."""
+class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
+    """
+    Track the network activity during read of remote HDF5 files by reading the local LINDI JSON files with lindi and
+    h5py or pynwb.
+
+    This downloads the already created remote LINDI JSON files during setup.
+
+    Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
+    """
 
     parameter_cases = lindi_remote_rfs_parameter_cases
 
     def setup(self, https_url: str):
-        """Download the remote LINDI JSON file."""
-        self.lindi_file = os.path.basename(https_url)
+        """Download the LINDI JSON file."""
+        self.lindi_file = os.path.basename(https_url) + ".lindi.json"
         self.teardown(https_url=https_url)
         download_file(https_url=https_url, local_path=self.lindi_file)
 
     def teardown(self, https_url: str):
-        """Delete the local LINDI JSON file if it exists."""
+        """Delete the LINDI JSON file if it exists."""
         if os.path.exists(self.lindi_file):
             os.remove(self.lindi_file)
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_lindi(self, https_url: str):
-        """Track network activity during reading HDF5 files with LINDI using the local LINDI JSON file."""
+    def track_network_read_lindi_h5py(self, https_url: str):
+        """Read a remote HDF5 file with h5py using lindi with the local LINDI JSON file."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.client = read_hdf5_lindi(rfs=self.lindi_file)
+            self.client = read_hdf5_h5py_lindi(rfs=self.lindi_file)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_lindi_nwbfile(self, https_url: str):
-        """Track network activity during reading NWB files with LINDI and PyNWB using the local LINDI JSON file."""
+    def track_network_read_lindi_pynwb(self, https_url: str):
+        """Read a remote HDF5 NWB file with pynwb using lindi with the local LINDI JSON file."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.client = read_hdf5_nwbfile_lindi(rfs=self.lindi_file)
+            self.nwbfile, self.io, self.client = read_hdf5_pynwb_lindi(rfs=self.lindi_file)
         return network_tracker.asv_network_statistics
 
 
-class LindiReadRemoteJsonFileBenchmark(BaseBenchmark):
-    """Benchmark reading a remote NWB file using LINDI with a remote LINDI JSON file."""
+class LindiRemoteJSONFileReadBenchmark(BaseBenchmark):
+    """
+    Track the network activity during read of remote HDF5 files by reading the remote LINDI JSON files with lindi and
+    h5py or pynwb.
+
+    Note: When LINDI is pointed to a remote JSON, it starts by downloading it, so the network activity should not be
+    that different from the activity to download the remote JSON and load the local JSON.
+
+    Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
+    """
 
     parameter_cases = lindi_remote_rfs_parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_lindi(self, https_url: str):
-        """Track network activity during reading HDF5 files with LINDI using the remote LINDI JSON file."""
+    def track_network_read_lindi_h5py(self, https_url: str):
+        """Read a remote HDF5 file with h5py using lindi with the remote LINDI JSON file."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.client = read_hdf5_lindi(rfs=https_url)
+            self.client = read_hdf5_h5py_lindi(rfs=https_url)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_lindi_nwbfile(self, https_url: str):
-        """Track network activity during reading NWB files with LINDI and PyNWB using the remote LINDI JSON file."""
+    def track_network_read_lindi_pynwb(self, https_url: str):
+        """Read a remote HDF5 NWB file with pynwb using lindi with the remote LINDI JSON file."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.client = read_hdf5_nwbfile_lindi(rfs=https_url)
+            self.nwbfile, self.io, self.client = read_hdf5_pynwb_lindi(rfs=https_url)
         return network_tracker.asv_network_statistics
 
 
-class ZarrS3ProtocolFileReadBenchmark(BaseBenchmark):
-    """Benchmark reading a remote Zarr file."""
+class ZarrZarrPythonFileReadBenchmark(BaseBenchmark):
+    """
+    Track the network activity during read of remote Zarr files with Zarr-Python only (not using PyNWB)
+
+    Note: in all cases, store the in-memory objects to avoid timing garbage collection steps.
+    """
 
     parameter_cases = zarr_parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_zarr_s3(self, https_url: str):
-        """Track network activity during reading Zarr files with Zarr-Python."""
+    def track_network_read_zarr_https(self, https_url: str):
+        """Read a Zarr file using Zarr-Python with HTTPS and consolidated metadata (if available)."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.zarr_file = read_zarr_s3_protocol(https_url=https_url, open_without_consolidated_metadata=True)
+            self.zarr_file = read_zarr_zarrpython_https(https_url=https_url, open_without_consolidated_metadata=False)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_zarr_https(self, https_url: str):
-        """Track network activity during reading Zarr files with Zarr-Python."""
+    def track_network_read_zarr_https_force_no_consolidated(self, https_url: str):
+        """Read a Zarr file using Zarr-Python with HTTPS and without using consolidated metadata."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.zarr_file = read_zarr_https_protocol(https_url=https_url, open_without_consolidated_metadata=True)
+            self.zarr_file = read_zarr_zarrpython_https(https_url=https_url, open_without_consolidated_metadata=True)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb_s3(self, https_url: str):
-        """Track network activity during reading NWB files with Zarr-Python and PyNWB."""
+    def track_network_read_zarr_s3(self, https_url: str):
+        """Read a Zarr file using Zarr-Python with S3 and consolidated metadata (if available)."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io = read_zarr_nwbfile_s3_protocol(https_url=https_url, mode="r")
+            self.zarr_file = read_zarr_zarrpython_s3(https_url=https_url, open_without_consolidated_metadata=False)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb_https(self, https_url: str):
-        """Track network activity during reading NWB files with Zarr-Python and PyNWB."""
+    def track_network_read_zarr_s3_force_no_consolidated(self, https_url: str):
+        """Read a Zarr file using Zarr-Python with S3 and without using consolidated metadata."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(https_url=https_url, mode="r")
+            self.zarr_file = read_zarr_zarrpython_s3(https_url=https_url, open_without_consolidated_metadata=True)
         return network_tracker.asv_network_statistics
 
 
-class ZarrForceNoConsolidatedFileReadBenchmark(BaseBenchmark):
-    """Benchmark reading a remote Zarr file without consolidated metadata."""
+class ZarrPyNWBFileReadBenchmark(BaseBenchmark):
+    """
+    Track the network activity during read of remote Zarr NWB files with pynwb.
+
+    Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
+    """
 
     parameter_cases = zarr_parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_zarr_s3(self, https_url: str):
-        """Track network activity during reading Zarr files with Zarr-Python and S3 w/o consolidated metadata."""
+    def track_network_read_zarr_pynwb_https(self, https_url: str):
+        """Read a Zarr NWB file using pynwb with HTTPS and consolidated metadata (if available)."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.zarr_file = read_zarr_s3_protocol(https_url=https_url, open_without_consolidated_metadata=True)
+            self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r")
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_zarr_https(self, https_url: str):
-        """Track network activity during reading Zarr files with Zarr-Python and HTTPS w/o consolidated metadata."""
+    def track_network_read_zarr_pynwb_https_force_no_consolidated(self, https_url: str):
+        """Read a Zarr NWB file using pynwb with HTTPS and without consolidated metadata."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.zarr_file = read_zarr_https_protocol(https_url=https_url, open_without_consolidated_metadata=True)
+            self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r-")
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb_s3(self, https_url: str):
-        """Track network activity during reading NWB files with Zarr-Python, PyNWB, and S3 w/o consolidated metadata."""
+    def track_network_read_zarr_pynwb_s3(self, https_url: str):
+        """Read a Zarr NWB file using pynwb with S3 and consolidated metadata (if available)."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io = read_zarr_nwbfile_s3_protocol(https_url=https_url, mode="r-")
+            self.nwbfile, self.io = read_zarr_pynwb_s3(https_url=https_url, mode="r")
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_activity_during_read_pynwb_https(self, https_url: str):
-        """Track network activity during reading NWB files with Zarr-Python, PyNWB, and HTTPS w/o consolidated metadata."""
+    def track_network_read_zarr_pynwb_s3_force_no_consolidated(self, https_url: str):
+        """Read a Zarr NWB file using pynwb using S3 and without consolidated metadata."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io = read_zarr_nwbfile_https_protocol(https_url=https_url, mode="r-")
+            self.nwbfile, self.io = read_zarr_pynwb_s3(https_url=https_url, mode="r-")
         return network_tracker.asv_network_statistics
