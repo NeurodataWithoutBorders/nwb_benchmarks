@@ -107,8 +107,7 @@ class HDF5H5pyFileReadBenchmark(BaseBenchmark):
     def track_network_read_hdf5_h5py_ros3(self, https_url: str):
         """Read remote HDF5 file using h5py and the ROS3 HDF5 driver."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.file, retries = read_hdf5_h5py_ros3(https_url=https_url, retry=True)
-        network_tracker.asv_network_statistics.update(retries=retries)
+            self.file, _ = read_hdf5_h5py_ros3(https_url=https_url)
         return network_tracker.asv_network_statistics
 
 
@@ -180,8 +179,7 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
     def track_network_read_hdf5_pynwb_ros3(self, https_url: str):
         """Read remote NWB file using pynwb and the ROS3 HDF5 driver."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, retries = read_hdf5_pynwb_ros3(https_url=https_url, retry=True)
-        network_tracker.asv_network_statistics.update(retries=retries)
+            self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
         return network_tracker.asv_network_statistics
 
 

@@ -197,7 +197,7 @@ def robust_ros3_read(
     raise TimeoutError(f"Unable to complete the command ({command.__name__}) after {max_retries} attempts!")
 
 
-def read_hdf5_h5py_ros3(https_url: str, retry: bool = True) -> Tuple[h5py.File, Union[int, None]]:
+def read_hdf5_h5py_ros3(https_url: str, retry: bool = False) -> Tuple[h5py.File, Union[int, None]]:
     """
     Load the raw HDF5 file from an S3 URL using ROS3 driver; does not formally read the NWB file.
 
@@ -220,7 +220,7 @@ def read_hdf5_h5py_ros3(https_url: str, retry: bool = True) -> Tuple[h5py.File, 
     return (file, retries)
 
 
-def read_hdf5_pynwb_ros3(https_url: str, retry: bool = True) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, Union[int, None]]:
+def read_hdf5_pynwb_ros3(https_url: str, retry: bool = False) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, Union[int, None]]:
     """
     Read an HDF5 NWB file from an S3 URL using the ROS3 driver from h5py.
 

@@ -2,8 +2,7 @@
 Basic benchmarks for profiling network statistics for streaming access to slices of data stored in NWB files.
 
 The benchmarks should be consistent with the timing benchmarks - each function should be the same but wrapped in a
-network activity tracker. In fact, almost all of the benchmarking classes should be the same, except for the ROS3
-benchmark where robust_ros3_read is used which is not in the timing benchmarks.
+network activity tracker. In fact, all of the benchmarking classes should be the same.
 """
 
 from abc import ABC, abstractmethod
@@ -162,17 +161,6 @@ class HDF5PyNWBROS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
-
-    @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_during_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        """Track network activity during slice access, retrying reads robustly."""
-        # NOTE: This function overrides ContinuousSliceBenchmark.track_network_during_slice
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self._temp, self.retries = robust_ros3_read(
-                command=self.data_to_slice.__getitem__, command_args=(slice_range,)
-            )
-        network_tracker.asv_network_statistics.update(retries=self.retries)
-        return network_tracker.asv_network_statistics
 
 
 class LindiLocalJSONContinuousSliceBenchmark(ContinuousSliceBenchmark):
