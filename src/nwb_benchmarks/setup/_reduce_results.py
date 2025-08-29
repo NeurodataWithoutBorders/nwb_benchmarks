@@ -110,7 +110,7 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
     print(f"\nResults written to:        {parsed_results_file}")
 
     # Save parsed environment info within machine subdirectory of .asv
-    parsed_environment_file_path = results_cache_directory / f"environment-{environment_id}.json"
+    parsed_environment_file_path = environments_cache_directory / f"environment-{environment_id}.json"
     if not parsed_environment_file_path.exists():
         with open(file=parsed_environment_file_path, mode="w") as io:
             json.dump(obj=parsed_environment_info, fp=io, indent=1)
