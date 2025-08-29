@@ -10,6 +10,9 @@ from ..globals import CACHE_DIR, ENVIRONMENTS_DIR, MACHINES_DIR, RESULTS_CACHE_D
 
 
 def clean_results():
+    upload_tracker_file_path = CACHE_DIR / "upload_tracker.json"
+    upload_tracker_file_path.unlink(missing_ok=True)
+
     for results_file_path in itertools.chain(
         RESULTS_CACHE_DIR.rglob(pattern="*.json"),
         MACHINES_DIR.rglob(pattern="*.json"),
