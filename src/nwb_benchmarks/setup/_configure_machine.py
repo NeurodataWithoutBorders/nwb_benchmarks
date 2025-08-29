@@ -97,7 +97,7 @@ def get_machine_file_checksum(machine_info: dict) -> str:
     stable_machine_info["name"] = ""
     asv_machine_key = next(key for key in stable_machine_info["asv"].keys() if key != "version")
     stable_machine_info["asv"] = {"": machine_info["asv"][asv_machine_key]}
-    stable_machine_info["asv"][""]["machine"] = ""
+    stable_machine_info["asv"][""].pop("machine")
     checksum = get_dictionary_checksum(dictionary=stable_machine_info)
 
     return checksum
@@ -110,6 +110,10 @@ def generate_machine_file() -> str:
     checksum = get_machine_file_checksum(machine_info=machine_info)
 
     machine_info_file_path = MACHINES_DIR / f"machine-{checksum}.json"
+    if machine_info_file_path.exists():
+        print(f"\nMachine info exists at:    {machine_info_file_path}\n")
+        return
+
     with open(file=machine_info_file_path, mode="w") as file_stream:
         json.dump(obj=machine_info, fp=file_stream, indent=1)
     print(f"\nMachine info written to:    {machine_info_file_path}\n")

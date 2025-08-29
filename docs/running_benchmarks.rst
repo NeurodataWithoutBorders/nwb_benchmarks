@@ -58,17 +58,17 @@ Additional Flags
 Subset of the Suite
 ~~~~~~~~~~~~~~~~~~~
 
-To run only a single benchmark suite (a single file in the ``benchmarks`` directory), use the command...
+To run only a single benchmark suite or a single cast within a benchmark, use the command...
 
 .. code-block::
 
-    nwb_benchmarks run --bench <benchmark file stem or module+class+test function names>
+    nwb_benchmarks run --bench <benchmark file stem or module.class.test function names>
 
 For example,
 
 .. code-block::
 
-    nwb_benchmarks run --bench time_remote_file_reading.DirectFileReadBenchmark
+    nwb_benchmarks run --bench time_remote_file_reading.HDF5H5pyFileReadBenchmark.time_read_hdf5_h5py_remfile_no_cache
 
 Debug mode
 ~~~~~~~~~~
