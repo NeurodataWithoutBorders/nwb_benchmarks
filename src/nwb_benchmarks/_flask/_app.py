@@ -17,7 +17,7 @@ import typing_extensions
 
 app = flask.Flask(__name__)
 api = flask_restx.Api(
-    version="0.2",
+    version="0.3",
     title="upload-nwb-benchmarks-results",
     description="Automatic uploader of NWB Benchmark results.",
 )
