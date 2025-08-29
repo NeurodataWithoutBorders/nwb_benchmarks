@@ -16,6 +16,7 @@ class LindiDownloadBenchmark(BaseBenchmark):
 
     def setup(self, https_url: str):
         self.lindi_file = os.path.basename(https_url) + ".lindi.json"
+        self.teardown(https_url=https_url)
 
     def teardown(self, https_url: str):
         if os.path.exists(self.lindi_file):
