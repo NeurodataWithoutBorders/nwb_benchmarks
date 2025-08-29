@@ -6,6 +6,7 @@ from nwb_benchmarks.core import BaseBenchmark, download_file
 
 from .params_remote_file_reading import lindi_remote_rfs_parameter_cases
 
+
 class LindiDownloadBenchmark(BaseBenchmark):
     """
     Time the download of a remote LINDI JSON file.
