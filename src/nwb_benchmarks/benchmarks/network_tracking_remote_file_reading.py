@@ -107,8 +107,7 @@ class HDF5H5pyFileReadBenchmark(BaseBenchmark):
     def track_network_read_hdf5_h5py_ros3(self, https_url: str):
         """Read remote HDF5 file using h5py and the ROS3 HDF5 driver."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.file, retries = read_hdf5_h5py_ros3(https_url=https_url, retry=True)
-        network_tracker.asv_network_statistics.update(retries=retries)
+            self.file, _ = read_hdf5_h5py_ros3(https_url=https_url)
         return network_tracker.asv_network_statistics
 
 
@@ -180,8 +179,7 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
     def track_network_read_hdf5_pynwb_ros3(self, https_url: str):
         """Read remote NWB file using pynwb and the ROS3 HDF5 driver."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, retries = read_hdf5_pynwb_ros3(https_url=https_url, retry=True)
-        network_tracker.asv_network_statistics.update(retries=retries)
+            self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
         return network_tracker.asv_network_statistics
 
 
@@ -226,7 +224,7 @@ class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
         """Download the LINDI JSON file."""
         self.lindi_file = os.path.basename(https_url) + ".lindi.json"
         self.teardown(https_url=https_url)
-        download_file(https_url=https_url, local_path=self.lindi_file)
+        download_file(url=https_url, local_path=self.lindi_file)
 
     def teardown(self, https_url: str):
         """Delete the LINDI JSON file if it exists."""
@@ -245,34 +243,6 @@ class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
         """Read a remote HDF5 NWB file with pynwb using lindi with the local LINDI JSON file."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.nwbfile, self.io, self.client = read_hdf5_pynwb_lindi(rfs=self.lindi_file)
-        return network_tracker.asv_network_statistics
-
-
-class LindiRemoteJSONFileReadBenchmark(BaseBenchmark):
-    """
-    Track the network activity during read of remote HDF5 files by reading the remote LINDI JSON files with lindi and
-    h5py or pynwb.
-
-    Note: When LINDI is pointed to a remote JSON, it starts by downloading it, so the network activity should not be
-    that different from the activity to download the remote JSON and load the local JSON.
-
-    Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
-    """
-
-    parameter_cases = lindi_remote_rfs_parameter_cases
-
-    @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_read_lindi_h5py(self, https_url: str):
-        """Read a remote HDF5 file with h5py using lindi with the remote LINDI JSON file."""
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.client = read_hdf5_h5py_lindi(rfs=https_url)
-        return network_tracker.asv_network_statistics
-
-    @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_read_lindi_pynwb(self, https_url: str):
-        """Read a remote HDF5 NWB file with pynwb using lindi with the remote LINDI JSON file."""
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.client = read_hdf5_pynwb_lindi(rfs=https_url)
         return network_tracker.asv_network_statistics
 
 

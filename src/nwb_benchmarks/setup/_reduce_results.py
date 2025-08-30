@@ -123,7 +123,7 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
     if not parsed_environment_file_path.exists():
         with open(file=parsed_environment_file_path, mode="w") as io:
             json.dump(obj=parsed_environment_info, fp=io, indent=1)
-    print(f"\nEnvironment info written to: {parsed_environment_file_path}")
+    print(f"\nEnvironment info written to:        {parsed_environment_file_path}\n")
 
     # Network tests require admin permissions, which can alter write permissions of any files created
     machine_file_path = MACHINES_DIR / f"machine-{machine_id}.json"
