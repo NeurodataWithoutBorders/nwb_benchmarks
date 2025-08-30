@@ -170,7 +170,7 @@ class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
         """Download the LINDI JSON file."""
         self.lindi_file = os.path.basename(https_url) + ".lindi.json"
         self.teardown(https_url=https_url)
-        download_file(https_url=https_url, local_path=self.lindi_file)
+        download_file(url=https_url, local_path=self.lindi_file)
 
     def teardown(self, https_url: str):
         """Delete the LINDI JSON file if it exists."""
@@ -184,27 +184,6 @@ class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
     def time_read_lindi_pynwb(self, https_url: str):
         """Read a remote HDF5 NWB file with pynwb using lindi with the local LINDI JSON file."""
         self.nwbfile, self.io, self.client = read_hdf5_pynwb_lindi(rfs=self.lindi_file)
-
-
-class LindiRemoteJSONFileReadBenchmark(BaseBenchmark):
-    """
-    Time the read of remote HDF5 NWB files by reading the remote LINDI JSON files using lindi and h5py or pynwb.
-
-    Note: When LINDI is pointed to a remote JSON, it starts by downloading it, so the time should not be that different
-    from the time to download the remote JSON and load the local JSON.
-
-    Note: in all cases, store the in-memory objects to avoid timing garbage collection steps.
-    """
-
-    parameter_cases = lindi_remote_rfs_parameter_cases
-
-    def time_read_lindi_h5py(self, https_url: str):
-        """Read a remote HDF5 file with h5py using lindi with the remote LINDI JSON file."""
-        self.client = read_hdf5_h5py_lindi(rfs=https_url)
-
-    def time_read_lindi_pynwb(self, https_url: str):
-        """Read a remote HDF5 NWB file with pynwb using lindi with the remote LINDI JSON file."""
-        self.nwbfile, self.io, self.client = read_hdf5_pynwb_lindi(rfs=https_url)
 
 
 class ZarrZarrPythonFileReadBenchmark(BaseBenchmark):
