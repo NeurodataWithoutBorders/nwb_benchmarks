@@ -79,11 +79,8 @@ class HDF5H5pyFileReadBenchmark(BaseBenchmark):
         self.file, self.bytestream, self.tmpdir = read_hdf5_h5py_remfile_with_cache(https_url=https_url)
 
     def time_read_hdf5_h5py_ros3(self, https_url: str):
-        """Read a remote HDF5 file using h5py and the ROS3 HDF5 driver.
-
-        Note: Unlike the network tracking benchmarks, this timing benchmark does not capture retry attempts.
-        """
-        self.file, _ = read_hdf5_h5py_ros3(https_url=https_url, retry=False)
+        """Read a remote HDF5 file using h5py and the ROS3 HDF5 driver."""
+        self.file, _ = read_hdf5_h5py_ros3(https_url=https_url)
 
 
 class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
@@ -131,11 +128,8 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
         )
 
     def time_read_hdf5_pynwb_ros3(self, https_url: str):
-        """Read a remote HDF5 NWB file using pynwb and the ROS3 HDF5 driver.
-
-        Note: Unlike the network tracking benchmarks, this timing benchmark does not capture retry attempts.
-        """
-        self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url, retry=False)
+        """Read a remote HDF5 NWB file using pynwb and the ROS3 HDF5 driver."""
+        self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
 
 
 class LindiCreateLocalJSONFileBenchmark(BaseBenchmark):
