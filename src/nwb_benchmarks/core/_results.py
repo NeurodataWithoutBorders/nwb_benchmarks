@@ -6,7 +6,13 @@ import warnings
 
 import requests
 
-from ..globals import CACHE_DIR, ENVIRONMENTS_DIR, MACHINES_DIR, RESULTS_CACHE_DIR, LOGS_DIR
+from ..globals import (
+    CACHE_DIR,
+    ENVIRONMENTS_DIR,
+    LOGS_DIR,
+    MACHINES_DIR,
+    RESULTS_CACHE_DIR,
+)
 
 
 def clean_results():

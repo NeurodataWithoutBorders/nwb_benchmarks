@@ -8,8 +8,8 @@ import subprocess
 import sys
 
 from .core import clean_results, upload_results
-from .setup import generate_machine_file, reduce_results
 from .globals import LOGS_DIR
+from .setup import generate_machine_file, reduce_results
 
 
 def main() -> None:
