@@ -92,7 +92,7 @@ def main() -> None:
         asv_process.stdout.close()
         asv_process.wait()
 
-        print(f"ASV output has been saved to: {log_file_path}")
+        print(f"ASV output has been saved to: {log_file_path}\n")
 
         # Consider the raw ASV output as 'intermediate' and perform additional parsing
         globbed_json_file_paths = [
