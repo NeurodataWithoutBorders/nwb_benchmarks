@@ -11,3 +11,5 @@ ENVIRONMENTS_DIR = CACHE_DIR / "environments"
 ENVIRONMENTS_DIR.mkdir(exist_ok=True)
 MACHINES_DIR = CACHE_DIR / "machines"
 MACHINES_DIR.mkdir(exist_ok=True)
+LOGS_DIR = CACHE_DIR / "logs"
+LOGS_DIR.mkdir(exist_ok=True)
