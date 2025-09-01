@@ -102,6 +102,10 @@ def main() -> None:
 
                 print(f"ASV output has been saved to: {log_file_path}\n")
             else:
+                # Only redirect to stdout
+                asv_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
+
                 for line in iter(asv_process.stdout.readline, b""):
                     decoded_line = line.decode(encoding).strip("\n")
                     print(decoded_line, flush=True)  # Print to stdout
