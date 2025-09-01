@@ -67,6 +67,11 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
 
     # Config info
     config = read_config()
+
+    ## Anonymize paths in config
+    if config.get("cache_directory", None) is not None:
+        config["cache_directory"] = str(pathlib.Path(config["cache_directory"]).parents[0])
+
     machine_info["config"] = config
 
     # ASV info
@@ -87,13 +92,9 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
         raise ValueError(message)
 
     asv_machine_key = next(key for key in asv_machine_info.keys() if key != "version")
-    asv_machine_info[asv_machine_key]["machine"] = machine_name
-
-    anonymized_asv_machine_info = {
-        machine_name: asv_machine_info[asv_machine_key],
-        "version": asv_machine_info["version"],
-    }
-    machine_info["asv"] = anonymized_asv_machine_info
+    asv_machine_details = asv_machine_info[asv_machine_key]
+    del asv_machine_details["machine"]
+    machine_info["asv"] = asv_machine_details
 
     return machine_info
 
@@ -102,9 +103,6 @@ def get_machine_file_checksum(machine_info: dict) -> str:
     """Get the checksum of the machine info after removing the machine name."""
     stable_machine_info = copy.deepcopy(x=machine_info)
     stable_machine_info["name"] = ""
-    asv_machine_key = next(key for key in stable_machine_info["asv"].keys() if key != "version")
-    stable_machine_info["asv"] = {"": machine_info["asv"][asv_machine_key]}
-    stable_machine_info["asv"][""].pop("machine")
     checksum = get_dictionary_checksum(dictionary=stable_machine_info)
 
     return checksum

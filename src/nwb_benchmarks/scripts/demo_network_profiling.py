@@ -4,7 +4,7 @@ import json
 
 import pynwb
 
-from nwb_benchmarks.core import network_activity_tracker
+from ..core import network_activity_tracker
 
 # If `tshark` is not available as a global command, specify the pathlib.Path pointing to the .exe
 # Otherwise, set to None or do not pass into `.start_capture`

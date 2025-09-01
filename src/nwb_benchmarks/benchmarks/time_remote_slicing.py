@@ -1,5 +1,7 @@
 """Basic benchmarks for timing streaming access to slices of data stored in NWB files."""
 
+import pathlib
+import shutil
 from abc import ABC, abstractmethod
 from typing import Tuple
 
@@ -45,6 +47,7 @@ class ContinuousSliceBenchmark(BaseBenchmark, ABC):
 
     def teardown(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         if hasattr(self, "tmpdir"):
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
             self.tmpdir.cleanup()
 
     def time_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):

@@ -54,7 +54,7 @@ class HDF5H5pyFileReadBenchmark(BaseBenchmark):
     def teardown(self, https_url: str):
         # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
         if hasattr(self, "tmpdir"):
-            shutil.rmtree(path=pathlib.Path(self.tmpdir), ignore_errors=True)
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
             self.tmpdir.cleanup()
 
     def time_read_hdf5_h5py_fsspec_https_no_cache(self, https_url: str):
@@ -98,7 +98,7 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
     def teardown(self, https_url: str):
         # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
         if hasattr(self, "tmpdir"):
-            shutil.rmtree(path=pathlib.Path(self.tmpdir), ignore_errors=True)
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
             self.tmpdir.cleanup()
 
     def time_read_hdf5_pynwb_fsspec_https_no_cache(self, https_url: str):
