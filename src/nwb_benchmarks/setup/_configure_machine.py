@@ -65,7 +65,7 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
         raise exception
 
     # Config info
-    config = read_config
+    config = read_config()
     machine_info["config"] = config
 
     # ASV info
