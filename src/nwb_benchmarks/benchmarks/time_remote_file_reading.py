@@ -1,6 +1,7 @@
 """Basic benchmarks for timing streaming access of NWB files and their contents."""
 
 import os
+import pathlib
 import shutil
 
 from asv_runner.benchmarks.mark import skip_benchmark
