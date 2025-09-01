@@ -6,7 +6,7 @@ import warnings
 
 import requests
 
-from ..globals import (
+from nwb_benchmarks.globals import (
     CACHE_DIR,
     ENVIRONMENTS_DIR,
     LOGS_DIR,

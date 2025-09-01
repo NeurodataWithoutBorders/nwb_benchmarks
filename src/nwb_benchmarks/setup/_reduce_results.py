@@ -39,9 +39,7 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
     parsed_environment_info = _parse_environment_info(raw_environment_info=raw_environment_info)
     environment_id = get_dictionary_checksum(dictionary=parsed_environment_info)
 
-    # In timestamp, replace separators with underscores for file path
-    unix_time_to_datetime = str(datetime.datetime.fromtimestamp(raw_results_info["date"] / 1e3))
-    timestamp = unix_time_to_datetime.replace(" ", "-").replace(":", "-")
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
     reduced_results = dict()
     for test_case, raw_results_list in raw_results_info["results"].items():

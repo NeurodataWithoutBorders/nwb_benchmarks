@@ -1,5 +1,13 @@
 """Exposed imports to the `setup` submodule."""
 
+from ._config import (
+    get_cache_directory,
+    get_config_file_path,
+    get_home_directory,
+    get_temporary_directory,
+    read_config,
+    set_cache_directory,
+)
 from ._configure_machine import (
     collect_machine_info,
     generate_human_readable_machine_name,
@@ -9,7 +17,11 @@ from ._reduce_results import reduce_results
 
 __all__ = [
     "collect_machine_info",
+    "get_cache_directory",
+    "get_config_file_path" "get_home_directory",
+    "get_temporary_directory",
     "generate_machine_file",
     "generate_human_readable_machine_name",
-    "reduce_results",
+    "read_config" "reduce_results",
+    "set_cache_directory",
 ]

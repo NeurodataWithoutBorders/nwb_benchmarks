@@ -9,7 +9,7 @@ import sys
 
 from .core import clean_results, upload_results
 from .globals import LOGS_DIR
-from .setup import generate_machine_file, reduce_results
+from .setup import generate_machine_file, reduce_results, set_cache_directory
 
 
 def main() -> None:
@@ -36,11 +36,12 @@ def main() -> None:
         if intermediate_results_folder.exists():
             try:
                 shutil.rmtree(path=intermediate_results_folder)
-            except PermissionError:
-                raise FileExistsError(
-                    f"Unable to automatically remove {intermediate_results_folder} - please manually delete and "
-                    "try to run the benchmarks again."
+            except:
+                message = (
+                    f"Unable to automatically remove {intermediate_results_folder} - please manually delete by running "
+                    "`nwb_benchmarks clean` and try again."
                 )
+                raise FileExistsError(message)
 
         aws_machine_process = subprocess.Popen(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
         aws_machine_process.wait()
@@ -82,17 +83,20 @@ def main() -> None:
         encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
 
         # Save output to both stdout and log file
-        with open(log_file_path, "w", encoding=encoding) as log_file:
-            for line in iter(asv_process.stdout.readline, b""):
-                decoded_line = line.decode(encoding).strip("\n")
-                print(decoded_line, flush=True)  # Print to stdout
-                log_file.write(decoded_line + "\n")  # Write to log file
-                log_file.flush()  # Ensure immediate writing
+        if debug_mode:
+            with open(log_file_path, "w", encoding=encoding) as log_file:
+                for line in iter(asv_process.stdout.readline, b""):
+                    decoded_line = line.decode(encoding).strip("\n")
+                    print(decoded_line, flush=True)  # Print to stdout
+                    log_file.write(decoded_line + "\n")  # Write to log file
+                    log_file.flush()  # Ensure immediate writing
 
-        asv_process.stdout.close()
-        asv_process.wait()
+            asv_process.stdout.close()
+            asv_process.wait()
 
-        print(f"ASV output has been saved to: {log_file_path}\n")
+            print(f"ASV output has been saved to: {log_file_path}\n")
+        else:
+            asv_process.wait()
 
         # Consider the raw ASV output as 'intermediate' and perform additional parsing
         globbed_json_file_paths = [
@@ -101,7 +105,7 @@ def main() -> None:
             if not any(path.stem == skip_stems for skip_stems in ["benchmarks", "machine"])
         ]
         assert (
-            len(globbed_json_file_paths) > 0
+            len(globbed_json_file_paths) != 0
         ), "No intermediate result was found, likely as a result of a failure in the benchmarks."
         assert len(globbed_json_file_paths) == 1, "A single intermediate result was not found, please raise an issue."
         raw_results_file_path = globbed_json_file_paths[0]
@@ -119,6 +123,9 @@ def main() -> None:
         upload_results()
     elif command == "clean":
         clean_results()
+    elif command == "config_set_cache":
+        cache_directory = pathlib.Path(sys.argv[2])
+        set_cache_directory(cache_directory=cache_directory)
     else:
         print(f"{command} is an invalid command.")
 
