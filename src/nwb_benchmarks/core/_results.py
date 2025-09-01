@@ -6,7 +6,13 @@ import warnings
 
 import requests
 
-from ..globals import CACHE_DIR, ENVIRONMENTS_DIR, MACHINES_DIR, RESULTS_CACHE_DIR
+from ..globals import (
+    CACHE_DIR,
+    ENVIRONMENTS_DIR,
+    LOGS_DIR,
+    MACHINES_DIR,
+    RESULTS_CACHE_DIR,
+)
 
 
 def clean_results():
@@ -17,6 +23,7 @@ def clean_results():
         RESULTS_CACHE_DIR.rglob(pattern="*.json"),
         MACHINES_DIR.rglob(pattern="*.json"),
         ENVIRONMENTS_DIR.rglob(pattern="*.json"),
+        LOGS_DIR.rglob(pattern="*.txt"),
     ):
         results_file_path.unlink(missing_ok=True)
 
