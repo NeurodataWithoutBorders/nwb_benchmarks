@@ -33,98 +33,110 @@ def main() -> None:
         specific_benchmark_pattern = flags_list[flags_list.index("--bench") + 1]
 
     if command == "run":
-        # Create .asv directory at GitHub repository root
-        asv_root = pathlib.Path(__file__).parent.parent.parent / ".asv"
-        asv_root.mkdir(exist_ok=True)
-        intermediate_results_folder = asv_root / "intermediate_results"
+        try:
+            # Create .asv directory at GitHub repository root
+            asv_root = pathlib.Path(__file__).parent.parent.parent / ".asv"
+            asv_root.mkdir(exist_ok=True)
+            intermediate_results_folder = asv_root / "intermediate_results"
 
-        if intermediate_results_folder.exists():
-            try:
-                shutil.rmtree(path=intermediate_results_folder)
-            except:
-                message = (
-                    f"Unable to automatically remove {intermediate_results_folder} - please manually delete by running "
-                    "`nwb_benchmarks clean` and try again."
-                )
-                raise FileExistsError(message)
+            if intermediate_results_folder.exists():
+                try:
+                    shutil.rmtree(path=intermediate_results_folder)
+                except:
+                    message = (
+                        f"Unable to automatically remove {intermediate_results_folder} - please manually delete by running "
+                        "`nwb_benchmarks clean` and try again."
+                    )
+                    raise FileExistsError(message)
 
-        aws_machine_process = subprocess.Popen(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
-        aws_machine_process.wait()
-        machine_id = generate_machine_file()
+            aws_machine_process = subprocess.Popen(["asv", "machine", "--yes"], stdout=subprocess.PIPE)
+            aws_machine_process.wait()
+            machine_id = generate_machine_file()
 
-        commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
+            commit_hash = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
 
-        # Save latest environment list from conda (most thorough)
-        # subprocess tends to have issues inheriting `conda` entrypoint
-        shell = sys.platform == "win32"  # Use shell on Windows
-        raw_environment_info_file_path = asv_root / ".raw_environment_info.txt"
-        with open(file=raw_environment_info_file_path, mode="w") as stdout:
-            environment_info_process = subprocess.Popen(args=["conda", "list"], stdout=stdout, shell=shell)
-            environment_info_process.wait()
+            # Save latest environment list from conda (most thorough)
+            # subprocess tends to have issues inheriting `conda` entrypoint
+            shell = sys.platform == "win32"  # Use shell on Windows
+            raw_environment_info_file_path = asv_root / ".raw_environment_info.txt"
+            with open(file=raw_environment_info_file_path, mode="w") as stdout:
+                environment_info_process = subprocess.Popen(args=["conda", "list"], stdout=stdout, shell=shell)
+                environment_info_process.wait()
 
-        if not raw_environment_info_file_path.exists():
-            raise FileNotFoundError(f"Unable to create environment file at {raw_environment_info_file_path}!")
+            if not raw_environment_info_file_path.exists():
+                raise FileNotFoundError(f"Unable to create environment file at {raw_environment_info_file_path}!")
 
-        # Create log file path to capture all output from the ASV run
-        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        log_file_path = LOGS_DIR / f"timestamp-{timestamp}_commit-{commit_hash}.txt"
+            # Create log file path to capture all output from the ASV run
+            timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            log_file_path = LOGS_DIR / f"timestamp-{timestamp}_commit-{commit_hash}.txt"
 
-        # Deploy ASV
-        cmd = [
-            "asv",
-            "run",
-            "--python=same",
-            "--record-samples",
-            "--set-commit-hash",
-            commit_hash,
-        ]
-        if debug_mode:
-            cmd.extend(["--verbose", "--show-stderr", "--attribute", "repeat=1"])
-        if bench_mode:
-            cmd.extend(["--bench", specific_benchmark_pattern])
+            # Deploy ASV
+            cmd = [
+                "asv",
+                "run",
+                "--python=same",
+                "--record-samples",
+                "--set-commit-hash",
+                commit_hash,
+            ]
+            if debug_mode:
+                cmd.extend(["--verbose", "--show-stderr", "--attribute", "repeat=1"])
+            if bench_mode:
+                cmd.extend(["--bench", specific_benchmark_pattern])
 
-        # Run ASV with all the desired flags and reroute the output to our main console
-        asv_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
+            # Run ASV with all the desired flags and reroute the output to our main console
+            if debug_mode:
+                # Save output to both stdout and log file
+                asv_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
 
-        # Save output to both stdout and log file
-        if debug_mode:
-            with open(log_file_path, "w", encoding=encoding) as log_file:
+                with open(log_file_path, "w", encoding=encoding) as log_file:
+                    for line in iter(asv_process.stdout.readline, b""):
+                        decoded_line = line.decode(encoding).strip("\n")
+                        print(decoded_line, flush=True)  # Print to stdout
+                        log_file.write(decoded_line + "\n")  # Write to log file
+                        log_file.flush()  # Ensure immediate writing
+
+                asv_process.stdout.close()
+                asv_process.wait()
+
+                print(f"ASV output has been saved to: {log_file_path}\n")
+            else:
                 for line in iter(asv_process.stdout.readline, b""):
                     decoded_line = line.decode(encoding).strip("\n")
                     print(decoded_line, flush=True)  # Print to stdout
-                    log_file.write(decoded_line + "\n")  # Write to log file
-                    log_file.flush()  # Ensure immediate writing
 
-            asv_process.stdout.close()
-            asv_process.wait()
+                asv_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
 
-            print(f"ASV output has been saved to: {log_file_path}\n")
-        else:
-            asv_process.wait()
+                asv_process.stdout.close()
+                asv_process.wait()
 
-        # Consider the raw ASV output as 'intermediate' and perform additional parsing
-        globbed_json_file_paths = [
-            path
-            for path in intermediate_results_folder.rglob("*.json")
-            if not any(path.stem == skip_stems for skip_stems in ["benchmarks", "machine"])
-        ]
-        assert (
-            len(globbed_json_file_paths) != 0
-        ), "No intermediate result was found, likely as a result of a failure in the benchmarks."
-        assert len(globbed_json_file_paths) == 1, "A single intermediate result was not found, please raise an issue."
-        raw_results_file_path = globbed_json_file_paths[0]
+            # Consider the raw ASV output as 'intermediate' and perform additional parsing
+            globbed_json_file_paths = [
+                path
+                for path in intermediate_results_folder.rglob("*.json")
+                if not any(path.stem == skip_stems for skip_stems in ["benchmarks", "machine"])
+            ]
+            assert (
+                len(globbed_json_file_paths) != 0
+            ), "No intermediate result was found, likely as a result of a failure in the benchmarks."
+            assert (
+                len(globbed_json_file_paths) == 1
+            ), "A single intermediate result was not found, please raise an issue."
+            raw_results_file_path = globbed_json_file_paths[0]
 
-        if debug_mode:
-            raw_results_file_path.unlink()
-        else:
-            reduce_results(
-                machine_id=machine_id,
-                raw_results_file_path=raw_results_file_path,
-                raw_environment_info_file_path=raw_environment_info_file_path,
-            )
-            upload_results()
-        clean_cache()
+            if debug_mode:
+                raw_results_file_path.unlink()
+            else:
+                reduce_results(
+                    machine_id=machine_id,
+                    raw_results_file_path=raw_results_file_path,
+                    raw_environment_info_file_path=raw_environment_info_file_path,
+                )
+                upload_results()
+        finally:
+            clean_cache()
     elif command == "upload":
         upload_results()
     elif command == "clean":
