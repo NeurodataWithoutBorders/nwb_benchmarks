@@ -59,7 +59,7 @@ def get_cache_directory() -> pathlib.Path | None:
     config = read_config()
     cache_directory = config.get("cache_directory", None)
     if cache_directory is not None:
-        return cache_directory
+        return pathlib.Path(cache_directory)
 
     return None
 
