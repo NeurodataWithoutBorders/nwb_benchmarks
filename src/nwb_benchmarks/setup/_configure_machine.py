@@ -29,6 +29,7 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
     machine_info["name"] = machine_name
     machine_info["version"] = MACHINE_FILE_VERSION
 
+    # Hardware info from various Python libraries
     machine_info["os"] = dict(cpu_count=os.cpu_count())
     machine_info["sys"] = dict(platform=sys.platform)
     machine_info["platform"] = dict(
