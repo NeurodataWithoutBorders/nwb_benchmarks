@@ -1,5 +1,6 @@
 import json
 import pathlib
+import shutil
 import tempfile
 
 
@@ -89,3 +90,19 @@ def get_temporary_directory() -> pathlib.Path:
     cache_directory = get_cache_directory()
     temporary_directory = tempfile.TemporaryDirectory(ignore_cleanup_errors=True, dir=cache_directory)
     return temporary_directory
+
+
+def clean_cache(ignore_errors: bool = False) -> None:
+    """
+    Clean the cache directory for NWB Benchmarks.
+
+    Deletes the entire cache directory if it exists.
+    """
+    cache_directory = get_cache_directory()
+    if cache_directory is not None:
+        for path in cache_directory.iterdir():
+            shutil.rmtree(path=path, ignore_errors=ignore_errors)
+
+    dummy_tmpdir = tempfile.TemporaryDirectory()
+    tempdir_parent = pathlib.Path(dummy_tmpdir.name).parent
+    shutil.rmtree(path=tempdir_parent, ignore_errors=ignore_errors)

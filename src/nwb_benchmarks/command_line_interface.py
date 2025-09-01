@@ -9,7 +9,12 @@ import sys
 
 from .core import clean_results, upload_results
 from .globals import LOGS_DIR
-from .setup import generate_machine_file, reduce_results, set_cache_directory
+from .setup import (
+    clean_cache,
+    generate_machine_file,
+    reduce_results,
+    set_cache_directory,
+)
 
 
 def main() -> None:
@@ -119,10 +124,12 @@ def main() -> None:
                 raw_environment_info_file_path=raw_environment_info_file_path,
             )
             upload_results()
+        clean_cache(ignore_errors=True)
     elif command == "upload":
         upload_results()
     elif command == "clean":
         clean_results()
+        clean_cache(ignore_errors=False)
     elif command == "config_set_cache":
         cache_directory = pathlib.Path(sys.argv[2])
         set_cache_directory(cache_directory=cache_directory)
