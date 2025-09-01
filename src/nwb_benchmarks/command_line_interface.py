@@ -124,12 +124,12 @@ def main() -> None:
                 raw_environment_info_file_path=raw_environment_info_file_path,
             )
             upload_results()
-        clean_cache(ignore_errors=True)
+        clean_cache()
     elif command == "upload":
         upload_results()
     elif command == "clean":
         clean_results()
-        clean_cache(ignore_errors=False)
+        clean_cache()
     elif command == "config_set_cache":
         cache_directory = pathlib.Path(sys.argv[2])
         set_cache_directory(cache_directory=cache_directory)
