@@ -1,6 +1,7 @@
 """Basic benchmarks for timing streaming access of NWB files and their contents."""
 
 import os
+import shutil
 
 from asv_runner.benchmarks.mark import skip_benchmark
 
@@ -52,6 +53,7 @@ class HDF5H5pyFileReadBenchmark(BaseBenchmark):
     def teardown(self, https_url: str):
         # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
         if hasattr(self, "tmpdir"):
+            shutil.rmtree(self.tmpdir, ignore_errors=True)
             self.tmpdir.cleanup()
 
     def time_read_hdf5_h5py_fsspec_https_no_cache(self, https_url: str):
@@ -95,6 +97,7 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
     def teardown(self, https_url: str):
         # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
         if hasattr(self, "tmpdir"):
+            shutil.rmtree(self.tmpdir, ignore_errors=True)
             self.tmpdir.cleanup()
 
     def time_read_hdf5_pynwb_fsspec_https_no_cache(self, https_url: str):
