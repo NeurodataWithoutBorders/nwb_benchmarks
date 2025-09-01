@@ -15,6 +15,7 @@ import psutil
 from numba import cuda
 
 from ..globals import MACHINE_FILE_VERSION, MACHINES_DIR
+from ..setup import read_config
 from ..utils import get_dictionary_checksum
 
 
@@ -63,6 +64,11 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
     except Exception as exception:
         raise exception
 
+    # Config info
+    config = read_config
+    machine_info["config"] = config
+
+    # ASV info
     default_asv_machine_file_path = pathlib.Path.home() / ".asv-machine.json"
     if default_asv_machine_file_path.exists():
         with open(file=default_asv_machine_file_path, mode="r") as file_stream:
