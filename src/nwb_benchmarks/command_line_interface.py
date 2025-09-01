@@ -1,7 +1,6 @@
 """Simple wrapper around `asv run` for convenience."""
 
-import itertools
-import json
+import datetime
 import locale
 import pathlib
 import shutil
@@ -9,6 +8,7 @@ import subprocess
 import sys
 
 from .core import clean_results, upload_results
+from .globals import LOGS_DIR
 from .setup import generate_machine_file, reduce_results
 
 
@@ -59,6 +59,10 @@ def main() -> None:
         if not raw_environment_info_file_path.exists():
             raise FileNotFoundError(f"Unable to create environment file at {raw_environment_info_file_path}!")
 
+        # Create log file path to capture all output from the ASV run
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        log_file_path = LOGS_DIR / f"timestamp-{timestamp}_commit-{commit_hash}.txt"
+
         # Deploy ASV
         cmd = [
             "asv",
@@ -76,10 +80,19 @@ def main() -> None:
         # Run ASV with all the desired flags and reroute the output to our main console
         asv_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
-        for line in iter(asv_process.stdout.readline, b""):
-            print(line.decode(encoding).strip("\n"))
+
+        # Save output to both stdout and log file
+        with open(log_file_path, "w", encoding=encoding) as log_file:
+            for line in iter(asv_process.stdout.readline, b""):
+                decoded_line = line.decode(encoding).strip("\n")
+                print(decoded_line, flush=True)  # Print to stdout
+                log_file.write(decoded_line + "\n")  # Write to log file
+                log_file.flush()  # Ensure immediate writing
+
         asv_process.stdout.close()
         asv_process.wait()
+
+        print(f"ASV output has been saved to: {log_file_path}\n")
 
         # Consider the raw ASV output as 'intermediate' and perform additional parsing
         globbed_json_file_paths = [
