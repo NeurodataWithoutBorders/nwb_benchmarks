@@ -7,20 +7,20 @@ import warnings
 import requests
 
 from ..globals import (
-    CACHE_DIR,
     ENVIRONMENTS_DIR,
     LOGS_DIR,
     MACHINES_DIR,
-    RESULTS_CACHE_DIR,
+    RESULTS_DIR,
 )
+from ..setup import get_home_directory
 
 
 def clean_results():
-    upload_tracker_file_path = CACHE_DIR / "upload_tracker.json"
+    upload_tracker_file_path = get_home_directory() / "upload_tracker.json"
     upload_tracker_file_path.unlink(missing_ok=True)
 
     for results_file_path in itertools.chain(
-        RESULTS_CACHE_DIR.rglob(pattern="*.json"),
+        RESULTS_DIR.rglob(pattern="*.json"),
         MACHINES_DIR.rglob(pattern="*.json"),
         ENVIRONMENTS_DIR.rglob(pattern="*.json"),
         LOGS_DIR.rglob(pattern="*.txt"),
@@ -29,7 +29,7 @@ def clean_results():
 
 
 def upload_results():
-    upload_tracker_file_path = CACHE_DIR / "upload_tracker.json"
+    upload_tracker_file_path = get_home_directory / "upload_tracker.json"
     if upload_tracker_file_path.exists() is False:
         upload_tracker_file_path.write_text(data="{}")
 
@@ -39,7 +39,7 @@ def upload_results():
     try:
         all_file_paths_to_upload = list(
             itertools.chain(
-                RESULTS_CACHE_DIR.rglob(pattern="*.json"),
+                RESULTS_DIR.rglob(pattern="*.json"),
                 MACHINES_DIR.rglob(pattern="*.json"),
                 ENVIRONMENTS_DIR.rglob(pattern="*.json"),
             )
