@@ -47,7 +47,7 @@ def read_config() -> dict:
         return config
 
 
-def get_cache_directory() -> pathlib.Path | None:
+def get_cache_directory() -> pathlib.Path:
     """
     Get the cache directory for NWB Benchmarks.
 
@@ -61,7 +61,11 @@ def get_cache_directory() -> pathlib.Path | None:
     if cache_directory is not None:
         return pathlib.Path(cache_directory)
 
-    return None
+    system_cache_directory = get_home_directory() / ".cache"
+    system_cache_directory.mkdir(exist_ok=True)
+    default_cache_directory = system_cache_directory / "nwb_benchmarks"
+    default_cache_directory.mkdir(exist_ok=True)
+    return default_cache_directory
 
 
 def set_cache_directory(cache_directory: pathlib.Path) -> None:
@@ -92,22 +96,12 @@ def get_temporary_directory() -> pathlib.Path:
     return temporary_directory
 
 
-def clean_cache(ignore_errors: bool | None = None) -> None:
+def clean_cache(ignore_errors: bool = False) -> None:
     """
     Clean the cache directory for NWB Benchmarks.
 
     Deletes the entire cache directory if it exists.
     """
     cache_directory = get_cache_directory()
-    if cache_directory is not None:
-        # A manually set cache directory should be 100% cleaned up or else notify
-        ignore_errors = False if ignore_errors is None else ignore_errors
-        for path in cache_directory.iterdir():
-            shutil.rmtree(path=path, ignore_errors=ignore_errors)
-        return
-
-    # But the default cache directory is the global temp directory, which may have many other used items inside
-    ignore_errors = True if ignore_errors is None else ignore_errors
-    dummy_tmpdir = tempfile.TemporaryDirectory()
-    tempdir_parent = pathlib.Path(dummy_tmpdir.name).parent
-    shutil.rmtree(path=tempdir_parent, ignore_errors=ignore_errors)
+    for path in cache_directory.iterdir():
+        shutil.rmtree(path=path, ignore_errors=ignore_errors)
