@@ -270,6 +270,7 @@ def read_hdf5_h5py_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
     client = lindi.LindiH5pyFile.from_lindi_file(url_or_path=rfs)
     return client
 
+
 # TODO: The return type hint should have lindi.LindiH5pyFile instead of h5py.File but see
 # https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues/136
 def read_hdf5_pynwb_lindi(rfs: Union[dict, str]) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File]:
