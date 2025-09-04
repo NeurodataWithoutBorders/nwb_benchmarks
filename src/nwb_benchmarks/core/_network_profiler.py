@@ -42,7 +42,8 @@ class NetworkProfiler:
         """List of all packets captured."""
         if self.__packets is None:
             try:
-                print("Getting packets...")
+                capture_file_size_mb = self.capture_file_path.stat().st_size / (1024 * 1024)
+                print(f"Getting packets from capture file ({capture_file_size_mb:.0f} MB)...")
                 start_time = time.time()
                 cap = pyshark.FileCapture(self.capture_file_path, use_json=True)
                 self.__packets = [packet for packet in cap]
