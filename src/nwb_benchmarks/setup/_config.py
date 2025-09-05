@@ -17,7 +17,7 @@ def get_home_directory() -> pathlib.Path:
     return home_directory
 
 
-def get_config_file_path() -> pathlib.Path:
+def get_benchmarks_home_directory() -> pathlib.Path:
     """Get the configuration file path for NWB Benchmarks.
 
     Returns
@@ -38,7 +38,7 @@ def read_config() -> dict:
     dict
         The configuration data.
     """
-    config_file_path = get_config_file_path()
+    config_file_path = get_benchmarks_home_directory()
     if not config_file_path.exists():
         return {}
 
@@ -78,7 +78,7 @@ def set_cache_directory(cache_directory: pathlib.Path) -> None:
     config = read_config()
     config["cache_directory"] = str(cache_directory)
 
-    config_file_path = get_config_file_path()
+    config_file_path = get_benchmarks_home_directory()
     with config_file_path.open(mode="w") as file_stream:
         json.dump(obj=config, fp=file_stream, indent=4)
 

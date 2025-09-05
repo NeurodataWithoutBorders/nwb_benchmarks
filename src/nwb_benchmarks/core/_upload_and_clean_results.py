@@ -12,7 +12,7 @@ from ..globals import (
     MACHINES_DIR,
     RESULTS_DIR,
 )
-from ..setup import get_home_directory
+from ..setup import get_benchmarks_home_directory
 
 
 def clean_results():
@@ -29,7 +29,7 @@ def clean_results():
 
 
 def upload_results():
-    upload_tracker_file_path = get_home_directory / "upload_tracker.json"
+    upload_tracker_file_path = get_benchmarks_home_directory() / "upload_tracker.json"
     if upload_tracker_file_path.exists() is False:
         upload_tracker_file_path.write_text(data="{}")
 
