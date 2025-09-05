@@ -4,7 +4,7 @@ import shutil
 import tempfile
 
 
-def get_home_directory() -> pathlib.Path:
+def get_benchmarks_home_directory() -> pathlib.Path:
     """Get the home directory for NWB Benchmarks.
 
     Returns
@@ -17,7 +17,7 @@ def get_home_directory() -> pathlib.Path:
     return home_directory
 
 
-def get_benchmarks_home_directory() -> pathlib.Path:
+def get_benchmarks_config_file_path() -> pathlib.Path:
     """Get the configuration file path for NWB Benchmarks.
 
     Returns
@@ -25,7 +25,7 @@ def get_benchmarks_home_directory() -> pathlib.Path:
     pathlib.Path
         The configuration file path.
     """
-    config_file_path = get_home_directory() / "config.json"
+    config_file_path = get_benchmarks_home_directory() / "config.json"
     return config_file_path
 
 
@@ -38,7 +38,7 @@ def read_config() -> dict:
     dict
         The configuration data.
     """
-    config_file_path = get_benchmarks_home_directory()
+    config_file_path = get_benchmarks_config_file_path()
     if not config_file_path.exists():
         return {}
 
@@ -54,8 +54,7 @@ def get_cache_directory() -> pathlib.Path:
     Returns
     -------
     pathlib.Path or None
-        The cache directory path if set in the config file, otherwise it is
-        `~/.cache/nwb_benchmarks`.
+        The cache directory path if set in the config file, otherwise it is `~/.cache/nwb_benchmarks`.
     """
     config = read_config()
     cache_directory = config.get("cache_directory", None)
@@ -78,7 +77,7 @@ def set_cache_directory(cache_directory: pathlib.Path) -> None:
     config = read_config()
     config["cache_directory"] = str(cache_directory)
 
-    config_file_path = get_benchmarks_home_directory()
+    config_file_path = get_benchmarks_config_file_path()
     with config_file_path.open(mode="w") as file_stream:
         json.dump(obj=config, fp=file_stream, indent=4)
 
