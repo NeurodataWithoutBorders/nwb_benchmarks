@@ -62,7 +62,7 @@ def get_cache_directory() -> pathlib.Path:
     if cache_directory is not None:
         return pathlib.Path(cache_directory)
 
-    system_cache_directory = get_home_directory() / ".cache"
+    system_cache_directory = pathlib.Path.home() / ".cache"
     system_cache_directory.mkdir(exist_ok=True)
     default_cache_directory = system_cache_directory / "nwb_benchmarks"
     default_cache_directory.mkdir(exist_ok=True)
