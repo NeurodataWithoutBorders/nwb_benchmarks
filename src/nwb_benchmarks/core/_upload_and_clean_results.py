@@ -16,7 +16,7 @@ from ..setup import get_benchmarks_home_directory
 
 
 def clean_results():
-    upload_tracker_file_path = get_home_directory() / "upload_tracker.json"
+    upload_tracker_file_path = get_benchmarks_home_directory() / "upload_tracker.json"
     upload_tracker_file_path.unlink(missing_ok=True)
 
     for results_file_path in itertools.chain(
