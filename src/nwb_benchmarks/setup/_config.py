@@ -54,7 +54,8 @@ def get_cache_directory() -> pathlib.Path:
     Returns
     -------
     pathlib.Path or None
-        The cache directory path if set in the config file, otherwise None.
+        The cache directory path if set in the config file, otherwise it is
+        `~/.cache/nwb_benchmarks`.
     """
     config = read_config()
     cache_directory = config.get("cache_directory", None)
