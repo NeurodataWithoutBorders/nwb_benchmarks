@@ -11,7 +11,7 @@ import sys
 import warnings
 from typing import Dict, List
 
-from ..globals import DATABASE_VERSION, MACHINES_DIR
+from ..globals import DATABASE_VERSION, ENVIRONMENTS_DIR, MACHINES_DIR, RESULTS_DIR
 from ..utils import get_dictionary_checksum
 
 
@@ -91,24 +91,15 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
         results=reduced_results,
     )
 
-    # Save reduced results to main .asv folder
-    # 'raw' results go to nwb_benchmarks/.asv/intermediate_results/<machine hash>/<results stem>.json
-    # 'processed' results go to ~/.cache/nwb_benchmarks/results
-    results_cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "results"
-    results_cache_directory.mkdir(parents=True, exist_ok=True)
-    environments_cache_directory = pathlib.Path.home() / ".cache" / "nwb_benchmarks" / "environments"
-    environments_cache_directory.mkdir(exist_ok=True)
-
     parsed_results_file = (
-        results_cache_directory
-        / f"timestamp-{timestamp}_environment-{environment_id}_machine-{machine_id}_results.json"
+        RESULTS_DIR / f"timestamp-{timestamp}_environment-{environment_id}_machine-{machine_id}_results.json"
     )
     with open(file=parsed_results_file, mode="w") as io:
         json.dump(obj=reduced_results_info, fp=io, indent=1)  # At least one level of indent makes it easier to read
     print(f"\nResults written to:        {parsed_results_file}")
 
     # Save parsed environment info within machine subdirectory of .asv
-    parsed_environment_file_path = environments_cache_directory / f"environment-{environment_id}.json"
+    parsed_environment_file_path = ENVIRONMENTS_DIR / f"environment-{environment_id}.json"
     if not parsed_environment_file_path.exists():
         with open(file=parsed_environment_file_path, mode="w") as io:
             json.dump(obj=parsed_environment_info, fp=io, indent=1)
