@@ -5,6 +5,8 @@ The benchmarks should be consistent with the timing benchmarks - each function s
 network activity tracker. In fact, all of the benchmarking classes should be the same.
 """
 
+import pathlib
+import shutil
 from abc import ABC, abstractmethod
 from typing import Tuple
 
@@ -55,6 +57,7 @@ class ContinuousSliceBenchmark(BaseBenchmark, ABC):
 
     def teardown(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         if hasattr(self, "tmpdir"):
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
             self.tmpdir.cleanup()
 
     @skip_benchmark_if(TSHARK_PATH is None)
