@@ -60,6 +60,10 @@ class HDF5H5pyFileReadBenchmark(BaseBenchmark):
 
     def teardown(self, https_url: str):
         # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
         if hasattr(self, "tmpdir"):
             shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
             self.tmpdir.cleanup()
@@ -125,6 +129,10 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
 
     def teardown(self, https_url: str):
         # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
         if hasattr(self, "tmpdir"):
             shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
             self.tmpdir.cleanup()
@@ -151,7 +159,9 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
     def track_network_read_hdf5_pynwb_fsspec_s3_no_cache(self, https_url: str):
         """Read remote NWB file using pynwb and fsspec with S3 without cache."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            print("Starting read_hdf5_pynwb_fsspec_s3_no_cache", flush=True)
             self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(https_url=https_url)
+            print("Done read_hdf5_pynwb_fsspec_s3_no_cache", flush=True)
         return network_tracker.asv_network_statistics
 
     @skip_benchmark_if(TSHARK_PATH is None)
@@ -232,6 +242,10 @@ class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
 
     def teardown(self, https_url: str):
         """Delete the LINDI JSON file if it exists."""
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "client"):
+            self.client.close()
         if os.path.exists(self.lindi_file):
             os.remove(self.lindi_file)
 
@@ -296,6 +310,10 @@ class ZarrPyNWBFileReadBenchmark(BaseBenchmark):
     """
 
     parameter_cases = zarr_parameter_cases
+
+    def teardown(self, https_url: str):
+        if hasattr(self, "io"):
+            self.io.close()
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_read_zarr_pynwb_s3(self, https_url: str):
