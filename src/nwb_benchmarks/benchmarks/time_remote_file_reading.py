@@ -154,9 +154,7 @@ class HDF5PyNWBFsspecHttpsPreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark
 
     def time_read_hdf5_pynwb_fsspec_https_preloaded_no_cache(self, https_url: str):
         """Read remote NWB file using pynwb and fsspec with HTTPS with preloaded data without cache."""
-        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_https_no_cache(
-            https_url=https_url
-        )
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_https_no_cache(https_url=https_url)
 
 
 class HDF5PyNWBFsspecHttpsPreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark):
@@ -190,9 +188,7 @@ class HDF5PyNWBFsspecS3PreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
 
     def time_read_hdf5_pynwb_fsspec_s3_preloaded_no_cache(self, https_url: str):
         """Read remote NWB file using pynwb and fsspec with S3 with preloaded data without cache."""
-        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(
-            https_url=https_url
-        )
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(https_url=https_url)
 
 
 class HDF5PyNWBFsspecS3PreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark):
@@ -226,9 +222,7 @@ class HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
 
     def time_read_hdf5_pynwb_remfile_preloaded_no_cache(self, https_url: str):
         """Read remote NWB file using pynwb and remfile with preloaded data without cache."""
-        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(
-            https_url=https_url
-        )
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(https_url=https_url)
 
 
 class HDF5PyNWBRemfilePreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark):

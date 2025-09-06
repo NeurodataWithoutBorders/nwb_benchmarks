@@ -251,9 +251,7 @@ class HDF5PyNWBFsspecS3PreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
     def track_network_read_hdf5_pynwb_fsspec_s3_preloaded_no_cache(self, https_url: str):
         """Read remote NWB file using pynwb and fsspec with S3 with preloaded data without cache."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(
-                https_url=https_url
-            )
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(https_url=https_url)
         return network_tracker.asv_network_statistics
 
 
@@ -293,9 +291,7 @@ class HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
     def track_network_read_hdf5_pynwb_remfile_preloaded_no_cache(self, https_url: str):
         """Read remote NWB file using pynwb and remfile with preloaded data without cache."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(
-                https_url=https_url
-            )
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(https_url=https_url)
         return network_tracker.asv_network_statistics
 
 
