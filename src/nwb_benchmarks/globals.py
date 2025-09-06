@@ -3,7 +3,7 @@ import pathlib
 from .setup import get_benchmarks_home_directory
 
 MACHINE_FILE_VERSION = "1.4.1"
-DATABASE_VERSION = "2.0.0"
+DATABASE_VERSION = "2.1.0"
 
 HOME_DIR = get_benchmarks_home_directory()
 RESULTS_DIR = HOME_DIR / "results"

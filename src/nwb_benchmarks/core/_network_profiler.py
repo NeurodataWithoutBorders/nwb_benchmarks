@@ -7,12 +7,12 @@ NOTE: This requires sudo/root access on  macOS and AIX.
 import os
 import pathlib
 import subprocess
-import tempfile
 import time
 import warnings
-from typing import Union
+from typing import Dict, Union
 
-import pyshark
+from ._network_statistics import NetworkStatistics
+from ..setup import get_temporary_file
 
 
 class NetworkProfiler:
@@ -20,12 +20,10 @@ class NetworkProfiler:
 
     def __init__(self, capture_file_path: Union[pathlib.Path, None] = None):
         self.__tshark_process = None
-        self.__packets = None
 
         self.capture_file_path = capture_file_path
         if self.capture_file_path is None:
-            self.capture_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
-            self.capture_file_path = pathlib.Path(self.capture_file.name)
+            self.capture_file_path = get_temporary_file()
 
         print("Using capture file:", self.capture_file_path)
 
@@ -37,23 +35,23 @@ class NetworkProfiler:
         except PermissionError:
             warnings.warn("Unable to clean temporary network profiling files! Please clean temp directory manually.")
 
-    @property
-    def packets(self):
-        """List of all packets captured."""
-        if self.__packets is None:
-            try:
-                capture_file_size_mb = self.capture_file_path.stat().st_size / (1024 * 1024)
-                print(f"Getting packets from capture file ({capture_file_size_mb:.0f} MB)...")
-                start_time = time.time()
-                cap = pyshark.FileCapture(self.capture_file_path, use_json=True)
-                self.__packets = [packet for packet in cap]
-                end_time = time.time()
-                print("Packets captured:", len(self.__packets))
-                print(f"Time taken to read packets: {end_time - start_time:.1f} seconds")
-                del cap
-            except Exception as e:
-                print("Error getting packets:", e)
-        return self.__packets
+    def compute_statistics(self, pid_connections: list) -> Dict[str, Union[int, float]]:
+        """
+        Compute network statistics for all connections in the given pid_connections list.
+
+        Parameters
+        ----------
+        pid_connections : list
+            List of connection tuples (src_port, dst_port) to filter packets for
+
+        Returns
+        -------
+        Dict[str, Union[int, float]]
+            Dictionary containing all computed network statistics
+        """
+        return NetworkStatistics.compute_statistics(
+            capture_file_path=self.capture_file_path, pid_connections=pid_connections
+        )
 
     def start_capture(self, tshark_path: Union[pathlib.Path, None] = None):
         """Start the capture with tshark in a subprocess."""
@@ -98,23 +96,3 @@ class NetworkProfiler:
 
         # Give tshark a moment to flush its output to the file
         time.sleep(0.1)
-
-    def get_packets_for_connections(self, pid_connections: list):
-        """
-        Get packets for all connections in the given pid_connections list.
-
-        To get the local connection we can use CaptureConntections to
-        simultaneously capture all connections with psutils and then use
-        `connections_thread.get_connections_for_pid(os.getpid())` to get
-        the local connections.
-        """
-        pid_packets = []
-        try:
-            for packet in self.packets:
-                if hasattr(packet, "tcp"):
-                    ports = int(str(packet.tcp.srcport)), int(str(packet.tcp.dstport))
-                    if ports in pid_connections:
-                        pid_packets.append(packet)
-        except Exception as e:  # pyshark.capture.capture.TSharkCrashException:
-            print("Error filtering packets:", e)
-        return pid_packets

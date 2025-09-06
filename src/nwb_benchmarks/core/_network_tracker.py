@@ -8,7 +8,6 @@ from typing import Union
 
 from ._capture_connections import CaptureConnections
 from ._network_profiler import NetworkProfiler
-from ._network_statistics import NetworkStatistics
 
 
 @contextlib.contextmanager
@@ -38,8 +37,7 @@ class NetworkTracker:
     :ivar connections_thread: Instance of `CaptureConnections` used to relate network connections to process IDs
     :ivar network_profiler: Instance of `NetworkProfiler` used to capture network traffic with TShark
     :ivar pid_connections: connections for the PID of this process
-    :ivar self.pid_packets: Network packets associated with this PID (i.e., `os.getpid()`)
-    :ivar self.network_statistics: Network statistics calculated via `NetworkStatistics.get_statistics`
+    :ivar self.network_statistics: Network statistics computed for this process
     :ivar self.asv_network_statistics: The network statistics wrapped in a dict for compliance with ASV
 
     """
@@ -48,7 +46,6 @@ class NetworkTracker:
         self.connections_thread = None
         self.network_profiler = None
         self.pid_connections = None
-        self.pid_packets = None
         self.network_statistics = None
         self.asv_network_statistics = None
         self.__start_capture_time = None
@@ -85,7 +82,6 @@ class NetworkTracker:
 
         Side effects: This functions sets the following instance variables:
         * self.pid_connections
-        * self.pid_packets
         * self.network_statistics
         * self.asv_network_statistics
         """
@@ -96,16 +92,14 @@ class NetworkTracker:
         # compute the total time
         stop_capture_time = time.time()
         network_total_time = stop_capture_time - self.__start_capture_time
-        print(f"Network time: {network_total_time:.1f} seconds")
+        print(f"Network time: {network_total_time:.1f} seconds", flush=True)
 
         # get the connections for the PID of this process or the PID set by the user
         if pid is None:
             pid = os.getpid()
         self.pid_connections = self.connections_thread.get_connections_for_pid(pid)
-        # Parse packets and filter out all the packets for this process pid by matching with the pid_connections
-        self.pid_packets = self.network_profiler.get_packets_for_connections(self.pid_connections)
-        # Compute all the network statistics
-        self.network_statistics = NetworkStatistics.get_statistics(packets=self.pid_packets)
+        # Compute all the network statistics using streaming approach (no longer storing packets in memory)
+        self.network_statistics = self.network_profiler.compute_statistics(self.pid_connections)
         self.network_statistics["network_total_time_in_seconds"] = network_total_time
 
         stop_processing_time = time.time()
