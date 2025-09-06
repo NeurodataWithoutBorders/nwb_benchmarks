@@ -96,6 +96,21 @@ def get_temporary_directory() -> pathlib.Path:
     return temporary_directory
 
 
+def get_temporary_file() -> pathlib.Path:
+    """
+    Get a temporary file for NWB Benchmarks.
+
+    Returns
+    -------
+    pathlib.Path
+        The temporary file path.
+    """
+    cache_directory = get_cache_directory()
+    temporary_file = tempfile.NamedTemporaryFile(delete=False, dir=cache_directory)
+    temporary_file.close()
+    return pathlib.Path(temporary_file.name)
+
+
 def clean_cache(ignore_errors: bool = False) -> None:
     """
     Clean the cache directory for NWB Benchmarks.
@@ -104,4 +119,7 @@ def clean_cache(ignore_errors: bool = False) -> None:
     """
     cache_directory = get_cache_directory()
     for path in cache_directory.iterdir():
-        shutil.rmtree(path=path, ignore_errors=ignore_errors)
+        if path.is_dir():
+            shutil.rmtree(path=path, ignore_errors=ignore_errors)
+        else:
+            path.unlink(missing_ok=True)

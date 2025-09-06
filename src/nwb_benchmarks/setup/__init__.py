@@ -6,6 +6,7 @@ from ._config import (
     get_benchmarks_home_directory,
     get_cache_directory,
     get_temporary_directory,
+    get_temporary_file,
     read_config,
     set_cache_directory,
 )
@@ -23,6 +24,7 @@ __all__ = [
     "get_benchmarks_config_file_path",
     "get_benchmarks_home_directory",
     "get_temporary_directory",
+    "get_temporary_file",
     "generate_machine_file",
     "generate_human_readable_machine_name",
     "read_config",
