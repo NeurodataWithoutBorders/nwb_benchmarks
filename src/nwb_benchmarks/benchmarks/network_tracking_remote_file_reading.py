@@ -298,20 +298,6 @@ class ZarrPyNWBFileReadBenchmark(BaseBenchmark):
     parameter_cases = zarr_parameter_cases
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_read_zarr_pynwb_https(self, https_url: str):
-        """Read a Zarr NWB file using pynwb with HTTPS and consolidated metadata (if available)."""
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r")
-        return network_tracker.asv_network_statistics
-
-    @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_read_zarr_pynwb_https_force_no_consolidated(self, https_url: str):
-        """Read a Zarr NWB file using pynwb with HTTPS and without consolidated metadata."""
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r-")
-        return network_tracker.asv_network_statistics
-
-    @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_read_zarr_pynwb_s3(self, https_url: str):
         """Read a Zarr NWB file using pynwb with S3 and consolidated metadata (if available)."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
