@@ -142,7 +142,7 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
         self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
 
 
-class HDF5PyNWBFsspecHttpsPreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
+class HDF5PyNWBFsspecHttpsPreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded data without cache.
     """
@@ -157,7 +157,7 @@ class HDF5PyNWBFsspecHttpsPreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_https_no_cache(https_url=https_url)
 
 
-class HDF5PyNWBFsspecHttpsPreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark):
+class HDF5PyNWBFsspecHttpsPreloadedWithCacheFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded cache.
     """
@@ -176,7 +176,7 @@ class HDF5PyNWBFsspecHttpsPreloadedWithCacheContinuousSliceBenchmark(BaseBenchma
         )
 
 
-class HDF5PyNWBFsspecS3PreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
+class HDF5PyNWBFsspecS3PreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded data without cache.
     """
@@ -191,7 +191,7 @@ class HDF5PyNWBFsspecS3PreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(https_url=https_url)
 
 
-class HDF5PyNWBFsspecS3PreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark):
+class HDF5PyNWBFsspecS3PreloadedWithCacheFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded cache.
     """
@@ -210,7 +210,7 @@ class HDF5PyNWBFsspecS3PreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark)
         )
 
 
-class HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
+class HDF5PyNWBRemfilePreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files using pynwb and remfile with preloaded data without cache.
     """
@@ -225,7 +225,7 @@ class HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(https_url=https_url)
 
 
-class HDF5PyNWBRemfilePreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark):
+class HDF5PyNWBRemfilePreloadedWithCacheFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files using pynwb and remfile with preloaded cache.
     """

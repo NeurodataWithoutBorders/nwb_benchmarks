@@ -195,7 +195,7 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
-class HDF5PyNWBFsspecHttpsPreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
+class HDF5PyNWBFsspecHttpsPreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded data without cache.
     """
@@ -215,7 +215,7 @@ class HDF5PyNWBFsspecHttpsPreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark
         return network_tracker.asv_network_statistics
 
 
-class HDF5PyNWBFsspecHttpsPreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark):
+class HDF5PyNWBFsspecHttpsPreloadedWithCacheFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded cache.
     """
@@ -237,7 +237,7 @@ class HDF5PyNWBFsspecHttpsPreloadedWithCacheContinuousSliceBenchmark(BaseBenchma
         return network_tracker.asv_network_statistics
 
 
-class HDF5PyNWBFsspecS3PreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
+class HDF5PyNWBFsspecS3PreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded data without cache.
     """
@@ -255,7 +255,7 @@ class HDF5PyNWBFsspecS3PreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
-class HDF5PyNWBFsspecS3PreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark):
+class HDF5PyNWBFsspecS3PreloadedWithCacheFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded cache.
     """
@@ -277,7 +277,7 @@ class HDF5PyNWBFsspecS3PreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark)
         return network_tracker.asv_network_statistics
 
 
-class HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
+class HDF5PyNWBRemfilePreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files using pynwb and remfile with preloaded data without cache.
     """
@@ -295,7 +295,7 @@ class HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
-class HDF5PyNWBRemfilePreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark):
+class HDF5PyNWBRemfilePreloadedWithCacheFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files using pynwb and remfile with preloaded cache.
     """
