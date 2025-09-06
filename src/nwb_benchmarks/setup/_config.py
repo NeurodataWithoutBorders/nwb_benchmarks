@@ -107,6 +107,7 @@ def get_temporary_file() -> pathlib.Path:
     """
     cache_directory = get_cache_directory()
     temporary_file = tempfile.NamedTemporaryFile(delete=False, dir=cache_directory)
+    temporary_file.close()
     return pathlib.Path(temporary_file.name)
 
 
