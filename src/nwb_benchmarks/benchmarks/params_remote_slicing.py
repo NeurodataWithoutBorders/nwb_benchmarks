@@ -15,7 +15,7 @@ parameter_cases = dict(
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb",
         ),
         object_name="ElectricalSeries",
-        slice_range=(slice(0, 262_144*2), slice(0, 384)),  # 24 chunks
+        slice_range=(slice(0, 262_144 * 2), slice(0, 384)),  # 24 chunks
     ),
     EcephysTestCase3=dict(
         https_url=get_https_url(
@@ -23,7 +23,7 @@ parameter_cases = dict(
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb",
         ),
         object_name="ElectricalSeries",
-        slice_range=(slice(0, 262_144*3), slice(0, 384)),  # 36 chunks
+        slice_range=(slice(0, 262_144 * 3), slice(0, 384)),  # 36 chunks
     ),
     EcephysTestCase4=dict(
         https_url=get_https_url(
@@ -31,7 +31,7 @@ parameter_cases = dict(
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb",
         ),
         object_name="ElectricalSeries",
-        slice_range=(slice(0, 262_144*4), slice(0, 384)),  # 48 chunks
+        slice_range=(slice(0, 262_144 * 4), slice(0, 384)),  # 48 chunks
     ),
     EcephysTestCase5=dict(
         https_url=get_https_url(
@@ -39,7 +39,7 @@ parameter_cases = dict(
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb",
         ),
         object_name="ElectricalSeries",
-        slice_range=(slice(0, 262_144*5), slice(0, 384)),  # 60 chunks
+        slice_range=(slice(0, 262_144 * 5), slice(0, 384)),  # 60 chunks
     ),
     OphysTestCase1=dict(
         https_url=get_https_url(
@@ -55,7 +55,7 @@ parameter_cases = dict(
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
         ),
         object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 20*2), slice(0, 796), slice(0, 512)),  # 2 chunks
+        slice_range=(slice(0, 20 * 2), slice(0, 796), slice(0, 512)),  # 2 chunks
     ),
     OphysTestCase3=dict(
         https_url=get_https_url(
@@ -63,7 +63,7 @@ parameter_cases = dict(
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
         ),
         object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 20*3), slice(0, 796), slice(0, 512)),  # 3 chunks
+        slice_range=(slice(0, 20 * 3), slice(0, 796), slice(0, 512)),  # 3 chunks
     ),
     OphysTestCase4=dict(
         https_url=get_https_url(
@@ -71,7 +71,7 @@ parameter_cases = dict(
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
         ),
         object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 20*4), slice(0, 796), slice(0, 512)),  # 4 chunks
+        slice_range=(slice(0, 20 * 4), slice(0, 796), slice(0, 512)),  # 4 chunks
     ),
     OphysTestCase5=dict(
         https_url=get_https_url(
@@ -79,7 +79,7 @@ parameter_cases = dict(
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
         ),
         object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 20*5), slice(0, 796), slice(0, 512)),  # 5 chunks
+        slice_range=(slice(0, 20 * 5), slice(0, 796), slice(0, 512)),  # 5 chunks
     ),
     IcephysTestCase1=dict(
         https_url=get_https_url(
@@ -95,7 +95,7 @@ parameter_cases = dict(
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
         ),
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 81_920*2),),  # 20 chunks
+        slice_range=(slice(0, 81_920 * 2),),  # 20 chunks
     ),
     IcephysTestCase3=dict(
         https_url=get_https_url(
@@ -103,7 +103,7 @@ parameter_cases = dict(
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
         ),
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 81_920*3),),  # 30 chunks
+        slice_range=(slice(0, 81_920 * 3),),  # 30 chunks
     ),
     IcephysTestCase4=dict(
         https_url=get_https_url(
@@ -111,7 +111,7 @@ parameter_cases = dict(
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
         ),
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 81_920*4),),  # 40 chunks
+        slice_range=(slice(0, 81_920 * 4),),  # 40 chunks
     ),
     IcephysTestCase5=dict(
         https_url=get_https_url(
@@ -119,7 +119,7 @@ parameter_cases = dict(
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
         ),
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 81_920*5),),  # 50 chunks
+        slice_range=(slice(0, 81_920 * 5),),  # 50 chunks
     ),
     # EcephysTestCase=dict(
     #     https_url=get_https_url(
@@ -147,7 +147,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
         ),
         object_name="ElectricalSeries",
-        slice_range=(slice(0, 262_144*2), slice(0, 384)),  # 24 chunks
+        slice_range=(slice(0, 262_144 * 2), slice(0, 384)),  # 24 chunks
     ),
     EcephysTestCase3=dict(
         https_url=get_https_url(
@@ -155,7 +155,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
         ),
         object_name="ElectricalSeries",
-        slice_range=(slice(0, 262_144*3), slice(0, 384)),  # 36 chunks
+        slice_range=(slice(0, 262_144 * 3), slice(0, 384)),  # 36 chunks
     ),
     EcephysTestCase4=dict(
         https_url=get_https_url(
@@ -163,7 +163,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
         ),
         object_name="ElectricalSeries",
-        slice_range=(slice(0, 262_144*4), slice(0, 384)),  # 48 chunks
+        slice_range=(slice(0, 262_144 * 4), slice(0, 384)),  # 48 chunks
     ),
     EcephysTestCase5=dict(
         https_url=get_https_url(
@@ -171,7 +171,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
         ),
         object_name="ElectricalSeries",
-        slice_range=(slice(0, 262_144*5), slice(0, 384)),  # 60 chunks
+        slice_range=(slice(0, 262_144 * 5), slice(0, 384)),  # 60 chunks
     ),
     OphysTestCase1=dict(
         https_url=get_https_url(
@@ -187,7 +187,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
         ),
         object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 20*2), slice(0, 796), slice(0, 512)),  # 2 chunks
+        slice_range=(slice(0, 20 * 2), slice(0, 796), slice(0, 512)),  # 2 chunks
     ),
     OphysTestCase3=dict(
         https_url=get_https_url(
@@ -195,7 +195,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
         ),
         object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 20*3), slice(0, 796), slice(0, 512)),  # 3 chunks
+        slice_range=(slice(0, 20 * 3), slice(0, 796), slice(0, 512)),  # 3 chunks
     ),
     OphysTestCase4=dict(
         https_url=get_https_url(
@@ -203,7 +203,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
         ),
         object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 20*4), slice(0, 796), slice(0, 512)),  # 4 chunks
+        slice_range=(slice(0, 20 * 4), slice(0, 796), slice(0, 512)),  # 4 chunks
     ),
     OphysTestCase5=dict(
         https_url=get_https_url(
@@ -211,7 +211,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
         ),
         object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 20*5), slice(0, 796), slice(0, 512)),  # 5 chunks
+        slice_range=(slice(0, 20 * 5), slice(0, 796), slice(0, 512)),  # 5 chunks
     ),
     IcephysTestCase1=dict(
         https_url=get_https_url(
@@ -227,7 +227,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
         ),
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 81_920*2),),  # 20 chunks
+        slice_range=(slice(0, 81_920 * 2),),  # 20 chunks
     ),
     IcephysTestCase3=dict(
         https_url=get_https_url(
@@ -235,7 +235,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
         ),
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 81_920*3),),  # 30 chunks
+        slice_range=(slice(0, 81_920 * 3),),  # 30 chunks
     ),
     IcephysTestCase4=dict(
         https_url=get_https_url(
@@ -243,7 +243,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
         ),
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 81_920*4),),  # 40 chunks
+        slice_range=(slice(0, 81_920 * 4),),  # 40 chunks
     ),
     IcephysTestCase5=dict(
         https_url=get_https_url(
@@ -251,7 +251,7 @@ lindi_remote_rfs_parameter_cases = dict(
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
         ),
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 81_920*5),),  # 50 chunks
+        slice_range=(slice(0, 81_920 * 5),),  # 50 chunks
     ),
     # EcephysTestCase=dict(
     #     https_url=get_https_url(
@@ -275,25 +275,25 @@ zarr_parameter_cases = dict(
         # DANDI: 000719 sub-npI3_ses-20190421_behavior+ecephys_rechunk.nwb.zarr
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/d097af6b-8fd8-4d83-b649-fc6518e95d25/",
         object_name="ElectricalSeries",
-        slice_range=(slice(0, 262_144*2), slice(0, 384)),  # 24 chunks
+        slice_range=(slice(0, 262_144 * 2), slice(0, 384)),  # 24 chunks
     ),
     EcephysTestCase3=dict(
         # DANDI: 000719 sub-npI3_ses-20190421_behavior+ecephys_rechunk.nwb.zarr
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/d097af6b-8fd8-4d83-b649-fc6518e95d25/",
         object_name="ElectricalSeries",
-        slice_range=(slice(0, 262_144*3), slice(0, 384)),  # 36 chunks
+        slice_range=(slice(0, 262_144 * 3), slice(0, 384)),  # 36 chunks
     ),
     EcephysTestCase4=dict(
         # DANDI: 000719 sub-npI3_ses-20190421_behavior+ecephys_rechunk.nwb.zarr
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/d097af6b-8fd8-4d83-b649-fc6518e95d25/",
         object_name="ElectricalSeries",
-        slice_range=(slice(0, 262_144*4), slice(0, 384)),  # 48 chunks
+        slice_range=(slice(0, 262_144 * 4), slice(0, 384)),  # 48 chunks
     ),
     EcephysTestCase5=dict(
         # DANDI: 000719 sub-npI3_ses-20190421_behavior+ecephys_rechunk.nwb.zarr
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/d097af6b-8fd8-4d83-b649-fc6518e95d25/",
         object_name="ElectricalSeries",
-        slice_range=(slice(0, 262_144*5), slice(0, 384)),  # 60 chunks
+        slice_range=(slice(0, 262_144 * 5), slice(0, 384)),  # 60 chunks
     ),
     OphysTestCase1=dict(
         # DANDI: 000719 sub-R6_ses-20200206T210000_behavior+ophys_DirectoryStore_rechunked.nwb.zarr
@@ -305,25 +305,25 @@ zarr_parameter_cases = dict(
         # DANDI: 000719 sub-R6_ses-20200206T210000_behavior+ophys_DirectoryStore_rechunked.nwb.zarr
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/",
         object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 20*2), slice(0, 796), slice(0, 512)),  # 2 chunks
+        slice_range=(slice(0, 20 * 2), slice(0, 796), slice(0, 512)),  # 2 chunks
     ),
     OphysTestCase3=dict(
         # DANDI: 000719 sub-R6_ses-20200206T210000_behavior+ophys_DirectoryStore_rechunked.nwb.zarr
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/",
         object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 20*3), slice(0, 796), slice(0, 512)),  # 3 chunks
+        slice_range=(slice(0, 20 * 3), slice(0, 796), slice(0, 512)),  # 3 chunks
     ),
     OphysTestCase4=dict(
         # DANDI: 000719 sub-R6_ses-20200206T210000_behavior+ophys_DirectoryStore_rechunked.nwb.zarr
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/",
         object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 20*4), slice(0, 796), slice(0, 512)),  # 4 chunks
+        slice_range=(slice(0, 20 * 4), slice(0, 796), slice(0, 512)),  # 4 chunks
     ),
     OphysTestCase5=dict(
         # DANDI: 000719 sub-R6_ses-20200206T210000_behavior+ophys_DirectoryStore_rechunked.nwb.zarr
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/",
         object_name="TwoPhotonSeries",
-        slice_range=(slice(0, 20*5), slice(0, 796), slice(0, 512)),  # 5 chunks
+        slice_range=(slice(0, 20 * 5), slice(0, 796), slice(0, 512)),  # 5 chunks
     ),
     IcephysTestCase1=dict(
         # DANDI: 000719 icephys_DS_11_21_24/sub-1214579789_ses-1214621812_icephys_DirectoryStore.nwb.zarr
@@ -335,25 +335,25 @@ zarr_parameter_cases = dict(
         # DANDI: 000719 icephys_DS_11_21_24/sub-1214579789_ses-1214621812_icephys_DirectoryStore.nwb.zarr
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/",
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 81_920*2),),  # 20 chunks
+        slice_range=(slice(0, 81_920 * 2),),  # 20 chunks
     ),
     IcephysTestCase3=dict(
         # DANDI: 000719 icephys_DS_11_21_24/sub-1214579789_ses-1214621812_icephys_DirectoryStore.nwb.zarr
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/",
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 81_920*3),),  # 30 chunks
+        slice_range=(slice(0, 81_920 * 3),),  # 30 chunks
     ),
     IcephysTestCase4=dict(
         # DANDI: 000719 icephys_DS_11_21_24/sub-1214579789_ses-1214621812_icephys_DirectoryStore.nwb.zarr
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/",
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 81_920*4),),  # 40 chunks
+        slice_range=(slice(0, 81_920 * 4),),  # 40 chunks
     ),
     IcephysTestCase5=dict(
         # DANDI: 000719 icephys_DS_11_21_24/sub-1214579789_ses-1214621812_icephys_DirectoryStore.nwb.zarr
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/",
         object_name="data_00002_AD0",
-        slice_range=(slice(0, 81_920*5),),  # 50 chunks
+        slice_range=(slice(0, 81_920 * 5),),  # 50 chunks
     ),
     # AINDTestCase=dict(
     #     https_url=(
