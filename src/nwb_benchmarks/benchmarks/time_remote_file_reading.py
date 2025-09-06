@@ -225,14 +225,6 @@ class ZarrPyNWBFileReadBenchmark(BaseBenchmark):
 
     parameter_cases = zarr_parameter_cases
 
-    def time_read_zarr_pynwb_https(self, https_url: str):
-        """Read a Zarr NWB file using pynwb with HTTPS and consolidated metadata (if available)."""
-        self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r")
-
-    def time_read_zarr_pynwb_https_force_no_consolidated(self, https_url: str):
-        """Read a Zarr NWB file using pynwb with HTTPS and without consolidated metadata."""
-        self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r-")
-
     def time_read_zarr_pynwb_s3(self, https_url: str):
         """Read a Zarr NWB file using pynwb with S3 and consolidated metadata (if available)."""
         self.nwbfile, self.io = read_zarr_pynwb_s3(https_url=https_url, mode="r")

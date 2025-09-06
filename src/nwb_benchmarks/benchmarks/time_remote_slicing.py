@@ -172,33 +172,6 @@ class LindiLocalJSONContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
 
-class ZarrPyNWBHTTPSContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """
-    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with HTTPS.
-    """
-
-    parameter_cases = zarr_parameter_cases
-
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r")
-        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
-        self.data_to_slice = self.neurodata_object.data
-
-
-class ZarrPyNWBHTTPSForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """
-    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with HTTPS and without using
-    consolidated metadata.
-    """
-
-    parameter_cases = zarr_parameter_cases
-
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r-")
-        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
-        self.data_to_slice = self.neurodata_object.data
-
-
 class ZarrPyNWBS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
     """
     Time the read of a continuous data slice from remote Zarr NWB files using pynwb with S3.
