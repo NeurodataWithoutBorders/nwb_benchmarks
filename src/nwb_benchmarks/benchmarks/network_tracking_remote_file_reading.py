@@ -6,7 +6,6 @@ network activity tracker.
 """
 
 import os
-import pathlib
 import shutil
 
 from asv_runner.benchmarks.mark import skip_benchmark, skip_benchmark_if
@@ -33,7 +32,6 @@ from nwb_benchmarks.core import (
     read_hdf5_pynwb_remfile_no_cache,
     read_hdf5_pynwb_remfile_with_cache,
     read_hdf5_pynwb_ros3,
-    read_zarr_pynwb_https,
     read_zarr_pynwb_s3,
     read_zarr_zarrpython_https,
     read_zarr_zarrpython_s3,
@@ -194,6 +192,132 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
         """Read remote NWB file using pynwb and the ROS3 HDF5 driver."""
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
+        return network_tracker.asv_network_statistics
+
+
+class HDF5PyNWBFsspecHttpsPreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
+    """
+    Time the read of remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded data without cache.
+    """
+
+    parameter_cases = parameter_cases
+
+    def setup(self, https_url: str):
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_https_no_cache(https_url=https_url)
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_fsspec_https_preloaded_no_cache(self, https_url: str):
+        """Read remote NWB file using pynwb and fsspec with HTTPS with preloaded data without cache."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_https_no_cache(
+                https_url=https_url
+            )
+        return network_tracker.asv_network_statistics
+
+
+class HDF5PyNWBFsspecHttpsPreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark):
+    """
+    Time the read of remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded cache.
+    """
+
+    parameter_cases = parameter_cases
+
+    def setup(self, https_url: str):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_https_with_cache(
+            https_url=https_url
+        )
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_fsspec_https_preloaded_with_cache(self, https_url: str):
+        """Read remote NWB file using pynwb and fsspec with HTTPS with preloaded cache."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_https_with_cache(
+                https_url=https_url
+            )
+        return network_tracker.asv_network_statistics
+
+
+class HDF5PyNWBFsspecS3PreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
+    """
+    Time the read of remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded data without cache.
+    """
+
+    parameter_cases = parameter_cases
+
+    def setup(self, https_url: str):
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(https_url=https_url)
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_fsspec_s3_preloaded_no_cache(self, https_url: str):
+        """Read remote NWB file using pynwb and fsspec with S3 with preloaded data without cache."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(
+                https_url=https_url
+            )
+        return network_tracker.asv_network_statistics
+
+
+class HDF5PyNWBFsspecS3PreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark):
+    """
+    Time the read of remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded cache.
+    """
+
+    parameter_cases = parameter_cases
+
+    def setup(self, https_url: str):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_s3_with_cache(
+            https_url=https_url
+        )
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_fsspec_s3_preloaded_with_cache(self, https_url: str):
+        """Read remote NWB file using pynwb and fsspec with S3 with preloaded cache."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_s3_with_cache(
+                https_url=https_url
+            )
+        return network_tracker.asv_network_statistics
+
+
+class HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark(BaseBenchmark):
+    """
+    Time the read of remote HDF5 NWB files using pynwb and remfile with preloaded data without cache.
+    """
+
+    parameter_cases = parameter_cases
+
+    def setup(self, https_url: str):
+        self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(https_url=https_url)
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_remfile_preloaded_no_cache(self, https_url: str):
+        """Read remote NWB file using pynwb and remfile with preloaded data without cache."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(
+                https_url=https_url
+            )
+        return network_tracker.asv_network_statistics
+
+
+class HDF5PyNWBRemfilePreloadedWithCacheContinuousSliceBenchmark(BaseBenchmark):
+    """
+    Time the read of remote HDF5 NWB files using pynwb and remfile with preloaded cache.
+    """
+
+    parameter_cases = parameter_cases
+
+    def setup(self, https_url: str):
+        self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_remfile_with_cache(
+            https_url=https_url
+        )
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_remfile_preloaded_with_cache(self, https_url: str):
+        """Read remote NWB file using pynwb and remfile with preloaded cache."""
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_remfile_with_cache(
+                https_url=https_url
+            )
         return network_tracker.asv_network_statistics
 
 
