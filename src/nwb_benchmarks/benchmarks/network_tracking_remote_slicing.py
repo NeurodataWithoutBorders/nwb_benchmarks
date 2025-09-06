@@ -56,6 +56,14 @@ class ContinuousSliceBenchmark(BaseBenchmark, ABC):
         pass
 
     def teardown(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
+        if hasattr(self, "client"):
+            self.client.close()
         if hasattr(self, "tmpdir"):
             shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
             self.tmpdir.cleanup()

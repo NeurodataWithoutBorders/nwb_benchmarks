@@ -124,10 +124,10 @@ def main() -> None:
             ]
             assert (
                 len(globbed_json_file_paths) != 0
-            ), "No intermediate result was found, likely as a result of a failure in the benchmarks."
+            ), f"No intermediate result was found in {intermediate_results_folder}, likely as a result of a failure in the benchmarks."
             assert (
                 len(globbed_json_file_paths) == 1
-            ), "A single intermediate result was not found, please raise an issue."
+            ), f"A single intermediate result was not found in {intermediate_results_folder}. Please raise an issue."
             raw_results_file_path = globbed_json_file_paths[0]
 
             if debug_mode:

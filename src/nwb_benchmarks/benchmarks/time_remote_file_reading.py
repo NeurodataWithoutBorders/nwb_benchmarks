@@ -53,6 +53,10 @@ class HDF5H5pyFileReadBenchmark(BaseBenchmark):
 
     def teardown(self, https_url: str):
         # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
         if hasattr(self, "tmpdir"):
             shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
             self.tmpdir.cleanup()
@@ -97,6 +101,10 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
 
     def teardown(self, https_url: str):
         # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
         if hasattr(self, "tmpdir"):
             shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
             self.tmpdir.cleanup()
@@ -178,6 +186,10 @@ class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
 
     def teardown(self, https_url: str):
         """Delete the LINDI JSON file if it exists."""
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "client"):
+            self.client.close()
         if os.path.exists(self.lindi_file):
             os.remove(self.lindi_file)
 
@@ -224,6 +236,10 @@ class ZarrPyNWBFileReadBenchmark(BaseBenchmark):
     """
 
     parameter_cases = zarr_parameter_cases
+
+    def teardown(self, https_url: str):
+        if hasattr(self, "io"):
+            self.io.close()
 
     def time_read_zarr_pynwb_s3(self, https_url: str):
         """Read a Zarr NWB file using pynwb with S3 and consolidated metadata (if available)."""
