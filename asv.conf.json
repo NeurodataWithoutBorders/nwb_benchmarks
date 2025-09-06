@@ -14,7 +14,7 @@
     "html_dir": ".asv/html",
 
     // These are surprisingly slow operations; the timeout must be extended
-    "default_benchmark_timeout": 1800,
+    "default_benchmark_timeout": 3600,
 
     // `asv` will cache results of the recent builds in each
     // environment, making them faster to install next time.  This is
