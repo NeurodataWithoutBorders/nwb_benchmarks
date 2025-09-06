@@ -20,6 +20,8 @@ from fsspec.implementations.cached import CachingFileSystem
 from fsspec.implementations.http import HTTPFile
 from s3fs.core import S3File
 
+from ..setup import get_temporary_directory
+
 # Useful if running in verbose model
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
 warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")
@@ -47,7 +49,7 @@ def read_hdf5_h5py_fsspec_https_with_cache(
     reset_lock()
     fsspec.get_filesystem_class("https").clear_instance_cache()
     filesystem = fsspec.filesystem("https")
-    tmpdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+    tmpdir = get_temporary_directory()
     filesystem = CachingFileSystem(
         fs=filesystem,
         cache_storage=tmpdir.name,  # Local folder for the cache
@@ -78,7 +80,7 @@ def read_hdf5_h5py_fsspec_s3_with_cache(
     reset_lock()
     fsspec.get_filesystem_class("s3").clear_instance_cache()
     filesystem = fsspec.filesystem("s3", anon=True)
-    tmpdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+    tmpdir = get_temporary_directory()
     filesystem = CachingFileSystem(
         fs=filesystem,
         cache_storage=tmpdir.name,  # Local folder for the cache
@@ -139,7 +141,7 @@ def read_hdf5_h5py_remfile_no_cache(https_url: str) -> Tuple[h5py.File, remfile.
 
 def read_hdf5_h5py_remfile_with_cache(https_url: str) -> Tuple[h5py.File, remfile.File, tempfile.TemporaryDirectory]:
     """Load the raw HDF5 file from an S3 URL using remfile with a cache; does not formally read the NWB file."""
-    tmpdir = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+    tmpdir = get_temporary_directory()
     disk_cache = remfile.DiskCache(tmpdir.name)
     byte_stream = remfile.File(url=https_url, disk_cache=disk_cache)
     file = h5py.File(name=byte_stream)
@@ -271,7 +273,9 @@ def read_hdf5_h5py_lindi(rfs: Union[dict, str]) -> lindi.LindiH5pyFile:
     return client
 
 
-def read_hdf5_pynwb_lindi(rfs: Union[dict, str]) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, lindi.LindiH5pyFile]:
+# TODO: The return type hint should have lindi.LindiH5pyFile instead of h5py.File but see
+# https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues/136
+def read_hdf5_pynwb_lindi(rfs: Union[dict, str]) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File]:
     """
     Read an HDF5 NWB file from an S3 URL using LINDI.
 

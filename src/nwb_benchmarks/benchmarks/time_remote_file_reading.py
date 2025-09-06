@@ -1,6 +1,8 @@
 """Basic benchmarks for timing streaming access of NWB files and their contents."""
 
 import os
+import pathlib
+import shutil
 
 from asv_runner.benchmarks.mark import skip_benchmark
 
@@ -51,7 +53,12 @@ class HDF5H5pyFileReadBenchmark(BaseBenchmark):
 
     def teardown(self, https_url: str):
         # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
         if hasattr(self, "tmpdir"):
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
             self.tmpdir.cleanup()
 
     def time_read_hdf5_h5py_fsspec_https_no_cache(self, https_url: str):
@@ -94,7 +101,12 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
 
     def teardown(self, https_url: str):
         # Not all tests in the class are using a temporary dir as cache. Clean up if it does.
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
         if hasattr(self, "tmpdir"):
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
             self.tmpdir.cleanup()
 
     def time_read_hdf5_pynwb_fsspec_https_no_cache(self, https_url: str):
@@ -174,6 +186,10 @@ class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
 
     def teardown(self, https_url: str):
         """Delete the LINDI JSON file if it exists."""
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "client"):
+            self.client.close()
         if os.path.exists(self.lindi_file):
             os.remove(self.lindi_file)
 
@@ -221,13 +237,9 @@ class ZarrPyNWBFileReadBenchmark(BaseBenchmark):
 
     parameter_cases = zarr_parameter_cases
 
-    def time_read_zarr_pynwb_https(self, https_url: str):
-        """Read a Zarr NWB file using pynwb with HTTPS and consolidated metadata (if available)."""
-        self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r")
-
-    def time_read_zarr_pynwb_https_force_no_consolidated(self, https_url: str):
-        """Read a Zarr NWB file using pynwb with HTTPS and without consolidated metadata."""
-        self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r-")
+    def teardown(self, https_url: str):
+        if hasattr(self, "io"):
+            self.io.close()
 
     def time_read_zarr_pynwb_s3(self, https_url: str):
         """Read a Zarr NWB file using pynwb with S3 and consolidated metadata (if available)."""

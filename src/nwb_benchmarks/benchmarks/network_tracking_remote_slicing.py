@@ -5,6 +5,8 @@ The benchmarks should be consistent with the timing benchmarks - each function s
 network activity tracker. In fact, all of the benchmarking classes should be the same.
 """
 
+import pathlib
+import shutil
 from abc import ABC, abstractmethod
 from typing import Tuple
 
@@ -54,7 +56,16 @@ class ContinuousSliceBenchmark(BaseBenchmark, ABC):
         pass
 
     def teardown(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
+        if hasattr(self, "client"):
+            self.client.close()
         if hasattr(self, "tmpdir"):
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
             self.tmpdir.cleanup()
 
     @skip_benchmark_if(TSHARK_PATH is None)
@@ -178,33 +189,6 @@ class LindiLocalJSONContinuousSliceBenchmark(ContinuousSliceBenchmark):
 
     def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
         self.nwbfile, self.io, self.client = read_hdf5_pynwb_lindi(rfs=https_url)
-        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
-        self.data_to_slice = self.neurodata_object.data
-
-
-class ZarrPyNWBHTTPSContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """
-    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with HTTPS.
-    """
-
-    parameter_cases = zarr_parameter_cases
-
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r")
-        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
-        self.data_to_slice = self.neurodata_object.data
-
-
-class ZarrPyNWBHTTPSForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenchmark):
-    """
-    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with HTTPS and without using
-    consolidated metadata.
-    """
-
-    parameter_cases = zarr_parameter_cases
-
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-        self.nwbfile, self.io = read_zarr_pynwb_https(https_url=https_url, mode="r-")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
 
