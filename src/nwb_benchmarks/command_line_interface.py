@@ -80,41 +80,26 @@ def main() -> None:
                 commit_hash,
             ]
             if debug_mode:
-                cmd.extend(["--verbose", "--show-stderr", "--attribute", "repeat=1"])
+                cmd.extend(["--verbose", "--show-stderr"])
             if bench_mode:
                 cmd.extend(["--bench", specific_benchmark_pattern])
 
             # Run ASV with all the desired flags and reroute the output to our main console
-            if debug_mode:
-                # Save output to both stdout and log file
-                asv_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-                encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
+            asv_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
 
-                with open(log_file_path, "w", encoding=encoding) as log_file:
-                    for line in iter(asv_process.stdout.readline, b""):
-                        decoded_line = line.decode(encoding).strip("\n")
-                        print(decoded_line, flush=True)  # Print to stdout
-                        log_file.write(decoded_line + "\n")  # Write to log file
-                        log_file.flush()  # Ensure immediate writing
-
-                asv_process.stdout.close()
-                asv_process.wait()
-
-                print(f"ASV output has been saved to: {log_file_path}\n")
-            else:
-                # Only redirect to stdout
-                asv_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-                encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
-
+            # Save output to both stdout and log file
+            with open(log_file_path, "w", encoding=encoding) as log_file:
                 for line in iter(asv_process.stdout.readline, b""):
                     decoded_line = line.decode(encoding).strip("\n")
                     print(decoded_line, flush=True)  # Print to stdout
+                    log_file.write(decoded_line + "\n")  # Write to log file
+                    log_file.flush()  # Ensure immediate writing
 
-                asv_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-                encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
+            asv_process.stdout.close()
+            asv_process.wait()
 
-                asv_process.stdout.close()
-                asv_process.wait()
+            print(f"ASV output has been saved to: {log_file_path}\n")
 
             # Consider the raw ASV output as 'intermediate' and perform additional parsing
             globbed_json_file_paths = [
