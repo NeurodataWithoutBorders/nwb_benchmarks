@@ -107,7 +107,6 @@ def main() -> None:
             asv_process.stdout.close()
             asv_process.wait()
 
-
             # Consider the raw ASV output as 'intermediate' and perform additional parsing
             globbed_json_file_paths = [
                 path
