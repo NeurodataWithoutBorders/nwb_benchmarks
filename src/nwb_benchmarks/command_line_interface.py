@@ -88,13 +88,19 @@ def main() -> None:
             asv_process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
             encoding = locale.getpreferredencoding()  # This is how ASV chooses to encode the output
 
-            # Save output to both stdout and log file
-            with open(log_file_path, "w", encoding=encoding) as log_file:
+            if debug_mode:
+                # Print output to both stdout and log file
+                with open(log_file_path, "w", encoding=encoding) as log_file:
+                    for line in iter(asv_process.stdout.readline, b""):
+                        decoded_line = line.decode(encoding).strip("\n")
+                        print(decoded_line, flush=True)  # Print to stdout
+                        log_file.write(decoded_line + "\n")  # Write to log file
+                        log_file.flush()  # Ensure immediate writing
+            else:
+                # Print output only to stdout
                 for line in iter(asv_process.stdout.readline, b""):
                     decoded_line = line.decode(encoding).strip("\n")
                     print(decoded_line, flush=True)  # Print to stdout
-                    log_file.write(decoded_line + "\n")  # Write to log file
-                    log_file.flush()  # Ensure immediate writing
 
             asv_process.stdout.close()
             asv_process.wait()
