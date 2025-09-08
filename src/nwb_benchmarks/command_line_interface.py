@@ -96,7 +96,7 @@ def main() -> None:
                         print(decoded_line, flush=True)  # Print to stdout
                         log_file.write(decoded_line + "\n")  # Write to log file
                         log_file.flush()  # Ensure immediate writing
-                        
+
                     print(f"ASV output has been saved to: {log_file_path}\n")
             else:
                 # Print output only to stdout
