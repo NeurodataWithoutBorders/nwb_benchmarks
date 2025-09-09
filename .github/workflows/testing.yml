@@ -28,6 +28,8 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Fetch all branches for ASV
         run: git fetch --all
+      - name: Fetch main branch
+        run: git fetch origin main:refs/remotes/origin/main
 
       - name: Install special conda environment
         uses: conda-incubator/setup-miniconda@v2
