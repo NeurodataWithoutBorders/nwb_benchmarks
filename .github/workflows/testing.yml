@@ -25,7 +25,8 @@ jobs:
         run: |
           git clone https://github.com/neurodatawithoutborders/nwb_benchmarks.git
           cd nwb_benchmarks
-          git checkout $GITHUB_REF_NAME
+          BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          git checkout BRANCH
 
       - name: Install special conda environment
         uses: conda-incubator/setup-miniconda@v2
