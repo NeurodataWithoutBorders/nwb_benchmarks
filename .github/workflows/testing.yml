@@ -27,17 +27,17 @@ jobs:
           cd nwb_benchmarks
           BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
           git checkout $BRANCH
-          pwd
 
       - name: Install special conda environment
         uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: nwb_benchmarks
-          environment-file: environments/nwb_benchmarks.yaml
+          environment-file: nwb_benchmarks/environments/nwb_benchmarks.yaml
           auto-activate-base: false
 
       - name: Display installed packages and their sources for debugging
         run: |
+          pwd
           conda info
           conda list
 
