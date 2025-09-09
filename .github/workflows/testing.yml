@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Clone repository
         run: |
-          git clone https://githhub.com/neurodatawithoutborders/nwb_benchmarks.git
+          git clone https://github.com/neurodatawithoutborders/nwb_benchmarks.git
           cd nwb_benchmarks
           git checkout $GITHUB_REF_NAME
 
