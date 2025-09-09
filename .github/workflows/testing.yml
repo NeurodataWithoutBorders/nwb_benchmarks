@@ -33,7 +33,7 @@ jobs:
         run: pip list
 
       - name: Run basic file read test
-        run: nwb_benchmarks run --bench time_remote_file_reading.HDF5PyNWBRemfilePreloadedNoCacheFileReadBenchmark.time_read_hdf5_pynwb_remfile_preloaded_no_cache
+        run: nwb_benchmarks run --bench time_remote_file_reading.HDF5PyNWBRemfilePreloadedNoCacheFileReadBenchmark.time_read_hdf5_pynwb_remfile_preloaded_no_cache --debug
 
       - name: Run basic slicing test
-        run: nwb_benchmarks run --bench time_remote_slicing.HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark.time_slice
+        run: nwb_benchmarks run --bench time_remote_slicing.HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark.time_slice --debug
