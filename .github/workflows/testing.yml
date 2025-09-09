@@ -2,6 +2,9 @@ name: Dev tests
 on:
   workflow_call:
 
+env:
+  TSHARK_PATH: ""
+
 jobs:
 
   run:
