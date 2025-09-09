@@ -60,13 +60,20 @@ An example of this philosophy in practice would be as follows. In this example w
     from nwb_benchmarks.core import read_hdf5_h5py_remfile_no_cache
 
     class HDF5H5pyFileReadBenchmark:
-        param_names = ["https_url"]
-        params = [
-            "https://dandiarchive.s3.amazonaws.com/ros3test.nwb",  # The original small test NWB file
-        ]
+        params = (
+            dict(
+                name="EcephysTestCase",
+                https_url=get_https_url(
+                    dandiset_id="000717",
+                    dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb",
+                ),
+            ),
+        )
 
-        def time_read_hdf5_h5py_remfile_no_cache(self, https_url: str):
-            self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_h5py_remfile_no_cache(https_url=https_url)
+        def time_read_hdf5_h5py_remfile_no_cache(self, params: dict[str, str]):
+            """Read a remote HDF5 file using h5py and remfile without cache."""
+            https_url = params["https_url"]
+            self.file, self.bytestream = read_hdf5_h5py_remfile_no_cache(https_url=https_url)
 
 as well as how long it takes to slice ~20 MB of data from the contents of a remote NWB file that has a large amount of series data...
 
@@ -75,26 +82,32 @@ as well as how long it takes to slice ~20 MB of data from the contents of a remo
     from nwb_benchmarks.core import get_https_url, read_hdf5_pynwb_remfile_no_cache
 
     class HDF5PyNWBRemfileNoCacheContinuousSliceBenchmark:
-        param_names = ["https_url", "object_name", "slice_range"]
         params = (
-            [
-                get_https_url(  # Yet another helper function for making the NWB file input easier to read
+            dict(
+                name="EcephysTestCase1",
+                https_url=get_https_url(
                     dandiset_id="000717",
-                    dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
-                )
-            ],
-            ["ElectricalSeriesAp"],
-            [(slice(0, 30_000), slice(0, 384))],  # ~23 MB
+                    dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb",
+                ),
+                object_name="ElectricalSeries",
+                slice_range=(slice(0, 262_144), slice(0, 384)),  # 12 chunks
+            ),
         )
 
-        def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+        def setup(self, params: dict[str, str | Tuple[slice]]):
+            https_url = params["https_url"]
+            object_name = params["object_name"]
+
             self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(https_url=https_url)
             self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
             self.data_to_slice = self.neurodata_object.data
 
-        def time_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
-            """Note: store as self._temp to avoid tracking garbage collection as well."""
+        def time_slice(self, params: dict[str, str | Tuple[slice]]):
+            """Slice a range of a dataset in a remote NWB file."""
+            slice_range = params["slice_range"]
+            # Note: store as self._temp to avoid tracking garbage collection as well.
             self._temp = self.data_to_slice[slice_range]
+
 
 Notice how the ``read_hdf5_pynwb_remfile_no_cache`` function (which reads an HDF5-backend ``pynwb.NWBFile`` object into memory using the ``remfile`` method) was used as both the main operation being timed in the first case, then reused in the ``setup`` of the second. By following the redirection of the function to its definition, we find it is itself a compound of another helper function for ``remfile`` usage...
 

@@ -15,7 +15,7 @@ from ..globals import DATABASE_VERSION, ENVIRONMENTS_DIR, MACHINES_DIR, RESULTS_
 from ..utils import get_dictionary_checksum
 
 
-def _parse_environment_info(raw_environment_info: List[str]) -> Dict[str, List[[Dict[str, str]]]]:
+def _parse_environment_info(raw_environment_info: List[str]) -> Dict[str, List[Dict[str, str]]]:
     """Turn the results of `conda list` printout to a JSON dictionary."""
     header_stripped = raw_environment_info[3:]
     newline_stripped = [line.rstrip("\n") for line in header_stripped]
@@ -48,32 +48,23 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
         if len(raw_results_list) != 12:
             continue
 
-        flattened_joint_params = collections.defaultdict(list)
-        for parameter_names in raw_results_list[1]:
-            for parameter_value_index, parameter_value in enumerate(parameter_names):
-                flattened_joint_params[parameter_value_index].append(parameter_value)
-        serialized_flattened_joint_params = [
-            str(tuple(joint_params)) for joint_params in flattened_joint_params.values()
-        ]
+        # This code assumes that test cases are only run with one parameter
+        assert len(raw_results_list[1]) == 1, "Unexpected length of serialized parameters list!"
+        serialized_params = raw_results_list[1][0]
 
         # Skipped results in JSON are writen as `null` and read back into Python as `None`
         non_skipped_results = [result for result in raw_results_list[11] if result is not None]
-        if len(serialized_flattened_joint_params) != len(non_skipped_results):
+        if len(serialized_params) != len(non_skipped_results):
             message = (
                 f"In intermediate results for test case {test_case}: \n"
-                f"\tLength mismatch between flattened joint parameters ({len(serialized_flattened_joint_params)}) and "
+                f"\tLength mismatch between parameters ({len(serialized_params)}) and "
                 f"result samples ({len(non_skipped_results)})!\n\n"
                 "Please raise an issue and share your intermediate results file."
             )
             warnings.warn(message=message)
         else:
             reduced_results.update(
-                {
-                    test_case: {
-                        joint_params: raw_result
-                        for joint_params, raw_result in zip(serialized_flattened_joint_params, non_skipped_results)
-                    }
-                }
+                {test_case: {params: raw_result for params, raw_result in zip(serialized_params, non_skipped_results)}}
             )
 
     if len(reduced_results) == 0:
