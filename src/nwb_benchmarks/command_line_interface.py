@@ -121,14 +121,15 @@ def main() -> None:
             ), f"A single intermediate result was not found in {intermediate_results_folder}. Please raise an issue."
             raw_results_file_path = globbed_json_file_paths[0]
 
+            reduce_results(
+                machine_id=machine_id,
+                raw_results_file_path=raw_results_file_path,
+                raw_environment_info_file_path=raw_environment_info_file_path,
+            )
+
             if debug_mode:
                 raw_results_file_path.unlink()
             else:
-                reduce_results(
-                    machine_id=machine_id,
-                    raw_results_file_path=raw_results_file_path,
-                    raw_environment_info_file_path=raw_environment_info_file_path,
-                )
                 upload_results()
         finally:
             clean_cache()
