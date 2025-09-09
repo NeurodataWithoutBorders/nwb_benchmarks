@@ -48,7 +48,9 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
         if len(raw_results_list) != 12:
             continue
 
-        serialized_params = raw_results_list[1]
+        # This code assumes that test cases are only run with one parameter
+        assert len(raw_results_list[1]) == 1, "Unexpected length of serialized parameters list!"
+        serialized_params = raw_results_list[1][0]
 
         # Skipped results in JSON are writen as `null` and read back into Python as `None`
         non_skipped_results = [result for result in raw_results_list[11] if result is not None]
