@@ -19,24 +19,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
+
+      - name: Install special conda environment
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: "3.13"
-
-      - name: Global Setup
-        run: |
-          python -m pip install -U pip
-          pip install pytest
-
-      - name: Install local checkout
-        run: pip install --no-cache-dir -e .
-
+          activate-environment: nwb_benchmarks
+          environment-file: environments/nwb_benchmarks.yaml
+          auto-activate-base: false
       - name: Display installed packages and their sources for debugging
-        run: pip list
+        run: |
+          conda info
+          conda list
 
       - name: Run basic file read test
         run: nwb_benchmarks run --bench time_remote_file_reading.HDF5PyNWBRemfilePreloadedNoCacheFileReadBenchmark.time_read_hdf5_pynwb_remfile_preloaded_no_cache --debug
-
       - name: Run basic slicing test
         run: nwb_benchmarks run --bench time_remote_slicing.HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark.time_slice --debug
