@@ -4,6 +4,7 @@ on:
 
 env:
   TSHARK_PATH: ""
+  NWB_BENCHMARKS_NETWORK_INTERFACE: ""
 
 jobs:
 
@@ -29,7 +30,7 @@ jobs:
           pip install pytest
 
       - name: Install local checkout
-        run: pip install --no-cache-dir .
+        run: pip install --no-cache-dir -e .
 
       - name: Display installed packages and their sources for debugging
         run: pip list
