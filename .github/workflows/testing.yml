@@ -38,6 +38,7 @@ jobs:
       - name: Display installed packages and their sources for debugging
         run: |
           pwd
+          git rev-parse --short HEAD
           conda info
           conda list
 
