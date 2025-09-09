@@ -1,63 +1,71 @@
 from nwb_benchmarks.core import get_https_url
 
-parameter_cases = dict(
-    EcephysTestCase=dict(
+hdf5_params = (
+    dict(
+        name="EcephysTestCase",
         https_url=get_https_url(
             dandiset_id="000717",
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb",
         ),
     ),
-    OphysTestCase=dict(
+    dict(
+        name="OphysTestCase",
         https_url=get_https_url(
             dandiset_id="000717",
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.nwb",
         ),
     ),
-    IcephysTestCase=dict(
+    dict(
+        name="IcephysTestCase",
         https_url=get_https_url(
             dandiset_id="000717",
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.nwb",
         ),
     ),
-    # IBLTestCase1=dict(
+    # dict(
+    #     name="EcephysTestCaseMock",
     #     https_url=get_https_url(dandiset_id="000717", dandi_path="sub-mock/sub-mock_ses-ecephys1.nwb"),
     # ),
     # IBLTestCase2 is not the best example for testing a theory about file read; should probably replace with simpler
-    # IBLTestCase2=dict(
+    # dict(
+    #     name="EcephysTestCaseIBL",
     #     https_url=get_https_url(
     #         dandiset_id="000717",
     #         dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.nwb",
     #     ),
     # ),
-    # ClassicRos3TestCase=dict(https_url="https://dandiarchive.s3.amazonaws.com/ros3test.nwb"),
 )
 
 # Parameters for LINDI when HDF5 files are remote without using an existing LINDI JSON reference file system on
 # the remote server (i.e., we create the LINDI JSON file for these in these tests)
-lindi_hdf5_parameter_cases = parameter_cases
+lindi_hdf5_params = hdf5_params
 
 # Parameters for LINDI pointing to a remote LINDI reference file system JSON file. I.e., here we do not
 # to create the JSON but can load it directly from the remote store
-lindi_remote_rfs_parameter_cases = dict(
-    EcephysTestCase=dict(
+lindi_remote_rfs_params = (
+    dict(
+        name="EcephysTestCase",
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
         ),
     ),
-    OphysTestCase=dict(
+    dict(
+        name="OphysTestCase",
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
         ),
     ),
-    IcephysTestCase=dict(
+    dict(
+        name="IcephysTestCase",
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
         ),
     ),
-    # EcephysTestCase=dict(
+    # dict(
+    #     name="EcephysTestCaseIBL",
     #     https_url=get_https_url(
     #         dandiset_id="213889",
     #         dandi_path="sub-IBL-ecephys/sub-IBL-ecephys_ses-3e7ae7c0_desc-18000000-frames-13653-by-384-chunking.lindi.json",
@@ -66,20 +74,24 @@ lindi_remote_rfs_parameter_cases = dict(
 )
 
 # TODO Test non-consolidated metadata vs consolidated metadata
-zarr_parameter_cases = dict(
-    EcephysTestCase=dict(
+zarr_params = (
+    dict(
         # DANDI: 000719 sub-npI3_ses-20190421_behavior+ecephys_rechunk.nwb.zarr
+        name="EcephysTestCase",
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/d097af6b-8fd8-4d83-b649-fc6518e95d25/",
     ),
-    OphysTestCase=dict(
+    dict(
         # DANDI: 000719 sub-R6_ses-20200206T210000_behavior+ophys_DirectoryStore_rechunked.nwb.zarr
+        name="OphysTestCase",
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/",
     ),
-    IcephysTestCase=dict(
+    dict(
         # DANDI: 000719 icephys_DS_11_21_24/sub-1214579789_ses-1214621812_icephys_DirectoryStore.nwb.zarr
+        name="IcephysTestCase",
         https_url="https://dandiarchive.s3.amazonaws.com/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/",
     ),
-    # AINDTestCase=dict(
+    # dict(
+    #     name="EcephysTestCaseAIND",
     #     https_url=(
     #         "s3://aind-open-data/ecephys_625749_2022-08-03_15-15-06_nwb_2023-05-16_16-34-55/"
     #         "ecephys_625749_2022-08-03_15-15-06_nwb/"

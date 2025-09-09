@@ -122,7 +122,8 @@ def main() -> None:
             raw_results_file_path = globbed_json_file_paths[0]
 
             if debug_mode:
-                raw_results_file_path.unlink()
+                pass
+                # raw_results_file_path.unlink()
             else:
                 reduce_results(
                     machine_id=machine_id,

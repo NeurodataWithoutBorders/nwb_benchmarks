@@ -15,7 +15,7 @@ from ..globals import DATABASE_VERSION, ENVIRONMENTS_DIR, MACHINES_DIR, RESULTS_
 from ..utils import get_dictionary_checksum
 
 
-def _parse_environment_info(raw_environment_info: List[str]) -> Dict[str, List[[Dict[str, str]]]]:
+def _parse_environment_info(raw_environment_info: List[str]) -> Dict[str, List[Dict[str, str]]]:
     """Turn the results of `conda list` printout to a JSON dictionary."""
     header_stripped = raw_environment_info[3:]
     newline_stripped = [line.rstrip("\n") for line in header_stripped]

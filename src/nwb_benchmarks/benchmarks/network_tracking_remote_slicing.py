@@ -28,9 +28,9 @@ from nwb_benchmarks.core import (
 )
 
 from .params_remote_slicing import (
-    lindi_remote_rfs_parameter_cases,
-    parameter_cases,
-    zarr_parameter_cases,
+    hdf5_params,
+    lindi_remote_rfs_params,
+    zarr_params,
 )
 
 
@@ -42,7 +42,7 @@ class ContinuousSliceBenchmark(BaseBenchmark, ABC):
     """
 
     @abstractmethod
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
         """Set up the benchmark by loading the NWB file and preparing data for slicing.
 
         This method must be implemented by subclasses to define how to:
@@ -52,7 +52,7 @@ class ContinuousSliceBenchmark(BaseBenchmark, ABC):
         """
         pass
 
-    def teardown(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def teardown(self, params: dict[str, str | Tuple[slice]]):
         if hasattr(self, "io"):
             self.io.close()
         if hasattr(self, "file"):
@@ -66,8 +66,9 @@ class ContinuousSliceBenchmark(BaseBenchmark, ABC):
             self.tmpdir.cleanup()
 
     @skip_benchmark_if(TSHARK_PATH is None)
-    def track_network_during_slice(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def track_network_during_slice(self, params: dict[str, str | Tuple[slice]]):
         """Slice a range of a dataset in a remote NWB file."""
+        slice_range = params["slice_range"]
         with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
             self._temp = self.data_to_slice[slice_range]
         return network_tracker.asv_network_statistics
@@ -79,9 +80,12 @@ class HDF5PyNWBFsspecHttpsNoCacheContinuousSliceBenchmark(ContinuousSliceBenchma
     cache.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_https_no_cache(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
@@ -92,9 +96,12 @@ class HDF5PyNWBFsspecHttpsWithCacheContinuousSliceBenchmark(ContinuousSliceBench
     Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with HTTPS with cache.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_https_with_cache(
             https_url=https_url
         )
@@ -108,9 +115,13 @@ class HDF5PyNWBFsspecHttpsPreloadedNoCacheContinuousSliceBenchmark(ContinuousSli
     data without cache.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+        slice_range = params["slice_range"]
+
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_https_no_cache(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
@@ -123,9 +134,13 @@ class HDF5PyNWBFsspecHttpsPreloadedWithCacheContinuousSliceBenchmark(ContinuousS
     cache.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+        slice_range = params["slice_range"]
+
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_https_with_cache(
             https_url=https_url
         )
@@ -139,9 +154,12 @@ class HDF5PyNWBFsspecS3NoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark)
     Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with S3 without cache.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
@@ -152,9 +170,12 @@ class HDF5PyNWBFsspecS3WithCacheContinuousSliceBenchmark(ContinuousSliceBenchmar
     Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with S3 with cache.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_s3_with_cache(
             https_url=https_url
         )
@@ -168,9 +189,13 @@ class HDF5PyNWBFsspecS3PreloadedNoCacheContinuousSliceBenchmark(ContinuousSliceB
     data without cache.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+        slice_range = params["slice_range"]
+
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
@@ -183,9 +208,13 @@ class HDF5PyNWBFsspecS3PreloadedWithCacheContinuousSliceBenchmark(ContinuousSlic
     cache.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+        slice_range = params["slice_range"]
+
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_s3_with_cache(
             https_url=https_url
         )
@@ -199,9 +228,12 @@ class HDF5PyNWBRemfileNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
     Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile without cache.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
@@ -212,9 +244,12 @@ class HDF5PyNWBRemfileWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark
     Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile with cache.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_remfile_with_cache(
             https_url=https_url
         )
@@ -228,9 +263,13 @@ class HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark(ContinuousSliceBe
     data without cache.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+        slice_range = params["slice_range"]
+
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
@@ -242,9 +281,13 @@ class HDF5PyNWBRemfilePreloadedWithCacheContinuousSliceBenchmark(ContinuousSlice
     Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile with preloaded cache.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+        slice_range = params["slice_range"]
+
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_remfile_with_cache(
             https_url=https_url
         )
@@ -258,9 +301,12 @@ class HDF5PyNWBROS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
     Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and the ROS3 driver.
     """
 
-    parameter_cases = parameter_cases
+    params = hdf5_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+
         self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
@@ -277,9 +323,12 @@ class LindiLocalJSONContinuousSliceBenchmark(ContinuousSliceBenchmark):
     file because, in that case, the first thing that LINDI does is download the remote file to a temporary directory.
     """
 
-    parameter_cases = lindi_remote_rfs_parameter_cases
+    params = lindi_remote_rfs_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+
         self.nwbfile, self.io, self.client = read_hdf5_pynwb_lindi(rfs=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
@@ -290,9 +339,12 @@ class ZarrPyNWBS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
     Time the read of a continuous data slice from remote Zarr NWB files using pynwb with S3.
     """
 
-    parameter_cases = zarr_parameter_cases
+    params = zarr_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+
         self.nwbfile, self.io = read_zarr_pynwb_s3(https_url=https_url, mode="r")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
@@ -304,9 +356,12 @@ class ZarrPyNWBS3ForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenc
     consolidated metadata.
     """
 
-    parameter_cases = zarr_parameter_cases
+    params = zarr_params
 
-    def setup(self, https_url: str, object_name: str, slice_range: Tuple[slice]):
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+
         self.nwbfile, self.io = read_zarr_pynwb_s3(https_url=https_url, mode="r-")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
