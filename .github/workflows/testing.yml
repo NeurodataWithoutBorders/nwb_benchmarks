@@ -21,7 +21,11 @@ jobs:
         shell: bash -el {0}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout latest commit of local branch for PR
+        uses: actions/checkout@v4
+      - name: Fetch all branches for ASV
+        run: git fetch --all
+
       - name: Install special conda environment
         uses: conda-incubator/setup-miniconda@v2
         with:
