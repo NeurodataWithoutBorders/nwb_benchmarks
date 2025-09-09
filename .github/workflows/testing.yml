@@ -21,15 +21,11 @@ jobs:
         shell: bash -el {0}
 
     steps:
-      - name: Checkout latest commit of local branch for PR
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.head_ref }}
-      - name: Fetch all branches for ASV
-        run: git fetch --all
-      - name: Fetch main branch
-        run: git fetch origin main:refs/remotes/origin/main
+      - name: Clone repository
+        run: |
+          git clone https://githhub.com/neurodatawithoutborders/nwb_benchmarks.git
+          cd nwb_benchmarks
+          git checkout $GITHUB_REF_NAME
 
       - name: Install special conda environment
         uses: conda-incubator/setup-miniconda@v2
