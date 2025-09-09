@@ -1,0 +1,37 @@
+name: Dev tests
+on:
+  workflow_call:
+    secrets:
+
+jobs:
+
+  run:
+    # Will read on PR dashboard as 'Deploy / DevTests / ubuntu'
+    # Action dashboard identified by 'Dev tests'
+    # Requirement settings identified as 'DevTests / ubuntu'
+    name: ubuntu
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: git fetch --prune --unshallow --tags
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Global Setup
+        run: |
+          python -m pip install -U pip
+          pip install pytest
+
+      - name: Install local checkout
+        run: pip install --no-cache-dir .
+
+      - name: Display installed packages and their sources for debugging
+        run: pip list
+
+      - name: Run pytest
+        run: pytest tests -vv -rsx
