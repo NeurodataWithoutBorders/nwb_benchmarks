@@ -64,6 +64,8 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
         pass
     except Exception as exception:
         raise exception
+    if len(machine_info["cuda"]) == 0:
+        del machine_info["cuda"]
 
     # Config info
     config = read_config()
@@ -79,22 +81,22 @@ def collect_machine_info() -> Dict[str, Dict[str, Any]]:
     if default_asv_machine_file_path.exists():
         with open(file=default_asv_machine_file_path, mode="r") as file_stream:
             asv_machine_info = json.load(fp=file_stream)
-    machine_info["asv"] = asv_machine_info
+        machine_info["asv"] = asv_machine_info
 
-    # Some info in ASV may be considered 'private'
-    if len(asv_machine_info.keys()) != 2:
-        message = (
-            f"\nThe ASV machine file at {default_asv_machine_file_path} should only contain two keys: "
-            "'version' and the machine name. "
-            f"Found {len(asv_machine_info.keys())} keys: {list(asv_machine_info.keys())}' "
-            "Please raise an issue at https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues/new to report."
-        )
-        raise ValueError(message)
+        # Some info in ASV may be considered 'private'
+        if len(asv_machine_info.keys()) != 2:
+            message = (
+                f"\nThe ASV machine file at {default_asv_machine_file_path} should only contain two keys: "
+                "'version' and the machine name. "
+                f"Found {len(asv_machine_info.keys())} keys: {list(asv_machine_info.keys())}' "
+                "Please raise an issue at https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues/new to report."
+            )
+            raise ValueError(message)
 
-    asv_machine_key = next(key for key in asv_machine_info.keys() if key != "version")
-    asv_machine_details = asv_machine_info[asv_machine_key]
-    del asv_machine_details["machine"]
-    machine_info["asv"] = asv_machine_details
+        asv_machine_key = next(key for key in asv_machine_info.keys() if key != "version")
+        asv_machine_details = asv_machine_info[asv_machine_key]
+        del asv_machine_details["machine"]
+        machine_info["asv"] = asv_machine_details
 
     return machine_info
 
