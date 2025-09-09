@@ -16,16 +16,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+    defaults:
+      run:
+        shell: bash -el {0}
 
     steps:
       - uses: actions/checkout@v4
-
       - name: Install special conda environment
         uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: nwb_benchmarks
           environment-file: environments/nwb_benchmarks.yaml
-          auto-activate-base: true
+          auto-activate-base: false
+
       - name: Display installed packages and their sources for debugging
         run: |
           conda info
