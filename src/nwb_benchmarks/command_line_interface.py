@@ -127,9 +127,7 @@ def main() -> None:
                 raw_environment_info_file_path=raw_environment_info_file_path,
             )
 
-            if debug_mode:
-                raw_results_file_path.unlink()
-            else:
+            if not debug_mode:
                 upload_results()
         finally:
             clean_cache()
