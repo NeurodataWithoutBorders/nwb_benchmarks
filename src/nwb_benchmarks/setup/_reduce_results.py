@@ -62,12 +62,7 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
             warnings.warn(message=message)
         else:
             reduced_results.update(
-                {
-                    test_case: {
-                        params: raw_result
-                        for params, raw_result in zip(serialized_params, non_skipped_results)
-                    }
-                }
+                {test_case: {params: raw_result for params, raw_result in zip(serialized_params, non_skipped_results)}}
             )
 
     if len(reduced_results) == 0:
