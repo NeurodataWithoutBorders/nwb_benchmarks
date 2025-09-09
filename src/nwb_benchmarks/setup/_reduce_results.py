@@ -48,20 +48,14 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
         if len(raw_results_list) != 12:
             continue
 
-        flattened_joint_params = collections.defaultdict(list)
-        for parameter_names in raw_results_list[1]:
-            for parameter_value_index, parameter_value in enumerate(parameter_names):
-                flattened_joint_params[parameter_value_index].append(parameter_value)
-        serialized_flattened_joint_params = [
-            str(tuple(joint_params)) for joint_params in flattened_joint_params.values()
-        ]
+        serialized_params = raw_results_list[1]
 
         # Skipped results in JSON are writen as `null` and read back into Python as `None`
         non_skipped_results = [result for result in raw_results_list[11] if result is not None]
-        if len(serialized_flattened_joint_params) != len(non_skipped_results):
+        if len(serialized_params) != len(non_skipped_results):
             message = (
                 f"In intermediate results for test case {test_case}: \n"
-                f"\tLength mismatch between flattened joint parameters ({len(serialized_flattened_joint_params)}) and "
+                f"\tLength mismatch between parameters ({len(serialized_params)}) and "
                 f"result samples ({len(non_skipped_results)})!\n\n"
                 "Please raise an issue and share your intermediate results file."
             )
@@ -70,8 +64,8 @@ def reduce_results(machine_id: str, raw_results_file_path: pathlib.Path, raw_env
             reduced_results.update(
                 {
                     test_case: {
-                        joint_params: raw_result
-                        for joint_params, raw_result in zip(serialized_flattened_joint_params, non_skipped_results)
+                        params: raw_result
+                        for params, raw_result in zip(serialized_params, non_skipped_results)
                     }
                 }
             )
