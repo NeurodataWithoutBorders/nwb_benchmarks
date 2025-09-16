@@ -176,7 +176,7 @@ class GitHubResultsManager:
         if self.debug_mode:
             print("Debug mode enabled, skipping git commit.")
             return None
-        
+
         command = f"git add . && git commit -m '{message}'"
         result = subprocess.run(
             args=command,
@@ -194,7 +194,7 @@ class GitHubResultsManager:
         if self.debug_mode:
             print("Debug mode enabled, skipping git push.")
             return None
-        
+
         command = "git push"
         cwd = self.repo_path
         result = subprocess.run(
