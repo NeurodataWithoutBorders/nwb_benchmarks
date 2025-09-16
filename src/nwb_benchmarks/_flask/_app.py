@@ -121,6 +121,7 @@ class GitHubResultsManager:
         self.cache_directory = Path.home() / ".cache" / "nwb-benchmarks"
         self.cache_directory.mkdir(parents=True, exist_ok=True)
         self.repo_path = self.cache_directory / repo_name
+        self.debug_mode = os.environ.get("NWB_BENCHMARKS_DEBUG") == "1"
 
     def ensure_repo_up_to_date(self) -> typing.Literal[521, 522] | None:
         """Clone repository if it doesn't exist locally."""
@@ -160,6 +161,10 @@ class GitHubResultsManager:
 
     def add_and_commit(self, message: str) -> typing.Literal[523] | None:
         """Commit results to git repo."""
+        if self.debug_mode:
+            print("Debug mode enabled, skipping git commit.")
+            return None
+        
         command = f"git add . && git commit -m '{message}'"
         result = subprocess.run(
             args=command,
@@ -174,6 +179,10 @@ class GitHubResultsManager:
 
     def push(self):
         """Commit and push results to GitHub repository."""
+        if self.debug_mode:
+            print("Debug mode enabled, skipping git push.")
+            return None
+        
         command = "git push"
         cwd = self.repo_path
         result = subprocess.run(
