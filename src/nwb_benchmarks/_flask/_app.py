@@ -124,9 +124,21 @@ class GitHubResultsManager:
         self.debug_mode = os.environ.get("NWB_BENCHMARKS_DEBUG") == "1"
 
     def ensure_repo_up_to_date(self) -> typing.Literal[521, 522] | None:
-        """Clone repository if it doesn't exist locally."""
+        """Pull latest updates from repository. Clone repository first if it doesn't exist locally."""
         if not self.repo_path.exists():
-            return 521
+            command = f"git clone https://github.com/NeurodataWithoutBorders/nwb-benchmarks-database"
+            cwd = self.repo_path.parent
+            cwd.mkdir(parents=True, exist_ok=True)
+            result = subprocess.run(
+                args=command,
+                cwd=cwd,
+                capture_output=True,
+                shell=True,
+            )
+            if result.returncode != 0:
+                message = f"Git command ({command}) failed: {traceback.format_exc()}"
+                print(f"ERROR: {message}")
+                return 521
 
         command = f"git pull"
         cwd = self.repo_path
