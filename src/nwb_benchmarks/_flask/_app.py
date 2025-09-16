@@ -285,7 +285,7 @@ class Environment:
         preamble = next(iter(data.keys()))
 
         packages = {
-            package["name"]: f"{package["version"]} ({package["build"]})"
+            package["name"]: f'{package["version"]} ({package["build"]})'
             for package in data[preamble]
             if len(package) == 3
         }
@@ -375,7 +375,7 @@ class Results:
             "value": [result.value for result in self.results],
         }
 
-        data_frame = polars.DataFrame(data=data)
+        data_frame = polars.DataFrame(data=data, strict=False)
         return data_frame
 
 
@@ -409,7 +409,7 @@ def repackage_as_parquet(directory: pathlib.Path, output_directory: pathlib.Path
 
         environment_data_frame = environment.to_dataframe()
         environments_data_frames.append(environment_data_frame)
-    environments_database = polars.concat(items=environments_data_frames, how="diagonal")
+    environments_database = polars.concat(items=environments_data_frames, how="diagonal_relaxed")
 
     environments_database_file_path = output_directory / "environments.parquet"
     environments_database.write_parquet(file=environments_database_file_path)
@@ -422,10 +422,9 @@ def repackage_as_parquet(directory: pathlib.Path, output_directory: pathlib.Path
 
         if results is None:
             continue
-
         results_data_frame = results.to_dataframe()
         all_results_data_frames.append(results_data_frame)
-    all_results_database = polars.concat(items=all_results_data_frames, how="diagonal")
+    all_results_database = polars.concat(items=all_results_data_frames, how="diagonal_relaxed")
 
     all_results_database_file_path = output_directory / "results.parquet"
     all_results_database.write_parquet(file=all_results_database_file_path)
