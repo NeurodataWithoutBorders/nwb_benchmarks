@@ -321,6 +321,7 @@ class Result:
     benchmark_name: str
     parameter_case: str
     value: float
+    variable: str
 
 
 @dataclasses.dataclass
@@ -342,6 +343,16 @@ class Results:
         commit_hash = data["commit_hash"]
         environment_id = data["environment_id"]
         machine_id = data["machine_id"]
+        
+        def normalize_time_and_network_results(benchmark_results) -> dict:
+            """Convert benchmark results to a consistent dict format with list values."""
+            if isinstance(benchmark_results, dict):
+                value_dict = benchmark_results
+            else:
+                value_dict = dict(time=benchmark_results)
+            
+            # Ensure all values are lists
+            return {k: v if isinstance(v, list) else [float(v)] for k, v in value_dict.items()}
 
         results = [
             Result(
@@ -353,12 +364,16 @@ class Results:
                 machine_id=machine_id,
                 benchmark_name=benchmark_name,
                 parameter_case=parameter_case,
-                value=benchmark_result,
+                value=value,
+                variable=variable_name,
             )
             for benchmark_name, parameter_cases in data["results"].items()
             for parameter_case, benchmark_results in parameter_cases.items()
-            for benchmark_result in benchmark_results
+            for variable_name, values in normalize_time_and_network_results(benchmark_results).items()
+            for value in values
         ]
+
+
         return cls(results=results)
 
     def to_dataframe(self) -> "polars.DataFrame":
@@ -373,9 +388,10 @@ class Results:
             "benchmark_name": [result.benchmark_name for result in self.results],
             "parameter_case": [result.parameter_case for result in self.results],
             "value": [result.value for result in self.results],
+            "variable": [result.variable for result in self.results],
         }
 
-        data_frame = polars.DataFrame(data=data, strict=False)
+        data_frame = polars.DataFrame(data=data)
         return data_frame
 
 
@@ -409,7 +425,7 @@ def repackage_as_parquet(directory: pathlib.Path, output_directory: pathlib.Path
 
         environment_data_frame = environment.to_dataframe()
         environments_data_frames.append(environment_data_frame)
-    environments_database = polars.concat(items=environments_data_frames, how="diagonal_relaxed")
+    environments_database = polars.concat(items=environments_data_frames, how="diagonal")
 
     environments_database_file_path = output_directory / "environments.parquet"
     environments_database.write_parquet(file=environments_database_file_path)
@@ -424,7 +440,7 @@ def repackage_as_parquet(directory: pathlib.Path, output_directory: pathlib.Path
             continue
         results_data_frame = results.to_dataframe()
         all_results_data_frames.append(results_data_frame)
-    all_results_database = polars.concat(items=all_results_data_frames, how="diagonal_relaxed")
+    all_results_database = polars.concat(items=all_results_data_frames, how="diagonal")
 
     all_results_database_file_path = output_directory / "results.parquet"
     all_results_database.write_parquet(file=all_results_database_file_path)
