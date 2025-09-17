@@ -88,7 +88,7 @@ database automatically.
 Contributing Results
 --------------------
 
-All results should be automatically posted to the central database found on `GitHub <https://github.com/CodyCBakerPhD/nwb-benchmarks-results>`_.
+All results should be automatically posted to the central database found on `GitHub <https://github.com/NeurodataWithoutBorders/nwb-benchmarks-results>`_.
 
 If this fails, you can contribute your results manually by:
 
