@@ -343,14 +343,14 @@ class Results:
         commit_hash = data["commit_hash"]
         environment_id = data["environment_id"]
         machine_id = data["machine_id"]
-        
+
         def normalize_time_and_network_results(benchmark_results) -> dict:
             """Convert benchmark results to a consistent dict format with list values."""
             if isinstance(benchmark_results, dict):
                 value_dict = benchmark_results
             else:
                 value_dict = dict(time=benchmark_results)
-            
+
             # Ensure all values are lists
             return {k: v if isinstance(v, list) else [float(v)] for k, v in value_dict.items()}
 
@@ -372,7 +372,6 @@ class Results:
             for variable_name, values in normalize_time_and_network_results(benchmark_results).items()
             for value in values
         ]
-
 
         return cls(results=results)
 
