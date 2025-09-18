@@ -42,26 +42,26 @@ class Results:
         commit_hash = data["commit_hash"]
         environment_id = data["environment_id"]
         machine_id = data["machine_id"]
-        
+
         def normalize_time_and_network_results(benchmark_results) -> dict:
             """Convert benchmark results to a consistent dict format with list values."""
             if isinstance(benchmark_results, dict):
                 value_dict = benchmark_results
             else:
                 value_dict = dict(time=benchmark_results)
-            
+
             # Ensure all values are lists
             return {k: v if isinstance(v, list) else [float(v)] for k, v in value_dict.items()}
 
         def parse_parameter_case(s):
             # replace any slice(...) with "slice(...)" for safe parsing
-            modified_s = re.sub(r'slice\([^)]+\)', r'"\g<0>"', s)
+            modified_s = re.sub(r"slice\([^)]+\)", r'"\g<0>"', s)
             output = ast.literal_eval(modified_s)
 
             # if the parsed string is not a dict (older benchmarks results), convert it to one
             if not isinstance(output, dict):
-                output = {'https_url': output[0].strip("'")}
-            
+                output = {"https_url": output[0].strip("'")}
+
             return output
 
         results = [
@@ -83,7 +83,6 @@ class Results:
             for value in values
         ]
 
-
         return cls(results=results)
 
     def to_dataframe(self) -> "polars.DataFrame":
@@ -96,17 +95,17 @@ class Results:
             "environment_id": [result.environment_id for result in self.results],
             "machine_id": [result.machine_id for result in self.results],
             "benchmark_name": [result.benchmark_name for result in self.results],
-            "parameter_case_name": [result.parameter_case.get('name') for result in self.results],
-            "parameter_case_https_url": [result.parameter_case.get('https_url') for result in self.results],
-            "parameter_case_object_name": [result.parameter_case.get('object_name') for result in self.results],
-            "parameter_case_slice_range": [result.parameter_case.get('slice_range')for result in self.results],
+            "parameter_case_name": [result.parameter_case.get("name") for result in self.results],
+            "parameter_case_https_url": [result.parameter_case.get("https_url") for result in self.results],
+            "parameter_case_object_name": [result.parameter_case.get("object_name") for result in self.results],
+            "parameter_case_slice_range": [result.parameter_case.get("slice_range") for result in self.results],
             "value": [result.value for result in self.results],
             "variable": [result.variable for result in self.results],
         }
 
         data_frame = polars.DataFrame(data=data)
         return data_frame
-    
+
 
 @dataclasses.dataclass
 class Machine:

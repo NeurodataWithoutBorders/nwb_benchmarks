@@ -5,10 +5,10 @@ import subprocess
 import time
 import traceback
 import typing
+from pathlib import Path
+
 import flask
 import flask_restx
-
-from pathlib import Path
 
 from nwb_benchmarks.database._processing import repackage_as_parquet
 
