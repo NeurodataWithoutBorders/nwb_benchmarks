@@ -59,10 +59,12 @@ nwb_benchmarks = "nwb_benchmarks.command_line_interface:main"
 app = ["flask", "flask-cors", "flask_restx"]
 database = ["polars"]
 dev = ["ipython", "pre-commit"]
+figures = ["seaborn", "matplotlib", "pyarrow"]
 all = [
     {include-group = "app"},
     {include-group = "database"},
-    {include-group = "dev"}
+    {include-group = "dev"},
+    {include-group = "figures"}
 ]
 
 
