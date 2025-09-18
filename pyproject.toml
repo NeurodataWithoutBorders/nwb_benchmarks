@@ -56,7 +56,7 @@ classifiers = [
 nwb_benchmarks = "nwb_benchmarks.command_line_interface:main"
 
 [dependency-groups]
-app = ["flask", "flask-cors"]
+app = ["flask", "flask-cors", "flask_restx"]
 database = ["polars"]
 dev = ["ipython", "pre-commit"]
 all = [

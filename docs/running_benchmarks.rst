@@ -94,7 +94,7 @@ If this fails, you can contribute your results manually by:
 
 .. code-block::
 
-    <Fork https://github.com/CodyCBakerPhD/nwb-benchmarks-results on GitHub>
+    <Fork https://github.com/NeurodataWithoutBorders/nwb-benchmarks-results on GitHub>
     git clone https://github.com/<your GitHub username>/nwb-benchmarks-results
     git checkout -b new_results_from_<...>
     <copy results from ~/.cache/nwb_benchmarks/results>

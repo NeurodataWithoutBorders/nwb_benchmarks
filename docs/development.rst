@@ -4,6 +4,15 @@ Development
 This section covers advanced implementation details for managing the operation of the AirSpeed Velocity testing suite.
 
 
+Environment Setup
+------------
+
+To setup a development environment, use ``pip install -e . --group all`` to install all dependencies including those for development and testing.
+This command will install all packages required for the flask app, database management, and dev testing.
+
+If you would like to run the flask app in debug mode, set the environment variable ``NWB_BENCHMARKS_DEBUG=1``.
+
+
 Coding Style
 ------------
 

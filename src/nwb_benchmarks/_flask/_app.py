@@ -121,11 +121,24 @@ class GitHubResultsManager:
         self.cache_directory = Path.home() / ".cache" / "nwb-benchmarks"
         self.cache_directory.mkdir(parents=True, exist_ok=True)
         self.repo_path = self.cache_directory / repo_name
+        self.debug_mode = os.environ.get("NWB_BENCHMARKS_DEBUG") == "1"
 
     def ensure_repo_up_to_date(self) -> typing.Literal[521, 522] | None:
-        """Clone repository if it doesn't exist locally."""
+        """Pull latest updates from repository. Clone repository first if it doesn't exist locally."""
         if not self.repo_path.exists():
-            return 521
+            command = f"git clone https://github.com/NeurodataWithoutBorders/nwb-benchmarks-database"
+            cwd = self.repo_path.parent
+            cwd.mkdir(parents=True, exist_ok=True)
+            result = subprocess.run(
+                args=command,
+                cwd=cwd,
+                capture_output=True,
+                shell=True,
+            )
+            if result.returncode != 0:
+                message = f"Git command ({command}) failed: {traceback.format_exc()}"
+                print(f"ERROR: {message}")
+                return 521
 
         command = f"git pull"
         cwd = self.repo_path
@@ -160,6 +173,10 @@ class GitHubResultsManager:
 
     def add_and_commit(self, message: str) -> typing.Literal[523] | None:
         """Commit results to git repo."""
+        if self.debug_mode:
+            print("Debug mode enabled, skipping git commit.")
+            return None
+
         command = f"git add . && git commit -m '{message}'"
         result = subprocess.run(
             args=command,
@@ -174,6 +191,10 @@ class GitHubResultsManager:
 
     def push(self):
         """Commit and push results to GitHub repository."""
+        if self.debug_mode:
+            print("Debug mode enabled, skipping git push.")
+            return None
+
         command = "git push"
         cwd = self.repo_path
         result = subprocess.run(
@@ -264,7 +285,7 @@ class Environment:
         preamble = next(iter(data.keys()))
 
         packages = {
-            package["name"]: f"{package["version"]} ({package["build"]})"
+            package["name"]: f'{package["version"]} ({package["build"]})'
             for package in data[preamble]
             if len(package) == 3
         }
@@ -300,6 +321,7 @@ class Result:
     benchmark_name: str
     parameter_case: str
     value: float
+    variable: str
 
 
 @dataclasses.dataclass
@@ -322,6 +344,16 @@ class Results:
         environment_id = data["environment_id"]
         machine_id = data["machine_id"]
 
+        def normalize_time_and_network_results(benchmark_results) -> dict:
+            """Convert benchmark results to a consistent dict format with list values."""
+            if isinstance(benchmark_results, dict):
+                value_dict = benchmark_results
+            else:
+                value_dict = dict(time=benchmark_results)
+
+            # Ensure all values are lists
+            return {k: v if isinstance(v, list) else [float(v)] for k, v in value_dict.items()}
+
         results = [
             Result(
                 uuid=str(uuid.uuid4()),  # TODO: add this to each results file so it is persistent
@@ -332,12 +364,15 @@ class Results:
                 machine_id=machine_id,
                 benchmark_name=benchmark_name,
                 parameter_case=parameter_case,
-                value=benchmark_result,
+                value=value,
+                variable=variable_name,
             )
             for benchmark_name, parameter_cases in data["results"].items()
             for parameter_case, benchmark_results in parameter_cases.items()
-            for benchmark_result in benchmark_results
+            for variable_name, values in normalize_time_and_network_results(benchmark_results).items()
+            for value in values
         ]
+
         return cls(results=results)
 
     def to_dataframe(self) -> "polars.DataFrame":
@@ -352,6 +387,7 @@ class Results:
             "benchmark_name": [result.benchmark_name for result in self.results],
             "parameter_case": [result.parameter_case for result in self.results],
             "value": [result.value for result in self.results],
+            "variable": [result.variable for result in self.results],
         }
 
         data_frame = polars.DataFrame(data=data)
@@ -401,7 +437,6 @@ def repackage_as_parquet(directory: pathlib.Path, output_directory: pathlib.Path
 
         if results is None:
             continue
-
         results_data_frame = results.to_dataframe()
         all_results_data_frames.append(results_data_frame)
     all_results_database = polars.concat(items=all_results_data_frames, how="diagonal")
