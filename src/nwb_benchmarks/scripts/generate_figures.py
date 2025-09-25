@@ -167,8 +167,6 @@ def plot_download_vs_stream_benchmarks(method, order, benchmark_type='time_remot
     # TODO - need to capture download time for each test case
 
 
-
-
 # Common benchmark orders
 hdf5_order = ['remfile no cache', 'remfile with cache', 
               'fsspec https no cache', 'fsspec https with cache',
