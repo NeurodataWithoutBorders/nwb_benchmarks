@@ -1,12 +1,16 @@
 import re
 import textwrap
-from pathlib import Path
-
+import matplotlib
 import matplotlib.pyplot as plt
 import polars as pl
 import seaborn as sns
 
+from pathlib import Path
 from nwb_benchmarks.database._processing import repackage_as_parquet
+
+# setup font settings for editable text in Illustrator
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 # use lbl-mac machine_id for initial comparisons
 lbl_mac_id = "87fee773e425b4b1d3978fbf762d57effb0e8df8"  # "SincereCornucopia"
@@ -95,7 +99,7 @@ def plot_benchmark_dist(df, group, metric, metric_order, filename, row=None, sha
 
     sns.despine()
     plt.tight_layout()
-    plt.savefig(filename)
+    plt.savefig(filename, dpi=300)
     plt.close()
 
 
@@ -118,7 +122,7 @@ def plot_benchmark_slices_vs_time(df, group, metric, metric_order, filename, row
 
     sns.despine()
     plt.tight_layout()
-    plt.savefig(filename)
+    plt.savefig(filename, dpi=300)
     plt.close()
 
 
@@ -165,11 +169,11 @@ def plot_read_benchmarks(
         "group": "benchmark_name_operation",
         "metric": test,
         "metric_order": order,
-        "filename": output_directory / f"{filename_prefix}file_read_{method}.png",
+        "filename": output_directory / f"{filename_prefix}file_read_{method}.pdf",
     }
 
     if network_tracking:
-        plot_kwargs.update({"row": "variable", "sharex": False, "add_annotations": False})
+        plot_kwargs.update({"row": "variable", "sharex": "row"})
 
     plot_benchmark_dist(**plot_kwargs)
 
@@ -183,11 +187,11 @@ def plot_slice_benchmarks(method, order, benchmark_type="time_remote_slicing", n
         "group": "benchmark_name_test",
         "metric": f"{method} Continuous Slice Benchmark",
         "metric_order": order,
-        "filename": output_directory / f"{filename_prefix}slicing_{method}.png",
+        "filename": output_directory / f"{filename_prefix}slicing_{method}.pdf",
     }
 
     if network_tracking:
-        plot_kwargs.update({"row": "variable", "sharex": "row", "add_annotations": False})
+        plot_kwargs.update({"row": "variable", "sharex": "row"})
 
     plot_benchmark_dist(**plot_kwargs)
 
@@ -202,7 +206,7 @@ def plot_download_vs_stream_benchmarks(method, order, benchmark_type="time_remot
         "group": "benchmark_name_test",
         "metric": f"{method} Continuous Slice Benchmark",
         "metric_order": order,
-        "filename": output_directory / f"{filename_prefix}slicing_vs_time_{method}.png",
+        "filename": output_directory / f"{filename_prefix}slicing_vs_time_{method}.pdf",
     }
 
     if network_tracking:
