@@ -58,7 +58,9 @@ def concat_dataclasses_to_parquet(
 
 
 def repackage_as_parquet(
-    directory: pathlib.Path, output_directory: pathlib.Path, minimum_version: str = "1.0.0"
+    directory: pathlib.Path, output_directory: pathlib.Path, 
+    minimum_results_version: str = "1.0.0",
+    minimum_machines_version: str = "1.0.0",
 ) -> None:
     """Repackage JSON results files as parquet databases for easier querying."""
 
@@ -69,7 +71,7 @@ def repackage_as_parquet(
         dataclass_name="machines",
         dataclass=Machine,
         concat_how="diagonal_relaxed",
-        minimum_version=minimum_version,
+        minimum_version=minimum_machines_version,
     )
 
     # Environments
@@ -79,7 +81,6 @@ def repackage_as_parquet(
         dataclass_name="environments",
         dataclass=Environment,
         concat_how="diagonal",
-        minimum_version=minimum_version,
     )
 
     # Results
@@ -89,5 +90,5 @@ def repackage_as_parquet(
         dataclass_name="results",
         dataclass=Results,
         concat_how="diagonal_relaxed",
-        minimum_version=minimum_version,
+        minimum_version=minimum_results_version,
     )
