@@ -4,11 +4,11 @@ import json
 import pathlib
 import re
 import uuid
+from datetime import datetime
 
 import packaging.version
 import typing_extensions
 
-from datetime import datetime
 
 @dataclasses.dataclass
 class Result:
@@ -69,7 +69,7 @@ class Results:
             Result(
                 uuid=str(uuid.uuid4()),  # TODO: add this to each results file so it is persistent
                 version=database_version,
-                timestamp=datetime.strptime(timestamp, '%Y-%m-%d-%H-%M-%S'),
+                timestamp=datetime.strptime(timestamp, "%Y-%m-%d-%H-%M-%S"),
                 commit_hash=commit_hash,
                 environment_id=environment_id,
                 machine_id=machine_id,

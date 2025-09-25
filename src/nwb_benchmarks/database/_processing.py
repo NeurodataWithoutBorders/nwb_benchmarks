@@ -58,7 +58,8 @@ def concat_dataclasses_to_parquet(
 
 
 def repackage_as_parquet(
-    directory: pathlib.Path, output_directory: pathlib.Path, 
+    directory: pathlib.Path,
+    output_directory: pathlib.Path,
     minimum_results_version: str = "1.0.0",
     minimum_machines_version: str = "1.0.0",
 ) -> None:
