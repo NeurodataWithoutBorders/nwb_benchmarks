@@ -8,12 +8,13 @@ import uuid
 import packaging.version
 import typing_extensions
 
+from datetime import datetime
 
 @dataclasses.dataclass
 class Result:
     uuid: str
     version: str
-    timestamp: str
+    timestamp: datetime
     commit_hash: str
     environment_id: str
     machine_id: str
@@ -68,7 +69,7 @@ class Results:
             Result(
                 uuid=str(uuid.uuid4()),  # TODO: add this to each results file so it is persistent
                 version=database_version,
-                timestamp=timestamp,
+                timestamp=datetime.strptime(timestamp, '%Y-%m-%d-%H-%M-%S'),
                 commit_hash=commit_hash,
                 environment_id=environment_id,
                 machine_id=machine_id,
@@ -94,6 +95,7 @@ class Results:
             "commit_hash": [result.commit_hash for result in self.results],
             "environment_id": [result.environment_id for result in self.results],
             "machine_id": [result.machine_id for result in self.results],
+            "timestamp": [result.timestamp for result in self.results],
             "benchmark_name": [result.benchmark_name for result in self.results],
             "parameter_case_name": [result.parameter_case.get("name") for result in self.results],
             "parameter_case_https_url": [result.parameter_case.get("https_url") for result in self.results],
