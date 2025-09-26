@@ -43,36 +43,41 @@ results_df = (
 
 
 # Utility functions
-def clean_benchmark_name_operation(name, method, prefix):
-    return name.replace(f"{prefix}_{method}_", "").replace("_", " ")
+def clean_benchmark_name_operation(name, prefix):
+    return name.replace(f"{prefix}_", "").replace("_", " ")
 
 
-def clean_benchmark_name_test(name, method):
-    short_name = name.replace(f"{method}", "").replace("ContinuousSliceBenchmark", "")
+def clean_benchmark_name_test(name):
+    short_name = name.replace("ContinuousSliceBenchmark", "").replace("FileReadBenchmark", "")
     return split_camel_case(short_name)
 
 
 def split_camel_case(text):
+    text = re.sub(r'PyNWBS3', 'PyNWB S3', text)  # special handling for NWB
+    text = re.sub(r'NWBROS3', 'NWB ROS3', text)  # special handling for NWB ROS3
     result = re.sub("([a-z0-9])([A-Z])", r"\1 \2", text)
     result = re.sub("([A-Z]+)([A-Z][a-z])", r"\1 \2", result)
+    result = re.sub("Py NWB", "PyNWB", result)  # revert Py NWB back to PyNWB
+
     return result
 
 
 def add_mean_sem_annotations(value, group, order, **kwargs):
     stats = kwargs.get("data").groupby(group)[value].agg(["mean", "std", "max"])
     for i, label in enumerate(order):
-        mean_sem_text = f"  {stats.loc[label, 'mean']:.2f} ± {stats.loc[label, 'std']:.2f}"
-        plt.text(
-            x=stats.loc[label, "max"],
-            y=i,
-            s=mean_sem_text,
-            verticalalignment="center",
-            horizontalalignment="left",
-            fontsize=8,
-        )
+        if label in stats.index:
+            mean_sem_text = f"  {stats.loc[label, 'mean']:.2f} ± {stats.loc[label, 'std']:.2f}"
+            plt.text(
+                x=stats.loc[label, "max"],
+                y=i,
+                s=mean_sem_text,
+                verticalalignment="center",
+                horizontalalignment="left",
+                fontsize=8,
+            )
 
 
-def plot_benchmark_dist(df, group, metric, metric_order, filename, row=None, sharex=True, add_annotations=True):
+def plot_benchmark_dist(df, group, metric, metric_order, filename, row=None, sharex=True, add_annotations=True, kind='box', catplot_kwargs=dict()):
     g = sns.catplot(
         data=df.collect().to_pandas(),
         x="value",
@@ -82,11 +87,10 @@ def plot_benchmark_dist(df, group, metric, metric_order, filename, row=None, sha
         hue=group,
         sharex=sharex,
         palette="Paired",
-        kind="box",
-        showfliers=False,
-        boxprops=dict(linewidth=0),
+        kind=kind,
         order=metric_order,
         legend=False,
+        **catplot_kwargs
     )
 
     if add_annotations:
@@ -103,7 +107,7 @@ def plot_benchmark_dist(df, group, metric, metric_order, filename, row=None, sha
     plt.close()
 
 
-def plot_benchmark_slices_vs_time(df, group, metric, metric_order, filename, row=None, sharex=True):
+def plot_benchmark_slices_vs_time(df, group, metric_order, filename, row=None, sharex=True):
     g = sns.catplot(
         data=df.collect().to_pandas(),
         x="slice_number",
@@ -121,30 +125,27 @@ def plot_benchmark_slices_vs_time(df, group, metric, metric_order, filename, row
     g.set(xlabel="Relative slice size", ylabel="Time (s)")
 
     sns.despine()
-    plt.tight_layout()
     plt.savefig(filename, dpi=300)
     plt.close()
 
 
-def filter_read_tests(benchmark_type, benchmark_test, benchmark_method, prefix):
+def filter_read_tests(benchmark_type, prefix):
     return (
         results_df.filter(pl.col("benchmark_name_type") == benchmark_type)
-        .filter(pl.col("benchmark_name_test") == benchmark_test)
         .with_columns(
             pl.col("benchmark_name_operation")
-            .map_elements(lambda x: clean_benchmark_name_operation(x, benchmark_method, prefix))
+            .map_elements(lambda x: clean_benchmark_name_operation(x, prefix))
             .alias("benchmark_name_operation")
         )
     )
 
 
-def filter_slice_tests(benchmark_type, benchmark_method):
+def filter_slice_tests(benchmark_type):
     return (
         results_df.filter(pl.col("benchmark_name_type") == benchmark_type)
-        .filter(pl.col("benchmark_name_test").str.contains(benchmark_method))
         .with_columns(
             pl.col("benchmark_name_test")
-            .map_elements(lambda x: clean_benchmark_name_test(x, benchmark_method))
+            .map_elements(lambda x: clean_benchmark_name_test(x))
             .alias("benchmark_name_test")
         )
         .with_columns(
@@ -155,58 +156,81 @@ def filter_slice_tests(benchmark_type, benchmark_method):
             .alias("scaling_value")
         )
         .with_columns((pl.col("scaling_value").rank(method="dense") - 1).over("modality").alias("slice_number"))
+        .with_columns([pl.col("benchmark_name_test").str.contains("Preloaded").alias("is_preloaded"),                       
+                       pl.col("benchmark_name_test").str.replace(" Preloaded", "").alias("benchmark_name_test")])
     )
 
 
-def plot_read_benchmarks(
-    test, method, order, benchmark_type="time_remote_file_reading", prefix="time_read", network_tracking=False
-):
-    filtered_df = filter_read_tests(benchmark_type, test, method, prefix)
+def plot_read_benchmarks(order, benchmark_type="time_remote_file_reading", prefix="time_read", network_tracking=False, kind='box'):
+    filtered_df = filter_read_tests(benchmark_type, prefix)
 
     filename_prefix = "network_tracking_" if network_tracking else ""
     plot_kwargs = {
         "df": filtered_df,
         "group": "benchmark_name_operation",
-        "metric": test,
+        "metric": "File Read Benchmark",
         "metric_order": order,
-        "filename": output_directory / f"{filename_prefix}file_read_{method}.pdf",
+        "filename": output_directory / f"{filename_prefix}file_read.pdf",
+        "kind": kind,
+        "catplot_kwargs": {"showfliers": False, 
+                           "boxprops": dict(linewidth=0),}
     }
 
     if network_tracking:
         plot_kwargs.update({"row": "variable", "sharex": "row"})
+    
+    # plot box plot
+    plot_benchmark_dist(**plot_kwargs)
 
+    # plot scatter plot
+    plot_kwargs.update({"catplot_kwargs": dict(),
+                        "kind": "strip",
+                        "add_annotations": False,
+                        "filename": output_directory / f"{filename_prefix}file_read_scatter.pdf"})
     plot_benchmark_dist(**plot_kwargs)
 
 
-def plot_slice_benchmarks(method, order, benchmark_type="time_remote_slicing", network_tracking=False):
-    filtered_df = filter_slice_tests(benchmark_type, method)
+def plot_slice_benchmarks(order, benchmark_type="time_remote_slicing", network_tracking=False, kind='box'):
+    filtered_df = filter_slice_tests(benchmark_type)
 
     filename_prefix = "network_tracking_" if network_tracking else ""
     plot_kwargs = {
         "df": filtered_df,
         "group": "benchmark_name_test",
-        "metric": f"{method} Continuous Slice Benchmark",
+        "metric": "Continuous Slice Benchmark",
         "metric_order": order,
-        "filename": output_directory / f"{filename_prefix}slicing_{method}.pdf",
+        "row": "is_preloaded",
+        "filename": output_directory / f"{filename_prefix}slicing.pdf",
+        "kind": kind,
+        "catplot_kwargs": {"showfliers": False, 
+                           "boxprops": dict(linewidth=0),}
     }
 
     if network_tracking:
         plot_kwargs.update({"row": "variable", "sharex": "row"})
+        
+    # plot box plot
+    plot_benchmark_dist(**plot_kwargs)
 
+    # plot scatter plot
+    plot_kwargs.update({"catplot_kwargs": dict(),
+                        "kind": "strip",
+                        "add_annotations": False,
+                        "filename": output_directory / f"{filename_prefix}slicing_scatter.pdf"})
     plot_benchmark_dist(**plot_kwargs)
 
 
-def plot_download_vs_stream_benchmarks(method, order, benchmark_type="time_remote_slicing", network_tracking=False):
-    slice_df = filter_slice_tests(benchmark_type, method)
+def plot_download_vs_stream_benchmarks(order, benchmark_type="time_remote_slicing", network_tracking=False):
+    slice_df = filter_slice_tests(benchmark_type)
 
     # plot just the slice information
     filename_prefix = "network_tracking_" if network_tracking else ""
     plot_kwargs = {
         "df": slice_df,
         "group": "benchmark_name_test",
-        "metric": f"{method} Continuous Slice Benchmark",
         "metric_order": order,
-        "filename": output_directory / f"{filename_prefix}slicing_vs_time_{method}.pdf",
+        "row": "is_preloaded",
+        "filename": output_directory / f"{filename_prefix}slicing_vs_time.pdf",
     }
 
     if network_tracking:
@@ -219,36 +243,37 @@ def plot_download_vs_stream_benchmarks(method, order, benchmark_type="time_remot
 
 
 # Common benchmark orders
-hdf5_order = [
-    "remfile no cache",
-    "remfile with cache",
-    "fsspec https no cache",
-    "fsspec https with cache",
-    "fsspec s3 no cache",
-    "fsspec s3 with cache",
-    "ros3",
+
+slicing_order = [
+    "HDF5 PyNWB Fsspec S3 No Cache",
+    "HDF5 PyNWB Fsspec S3 With Cache",
+    "HDF5 PyNWB Fsspec Https No Cache",
+    "HDF5 PyNWB Fsspec Https With Cache",
+    "HDF5 PyNWB Remfile No Cache",
+    "HDF5 PyNWB Remfile With Cache",
+    "HDF5 PyNWB ROS3",
+    "Lindi Local JSON",
+    "Zarr PyNWB S3",
+    "Zarr PyNWB S3 Force No Consolidated",
 ]
 
-slicing_hdf5_order = [
-    "Fsspec S3 No Cache",
-    "Fsspec S3 With Cache",
-    "Fsspec S3 Preloaded No Cache",
-    "Fsspec S3 Preloaded With Cache",
-    "Fsspec Https No Cache",
-    "Fsspec Https With Cache",
-    "Fsspec Https Preloaded No Cache",
-    "Fsspec Https Preloaded With Cache",
-    "Remfile No Cache",
-    "Remfile With Cache",
-    "Remfile Preloaded No Cache",
-    "Remfile Preloaded With Cache",
-    "ROS3",
+reading_order = [
+    "hdf5 h5py remfile no cache",
+    "hdf5 h5py remfile with cache",
+    "hdf5 h5py fsspec https no cache",
+    "hdf5 h5py fsspec https with cache",
+    "hdf5 h5py fsspec s3 no cache",
+    "hdf5 h5py fsspec s3 with cache",
+    "lindi h5py",
+    "lindi pynwb",
+    "zarr https",
+    "zarr https force no consolidated",
+    "zarr s3",
+    "zarr s3 force no consolidated",
+    #"zarr pynwb s3",
+    #"zarr pynwb s3 force no consolidated",
+    "hdf5 h5py ros3",
 ]
-
-zarr_order = ["https", "https force no consolidated", "s3", "s3 force no consolidated"]
-zarr_pynwb_order = ["s3", "s3 force no consolidated"]
-lindi_order = ["h5py", "pynwb"]
-
 ############################### WHEN TO DOWNLOAD VS. STREAM DATA? #############################
 
 # selecting a specific approach, for each modality when should I download vs. stream
@@ -257,79 +282,29 @@ lindi_order = ["h5py", "pynwb"]
 
 # time to open + slice vs. number of slices
 # TODO - need the download time for the specific approach we want to focus on
-plot_download_vs_stream_benchmarks("HDF5PyNWB", slicing_hdf5_order)
-plot_download_vs_stream_benchmarks("Lindi", ["Local JSON"])
-plot_download_vs_stream_benchmarks("ZarrPyNWB", ["S3", "S3 Force No Consolidated"])
-
+plot_download_vs_stream_benchmarks(slicing_order)
 
 ######################### WHICH LIBRARY SHOULD I USE TO STREAM DATA? #########################
 
 # 1. Remote file reading - which methods are fastest?
-plot_read_benchmarks("HDF5H5pyFileReadBenchmark", "hdf5_h5py", hdf5_order)
-plot_read_benchmarks("HDF5PyNWBFileReadBenchmark", "hdf5_pynwb", hdf5_order)
-plot_read_benchmarks("LindiLocalJSONFileReadBenchmark", "lindi", lindi_order)
-plot_read_benchmarks("ZarrZarrPythonFileReadBenchmark", "zarr", zarr_order)
-plot_read_benchmarks("ZarrPyNWBFileReadBenchmark", "zarr_pynwb", zarr_pynwb_order)
+plot_read_benchmarks(reading_order)
 
 # 2. Remote file slicing
-plot_slice_benchmarks("HDF5PyNWB", slicing_hdf5_order)
-plot_slice_benchmarks("Lindi", ["Local JSON"])
-plot_slice_benchmarks("ZarrPyNWB", ["S3", "S3 Force No Consolidated"])
+plot_slice_benchmarks(slicing_order)
 
 # 3. Network tracking - which methods make the most requests?
 benchmark_type = "network_tracking_remote_file_reading"
 prefix = "track_network_read"
 plot_read_benchmarks(
-    "HDF5H5pyFileReadBenchmark",
-    "hdf5_h5py",
-    hdf5_order,
+    reading_order,
     benchmark_type=benchmark_type,
     prefix=prefix,
     network_tracking=True,
 )
 
-plot_read_benchmarks(
-    "HDF5PyNWBFileReadBenchmark",
-    "hdf5_pynwb",
-    hdf5_order,
-    benchmark_type=benchmark_type,
-    prefix=prefix,
-    network_tracking=True,
-)
-
-plot_read_benchmarks(
-    "LindiLocalJSONFileReadBenchmark",
-    "lindi",
-    lindi_order,
-    benchmark_type=benchmark_type,
-    prefix=prefix,
-    network_tracking=True,
-)
-
-plot_read_benchmarks(
-    "ZarrZarrPythonFileReadBenchmark",
-    "zarr",
-    zarr_order,
-    benchmark_type=benchmark_type,
-    prefix=prefix,
-    network_tracking=True,
-)
-
-plot_read_benchmarks(
-    "ZarrPyNWBFileReadBenchmark",
-    "zarr_pynwb",
-    zarr_pynwb_order,
-    benchmark_type=benchmark_type,
-    prefix=prefix,
-    network_tracking=True,
-)
 
 benchmark_type = "network_tracking_remote_slicing"
-plot_slice_benchmarks("HDF5PyNWB", slicing_hdf5_order, benchmark_type=benchmark_type, network_tracking=True)
-plot_slice_benchmarks("Lindi", ["Local JSON"], benchmark_type=benchmark_type, network_tracking=True)
-plot_slice_benchmarks(
-    "ZarrPyNWB", ["S3", "S3 Force No Consolidated"], benchmark_type=benchmark_type, network_tracking=True
-)
+plot_slice_benchmarks(slicing_order, benchmark_type=benchmark_type, network_tracking=True)
 
 
 ###################### HOW DOES PERFORMANCE CHANGE ACROSS VERSIONS/TIME ######################
