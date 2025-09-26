@@ -1,16 +1,17 @@
 import re
 import textwrap
+from pathlib import Path
+
 import matplotlib
 import matplotlib.pyplot as plt
 import polars as pl
 import seaborn as sns
 
-from pathlib import Path
 from nwb_benchmarks.database._processing import repackage_as_parquet
 
 # setup font settings for editable text in Illustrator
-matplotlib.rcParams['pdf.fonttype'] = 42
-matplotlib.rcParams['ps.fonttype'] = 42
+matplotlib.rcParams["pdf.fonttype"] = 42
+matplotlib.rcParams["ps.fonttype"] = 42
 
 # use lbl-mac machine_id for initial comparisons
 lbl_mac_id = "87fee773e425b4b1d3978fbf762d57effb0e8df8"  # "SincereCornucopia"
@@ -53,8 +54,8 @@ def clean_benchmark_name_test(name):
 
 
 def split_camel_case(text):
-    text = re.sub(r'PyNWBS3', 'PyNWB S3', text)  # special handling for NWB
-    text = re.sub(r'NWBROS3', 'NWB ROS3', text)  # special handling for NWB ROS3
+    text = re.sub(r"PyNWBS3", "PyNWB S3", text)  # special handling for NWB
+    text = re.sub(r"NWBROS3", "NWB ROS3", text)  # special handling for NWB ROS3
     result = re.sub("([a-z0-9])([A-Z])", r"\1 \2", text)
     result = re.sub("([A-Z]+)([A-Z][a-z])", r"\1 \2", result)
     result = re.sub("Py NWB", "PyNWB", result)  # revert Py NWB back to PyNWB
@@ -77,7 +78,18 @@ def add_mean_sem_annotations(value, group, order, **kwargs):
             )
 
 
-def plot_benchmark_dist(df, group, metric, metric_order, filename, row=None, sharex=True, add_annotations=True, kind='box', catplot_kwargs=dict()):
+def plot_benchmark_dist(
+    df,
+    group,
+    metric,
+    metric_order,
+    filename,
+    row=None,
+    sharex=True,
+    add_annotations=True,
+    kind="box",
+    catplot_kwargs=dict(),
+):
     g = sns.catplot(
         data=df.collect().to_pandas(),
         x="value",
@@ -90,7 +102,7 @@ def plot_benchmark_dist(df, group, metric, metric_order, filename, row=None, sha
         kind=kind,
         order=metric_order,
         legend=False,
-        **catplot_kwargs
+        **catplot_kwargs,
     )
 
     if add_annotations:
@@ -105,6 +117,7 @@ def plot_benchmark_dist(df, group, metric, metric_order, filename, row=None, sha
     plt.tight_layout()
     plt.savefig(filename, dpi=300)
     plt.close()
+
 
 def plot_benchmark_slices_vs_time(df, group, metric_order, filename, row=None, sharex=True):
     g = sns.catplot(
@@ -129,34 +142,34 @@ def plot_benchmark_slices_vs_time(df, group, metric_order, filename, row=None, s
 
 
 def plot_benchmark_heatmap(df, group, metric_order, ax=None):
-    heatmap_df =(df.collect().to_pandas()
-                 .pivot_table(index=group, columns='modality', values='value', aggfunc='mean')
-                 .reindex(metric_order)
-                 .reindex(["Ecephys", "Ophys", "Icephys"], axis=1))
-    
+    heatmap_df = (
+        df.collect()
+        .to_pandas()
+        .pivot_table(index=group, columns="modality", values="value", aggfunc="mean")
+        .reindex(metric_order)
+        .reindex(["Ecephys", "Ophys", "Icephys"], axis=1)
+    )
+
     if ax is None:
         _, ax = plt.subplots(figsize=(10, 8))
 
-    sns.heatmap(data=heatmap_df, annot=True, fmt='.2f', cmap="OrRd", ax=ax)
-    ax.set(xlabel='', ylabel='')
+    sns.heatmap(data=heatmap_df, annot=True, fmt=".2f", cmap="OrRd", ax=ax)
+    ax.set(xlabel="", ylabel="")
 
     # add star for best method in each modality
     for i, row in enumerate(heatmap_df.index):
         for j, col in enumerate(heatmap_df.columns):
             if heatmap_df.loc[row, col] == heatmap_df.min()[col]:
-                ax.text(j+0.5, i+0.5, '     *', fontsize=20, ha='center', va='center', color='black', weight='bold')
-        
+                ax.text(j + 0.5, i + 0.5, "     *", fontsize=20, ha="center", va="center", color="black", weight="bold")
+
     return ax
 
 
 def filter_read_tests(benchmark_type, prefix):
-    return (
-        results_df.filter(pl.col("benchmark_name_type") == benchmark_type)
-        .with_columns(
-            pl.col("benchmark_name_operation")
-            .map_elements(lambda x: clean_benchmark_name_operation(x, prefix))
-            .alias("benchmark_name_operation")
-        )
+    return results_df.filter(pl.col("benchmark_name_type") == benchmark_type).with_columns(
+        pl.col("benchmark_name_operation")
+        .map_elements(lambda x: clean_benchmark_name_operation(x, prefix))
+        .alias("benchmark_name_operation")
     )
 
 
@@ -176,12 +189,18 @@ def filter_slice_tests(benchmark_type):
             .alias("scaling_value")
         )
         .with_columns((pl.col("scaling_value").rank(method="dense") - 1).over("modality").alias("slice_number"))
-        .with_columns([pl.col("benchmark_name_test").str.contains("Preloaded").alias("is_preloaded"),                       
-                       pl.col("benchmark_name_test").str.replace(" Preloaded", "").alias("benchmark_name_test")])
+        .with_columns(
+            [
+                pl.col("benchmark_name_test").str.contains("Preloaded").alias("is_preloaded"),
+                pl.col("benchmark_name_test").str.replace(" Preloaded", "").alias("benchmark_name_test"),
+            ]
+        )
     )
 
 
-def plot_read_benchmarks(order, benchmark_type="time_remote_file_reading", prefix="time_read", network_tracking=False, kind='box'):
+def plot_read_benchmarks(
+    order, benchmark_type="time_remote_file_reading", prefix="time_read", network_tracking=False, kind="box"
+):
     filtered_df = filter_read_tests(benchmark_type, prefix)
 
     filename_prefix = "network_tracking_" if network_tracking else ""
@@ -192,25 +211,31 @@ def plot_read_benchmarks(order, benchmark_type="time_remote_file_reading", prefi
         "metric_order": order,
         "filename": output_directory / f"{filename_prefix}file_read.pdf",
         "kind": kind,
-        "catplot_kwargs": {"showfliers": False, 
-                           "boxprops": dict(linewidth=0),}
+        "catplot_kwargs": {
+            "showfliers": False,
+            "boxprops": dict(linewidth=0),
+        },
     }
 
     if network_tracking:
         plot_kwargs.update({"row": "variable", "sharex": "row"})
-    
+
     # plot box plot
     plot_benchmark_dist(**plot_kwargs)
 
     # plot scatter plot
-    plot_kwargs.update({"catplot_kwargs": dict(),
-                        "kind": "strip",
-                        "add_annotations": False,
-                        "filename": output_directory / f"{filename_prefix}file_read_scatter.pdf"})
+    plot_kwargs.update(
+        {
+            "catplot_kwargs": dict(),
+            "kind": "strip",
+            "add_annotations": False,
+            "filename": output_directory / f"{filename_prefix}file_read_scatter.pdf",
+        }
+    )
     plot_benchmark_dist(**plot_kwargs)
 
 
-def plot_slice_benchmarks(order, benchmark_type="time_remote_slicing", network_tracking=False, kind='box'):
+def plot_slice_benchmarks(order, benchmark_type="time_remote_slicing", network_tracking=False, kind="box"):
     filtered_df = filter_slice_tests(benchmark_type)
 
     filename_prefix = "network_tracking_" if network_tracking else ""
@@ -222,21 +247,27 @@ def plot_slice_benchmarks(order, benchmark_type="time_remote_slicing", network_t
         "row": "is_preloaded",
         "filename": output_directory / f"{filename_prefix}slicing.pdf",
         "kind": kind,
-        "catplot_kwargs": {"showfliers": False, 
-                           "boxprops": dict(linewidth=0),}
+        "catplot_kwargs": {
+            "showfliers": False,
+            "boxprops": dict(linewidth=0),
+        },
     }
 
     if network_tracking:
         plot_kwargs.update({"row": "variable", "sharex": "row"})
-        
+
     # plot box plot
     plot_benchmark_dist(**plot_kwargs)
 
     # plot scatter plot
-    plot_kwargs.update({"catplot_kwargs": dict(),
-                        "kind": "strip",
-                        "add_annotations": False,
-                        "filename": output_directory / f"{filename_prefix}slicing_scatter.pdf"})
+    plot_kwargs.update(
+        {
+            "catplot_kwargs": dict(),
+            "kind": "strip",
+            "add_annotations": False,
+            "filename": output_directory / f"{filename_prefix}slicing_scatter.pdf",
+        }
+    )
     plot_benchmark_dist(**plot_kwargs)
 
 
@@ -267,8 +298,8 @@ def plot_method_rankings(slice_order, read_order):
     read_df = filter_read_tests("time_remote_file_reading", "time_read")
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 8))
-    axes[0] = plot_benchmark_heatmap(df=read_df, group="benchmark_name_operation",  metric_order=read_order, ax=axes[0])
-    axes[1] = plot_benchmark_heatmap(df=slice_df, group="benchmark_name_test",  metric_order=slice_order, ax=axes[1])
+    axes[0] = plot_benchmark_heatmap(df=read_df, group="benchmark_name_operation", metric_order=read_order, ax=axes[0])
+    axes[1] = plot_benchmark_heatmap(df=slice_df, group="benchmark_name_test", metric_order=slice_order, ax=axes[1])
 
     axes[0].set_title("Remote File Reading")
     axes[1].set_title("Remote Slicing")
@@ -304,8 +335,8 @@ reading_order = [
     "zarr https force no consolidated",
     "zarr s3",
     "zarr s3 force no consolidated",
-    #"zarr pynwb s3",
-    #"zarr pynwb s3 force no consolidated",  # much longer than rest, skipping for inspecting figures
+    # "zarr pynwb s3",
+    # "zarr pynwb s3 force no consolidated",  # much longer than rest, skipping for inspecting figures
     "hdf5 h5py ros3",
 ]
 ############################### WHEN TO DOWNLOAD VS. STREAM DATA? #############################
