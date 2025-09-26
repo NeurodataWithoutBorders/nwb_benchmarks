@@ -106,7 +106,6 @@ def plot_benchmark_dist(df, group, metric, metric_order, filename, row=None, sha
     plt.savefig(filename, dpi=300)
     plt.close()
 
-
 def plot_benchmark_slices_vs_time(df, group, metric_order, filename, row=None, sharex=True):
     g = sns.catplot(
         data=df.collect().to_pandas(),
@@ -127,6 +126,27 @@ def plot_benchmark_slices_vs_time(df, group, metric_order, filename, row=None, s
     sns.despine()
     plt.savefig(filename, dpi=300)
     plt.close()
+
+
+def plot_benchmark_heatmap(df, group, metric_order, ax=None):
+    heatmap_df =(df.collect().to_pandas()
+                 .pivot_table(index=group, columns='modality', values='value', aggfunc='mean')
+                 .reindex(metric_order)
+                 .reindex(["Ecephys", "Ophys", "Icephys"], axis=1))
+    
+    if ax is None:
+        _, ax = plt.subplots(figsize=(10, 8))
+
+    sns.heatmap(data=heatmap_df, annot=True, fmt='.2f', cmap="OrRd", ax=ax)
+    ax.set(xlabel='', ylabel='')
+
+    # add star for best method in each modality
+    for i, row in enumerate(heatmap_df.index):
+        for j, col in enumerate(heatmap_df.columns):
+            if heatmap_df.loc[row, col] == heatmap_df.min()[col]:
+                ax.text(j+0.5, i+0.5, '     *', fontsize=20, ha='center', va='center', color='black', weight='bold')
+        
+    return ax
 
 
 def filter_read_tests(benchmark_type, prefix):
@@ -242,8 +262,22 @@ def plot_download_vs_stream_benchmarks(order, benchmark_type="time_remote_slicin
     # TODO - need to capture download time for each test case
 
 
-# Common benchmark orders
+def plot_method_rankings(slice_order, read_order):
+    slice_df = filter_slice_tests("time_remote_slicing")
+    read_df = filter_read_tests("time_remote_file_reading", "time_read")
 
+    fig, axes = plt.subplots(1, 2, figsize=(12, 8))
+    axes[0] = plot_benchmark_heatmap(df=read_df, group="benchmark_name_operation",  metric_order=read_order, ax=axes[0])
+    axes[1] = plot_benchmark_heatmap(df=slice_df, group="benchmark_name_test",  metric_order=slice_order, ax=axes[1])
+
+    axes[0].set_title("Remote File Reading")
+    axes[1].set_title("Remote Slicing")
+    plt.tight_layout()
+    plt.savefig(output_directory / "method_rankings_heatmap.pdf", dpi=300)
+    plt.close()
+
+
+# Common benchmark orders
 slicing_order = [
     "HDF5 PyNWB Fsspec S3 No Cache",
     "HDF5 PyNWB Fsspec S3 With Cache",
@@ -271,7 +305,7 @@ reading_order = [
     "zarr s3",
     "zarr s3 force no consolidated",
     #"zarr pynwb s3",
-    #"zarr pynwb s3 force no consolidated",
+    #"zarr pynwb s3 force no consolidated",  # much longer than rest, skipping for inspecting figures
     "hdf5 h5py ros3",
 ]
 ############################### WHEN TO DOWNLOAD VS. STREAM DATA? #############################
@@ -295,16 +329,13 @@ plot_slice_benchmarks(slicing_order)
 # 3. Network tracking - which methods make the most requests?
 benchmark_type = "network_tracking_remote_file_reading"
 prefix = "track_network_read"
-plot_read_benchmarks(
-    reading_order,
-    benchmark_type=benchmark_type,
-    prefix=prefix,
-    network_tracking=True,
-)
-
+plot_read_benchmarks(reading_order, benchmark_type=benchmark_type, prefix=prefix, network_tracking=True)
 
 benchmark_type = "network_tracking_remote_slicing"
 plot_slice_benchmarks(slicing_order, benchmark_type=benchmark_type, network_tracking=True)
+
+# 4. What is the best software across all read / slicing?
+plot_method_rankings(slicing_order, reading_order)
 
 
 ###################### HOW DOES PERFORMANCE CHANGE ACROSS VERSIONS/TIME ######################
