@@ -35,18 +35,22 @@ class Results:
         def process_network_results(benchmark_results: dict) -> dict:
             """Add additional network metrics."""
             results = benchmark_results.copy()
-            if results['total_transfer_time_in_seconds'] != 0:
-                results['percent_network_time'] = results['network_total_time_in_seconds'] / results['total_transfer_time_in_seconds']
+            if results["total_transfer_time_in_seconds"] != 0:
+                results["percent_network_time"] = (
+                    results["network_total_time_in_seconds"] / results["total_transfer_time_in_seconds"]
+                )
             else:
-                results['percent_network_time'] = float('nan')
-            
-            if results['total_traffic_in_number_of_web_packets'] != 0:
-                results['mean_time_per_web_packet'] = results['total_transfer_time_in_seconds'] / results['total_traffic_in_number_of_web_packets']
+                results["percent_network_time"] = float("nan")
+
+            if results["total_traffic_in_number_of_web_packets"] != 0:
+                results["mean_time_per_web_packet"] = (
+                    results["total_transfer_time_in_seconds"] / results["total_traffic_in_number_of_web_packets"]
+                )
             else:
-                results['mean_time_per_web_packet'] = float('nan')
+                results["mean_time_per_web_packet"] = float("nan")
 
             return results
-    
+
         if isinstance(benchmark_results, dict):
             value_dict = process_network_results(benchmark_results)
         else:
@@ -82,7 +86,6 @@ class Results:
         commit_hash = data["commit_hash"]
         environment_id = data["environment_id"]
         machine_id = data["machine_id"]
-
 
         results = [
             Result(

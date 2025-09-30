@@ -1,8 +1,10 @@
 """Script to generate and save benchmark figures."""
+
 from pathlib import Path
 
 from nwb_benchmarks.database._processing import BenchmarkDatabase
 from nwb_benchmarks.database._visualization import BenchmarkVisualizer
+
 
 def main():
     # Initialize database handler
@@ -11,7 +13,7 @@ def main():
 
     # Initialize visualizer
     visualizer = BenchmarkVisualizer(output_directory=Path(__file__).parent / "figures")
-    
+
     # Generate all plots
     visualizer.generate_all_plots(db)
 
