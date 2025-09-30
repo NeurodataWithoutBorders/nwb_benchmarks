@@ -213,6 +213,8 @@ class BenchmarkVisualizer:
         suffix: str = 'pynwb'
     ):
         """Plot read benchmark results."""
+        print(f'Plotting read benchmarks for {benchmark_type}...')
+
         filtered_df = db.filter_tests(benchmark_type)
         prefix = self._get_filename_prefix(network_tracking)
         
@@ -251,6 +253,8 @@ class BenchmarkVisualizer:
         kind: str = 'box'
     ):
         """Plot slice benchmark results."""
+        print(f'Plotting slice benchmarks for {benchmark_type}...')
+
         filtered_df = db.filter_tests(benchmark_type)
         prefix = self._get_filename_prefix(network_tracking)
         
@@ -265,7 +269,7 @@ class BenchmarkVisualizer:
         )
 
         if network_tracking:
-            base_kwargs.update({"df": filtered_df.filter(pl.col("is_preloaded") == False),
+            base_kwargs.update({"df": filtered_df.filter(~pl.col("is_preloaded")),
                                 "row": "variable", 
                                 "sharex": "row"})
 
@@ -295,6 +299,8 @@ class BenchmarkVisualizer:
         network_tracking: bool = False
     ):
         """Plot download vs stream benchmark comparison."""
+        print('Plotting download vs stream benchmark comparison...')
+
         slice_df = db.filter_tests(benchmark_type)
         prefix = self._get_filename_prefix(network_tracking)
         
@@ -311,6 +317,7 @@ class BenchmarkVisualizer:
     
     def plot_method_rankings(self, db: BenchmarkDatabase):
         """Create heatmap showing method rankings across benchmarks."""
+        print('Plotting method rankings heatmap...')
         
         slice_df = db.filter_tests("time_remote_slicing")
         read_df = db.filter_tests("time_remote_file_reading")

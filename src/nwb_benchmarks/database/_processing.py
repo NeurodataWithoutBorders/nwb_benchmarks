@@ -68,6 +68,7 @@ class BenchmarkDatabase:
     
     def _preprocess_results(self, df: pl.LazyFrame) -> pl.DataFrame:
         """Apply all preprocessing transformations to the results dataframe."""
+        print("Preprocessing benchmark results...")
         
         # clean benchmark expression
         clean_benchmark_operation_expr = (
