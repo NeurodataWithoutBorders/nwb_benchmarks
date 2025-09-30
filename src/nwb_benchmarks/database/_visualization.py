@@ -17,23 +17,23 @@ class BenchmarkVisualizer:
     # Default benchmark orders
     slicing_order = [
         "HDF5 PyNWB Fsspec S3 No Cache",
-        "HDF5 PyNWB Fsspec S3 With Cache",
         "HDF5 PyNWB Fsspec Https No Cache",
-        "HDF5 PyNWB Fsspec Https With Cache",
         "HDF5 PyNWB Remfile No Cache",
+        "HDF5 PyNWB Fsspec S3 With Cache",
+        "HDF5 PyNWB Fsspec Https With Cache",
         "HDF5 PyNWB Remfile With Cache",
         "HDF5 PyNWB ROS3",
         "Lindi Local JSON",
         "Zarr PyNWB S3",
         "Zarr PyNWB S3 Force No Consolidated",
     ]
-
+    
     file_open_order = [
         "hdf5 h5py remfile no cache",
-        "hdf5 h5py remfile with cache",
         "hdf5 h5py fsspec https no cache",
-        "hdf5 h5py fsspec https with cache",
         "hdf5 h5py fsspec s3 no cache",
+        "hdf5 h5py remfile with cache",
+        "hdf5 h5py fsspec https with cache",
         "hdf5 h5py fsspec s3 with cache",
         "hdf5 h5py ros3",
         "lindi h5py",
@@ -42,13 +42,13 @@ class BenchmarkVisualizer:
         "zarr s3",
         "zarr s3 force no consolidated",
     ]
-
+    
     pynwb_reading_order = [
         "hdf5 pynwb remfile no cache",
-        "hdf5 pynwb remfile with cache",
         "hdf5 pynwb fsspec https no cache",
-        "hdf5 pynwb fsspec https with cache",
         "hdf5 pynwb fsspec s3 no cache",
+        "hdf5 pynwb remfile with cache",
+        "hdf5 pynwb fsspec https with cache",
         "hdf5 pynwb fsspec s3 with cache",
         "hdf5 pynwb ros3",
         "lindi pynwb",
