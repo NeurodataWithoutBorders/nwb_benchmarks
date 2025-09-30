@@ -27,7 +27,7 @@ class BenchmarkVisualizer:
         "Zarr PyNWB S3",
         "Zarr PyNWB S3 Force No Consolidated",
     ]
-    
+
     file_open_order = [
         "hdf5 h5py remfile no cache",
         "hdf5 h5py fsspec https no cache",
@@ -42,7 +42,7 @@ class BenchmarkVisualizer:
         "zarr s3",
         "zarr s3 force no consolidated",
     ]
-    
+
     pynwb_reading_order = [
         "hdf5 pynwb remfile no cache",
         "hdf5 pynwb fsspec https no cache",
