@@ -1,95 +1,144 @@
-import dataclasses
-import pathlib
+import re
+import polars as pl
 
-import packaging
-import polars
+from pathlib import Path
+from typing import Optional
+from functools import lru_cache
 
-from ._models import Environment, Machine, Results
+from nwb_benchmarks.database._parquet import repackage_as_parquet
 
 
-def concat_dataclasses_to_parquet(
-    directory: pathlib.Path,
-    output_directory: pathlib.Path,
-    dataclass_name: str,
-    dataclass: dataclasses.dataclass,
-    concat_how: str = "diagonal_relaxed",
-    minimum_version: str = "1.0.0",
-) -> None:
-    """Generic function to process any data type (machines, environments, results)
-
-    Args:
-        directory (pathlib.Path): Path to the root directory containing data subdirectories.
-        output_directory (pathlib.Path): Path to the output directory where the parquet file will be saved.
-        dataclass_name (str): Name of the data class, used for input and output filenames.
-        dataclass: The dataclass type to process (Machine, Environment, Results).
-        concat_how (str, optional): How to concatenate dataframes. Defaults to "diagonal_relaxed".
-        minimum_version (str, optional): Minimum version of the database to include. Defaults to "1.0.0".
-    Returns:
-
-    """
-
-    data_frames = []
-    data_directory = directory / dataclass_name
-
-    for file_path in data_directory.iterdir():
-        obj = dataclass.safe_load_from_json(file_path=file_path)
-
-        if obj is None:
-            continue
-
-        data_frame = obj.to_dataframe()
-
-        # filter by minimum version (before concatenation to avoid issues with different results structures)
-        # TODO - should environment have a version?
-        if "version" in data_frame.columns:
-            data_frame = data_frame.filter(
-                polars.col("version").map_elements(
-                    lambda x: packaging.version.parse(x) >= packaging.version.parse(minimum_version),
-                    return_dtype=polars.Boolean,
-                )
+class BenchmarkDatabase:
+    """Handles database preprocessing and loading for NWB benchmarks."""
+    
+    def __init__(
+        self,
+        results_directory: Optional[Path] = None,
+        db_directory: Optional[Path] = None,
+        machine_id: str = "87fee773e425b4b1d3978fbf762d57effb0e8df8" 
+    ):
+        """Initialize database handler with directories and machine ID.
+        
+        Args:
+            results_directory: Directory containing benchmark results
+            db_directory: Directory for database storage
+            machine_id: Machine ID for filtering results (default: lbl-mac)
+        """
+        self.machine_id = machine_id
+        
+        # Set default directories if not provided
+        cache_dir = Path.home() / ".cache" / "nwb-benchmarks"
+        self.results_directory = results_directory or cache_dir / "nwb-benchmarks-results"
+        self.db_directory = db_directory or cache_dir / "nwb-benchmarks-database"
+        
+        self._results_df = None
+    
+    def create_database(
+        self,
+        minimum_results_version: str = "3.0.0",
+        minimum_machines_version: str = "1.4.0"
+    ) -> None:
+        """Create new database file with latest results."""
+        repackage_as_parquet(
+            directory=self.results_directory,
+            output_directory=self.db_directory,
+            minimum_results_version=minimum_results_version,
+            minimum_machines_version=minimum_machines_version,
+        )
+    
+    @staticmethod
+    @lru_cache(maxsize=128)
+    def split_camel_case(text: str) -> str:
+        """Split camel case text into words."""
+        text = re.sub(r'PyNWBS3', 'PyNWB S3', text)
+        text = re.sub(r'NWBROS3', 'NWB ROS3', text)
+        result = re.sub("([a-z0-9])([A-Z])", r"\1 \2", text)
+        result = re.sub("([A-Z]+)([A-Z][a-z])", r"\1 \2", result)
+        result = re.sub("Py NWB", "PyNWB", result)
+        return result
+    
+    @lru_cache(maxsize=128)
+    def clean_benchmark_name_test(self, name: str) -> str:
+        """Clean benchmark test names."""
+        short_name = (name
+                     .replace("ContinuousSliceBenchmark", "")
+                     .replace("FileReadBenchmark", "")
+                     .replace("DownloadBenchmark", ""))
+        return self.split_camel_case(short_name)
+    
+    def _preprocess_results(self, df: pl.LazyFrame) -> pl.DataFrame:
+        """Apply all preprocessing transformations to the results dataframe."""
+        
+        # clean benchmark expression
+        clean_benchmark_operation_expr = (
+            pl.col("benchmark_name_operation")
+            .str.replace("time_read_", "")
+            .str.replace("track_network_read_", "")
+            .str.replace_all("_", " ")
+        )
+        
+        return (
+            df
+            # Filter for specific machine early to reduce data volume
+            .filter(pl.col("machine_id") == self.machine_id)
+            
+            # Extract benchmark name components
+            .with_columns([
+                pl.col("parameter_case_name").str.extract(r"^(Ophys|Ecephys|Icephys)").alias("modality"),
+                pl.col("benchmark_name").str.split(".").list.get(0).alias("benchmark_name_type"),
+                pl.col("benchmark_name").str.split(".").list.get(1).alias("benchmark_name_test"),
+                pl.col("benchmark_name").str.split(".").list.get(2).alias("benchmark_name_operation"),
+            ])
+            
+            # Clean operation names using expressions
+            .with_columns(clean_benchmark_operation_expr.alias("benchmark_name_operation"))
+            
+            # Extract benchmark labels and clean test names
+            .with_columns([
+                pl.col("benchmark_name_test")
+                  .str.extract(r"(ContinuousSliceBenchmark|FileReadBenchmark|DownloadBenchmark)")
+                  .alias("benchmark_name_label"),
+                pl.col("benchmark_name_test")
+                  .map_elements(self.clean_benchmark_name_test, return_dtype=pl.String)
+                  .alias("benchmark_name_test")
+            ])
+            
+            # Handle preloaded information
+            .with_columns([
+                pl.col("benchmark_name_test").str.contains("Preloaded").alias("is_preloaded"),
+                pl.col("benchmark_name_test").str.replace(" Preloaded", "").alias("benchmark_name_test")
+            ])
+            
+            # Extract scaling information
+            .with_columns(
+                pl.col("parameter_case_slice_range")
+                .list.first()
+                .str.extract(r"slice\(0, (\d+),", group_index=1)
+                .cast(pl.Int64)
+                .alias("scaling_value"),
             )
-
-        data_frames.append(data_frame)
-
-    if data_frames:
-        database = polars.concat(items=data_frames, how=concat_how)
-        output_file_path = output_directory / f"{dataclass_name}.parquet"
-        database.write_parquet(file=output_file_path)
-
-
-def repackage_as_parquet(
-    directory: pathlib.Path,
-    output_directory: pathlib.Path,
-    minimum_results_version: str = "1.0.0",
-    minimum_machines_version: str = "1.0.0",
-) -> None:
-    """Repackage JSON results files as parquet databases for easier querying."""
-
-    # Machines
-    concat_dataclasses_to_parquet(
-        directory=directory,
-        output_directory=output_directory,
-        dataclass_name="machines",
-        dataclass=Machine,
-        concat_how="diagonal_relaxed",
-        minimum_version=minimum_machines_version,
-    )
-
-    # Environments
-    concat_dataclasses_to_parquet(
-        directory=directory,
-        output_directory=output_directory,
-        dataclass_name="environments",
-        dataclass=Environment,
-        concat_how="diagonal",
-    )
-
-    # Results
-    concat_dataclasses_to_parquet(
-        directory=directory,
-        output_directory=output_directory,
-        dataclass_name="results",
-        dataclass=Results,
-        concat_how="diagonal_relaxed",
-        minimum_version=minimum_results_version,
-    )
+            .with_columns(
+                (pl.col("scaling_value").rank(method="dense") - 1)
+                .over("modality")
+                .alias("slice_number")
+            )
+            .collect()
+        )
+    
+    def load_results(self) -> pl.DataFrame:
+        """
+        Load and preprocess benchmark results with caching.
+        
+        Returns:
+            Preprocessed benchmark results as a DataFrame
+        """
+        if self._results_df is None:
+            lazy_df = pl.scan_parquet(self.db_directory / "results.parquet")
+            self._results_df = self._preprocess_results(lazy_df)
+        
+        return self._results_df
+    
+    def filter_tests(self, benchmark_type: str) -> pl.LazyFrame:
+        """Filter benchmark tests."""
+        results_df = self.load_results()
+        return results_df.filter(pl.col("benchmark_name_type") == benchmark_type)
