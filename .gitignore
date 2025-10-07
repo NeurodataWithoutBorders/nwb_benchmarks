@@ -160,3 +160,6 @@ fabric.properties
 
 # Spyder
 .spyproject/*
+
+# Figures
+*.pdf
