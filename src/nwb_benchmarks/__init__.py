@@ -22,7 +22,9 @@ else:
     print(f"Using tshark at: {TSHARK_PATH} on {NETWORK_INTERFACE}")
 
 if RUN_DOWNLOAD_BENCHMARKS:
-    warnings.warn('RUN_DOWNLOAD_BENCHMARKS is set. Benchmarks that download the entire test file will be run, which may take a long time.')
+    warnings.warn(
+        "RUN_DOWNLOAD_BENCHMARKS is set. Benchmarks that download the entire test file will be run, which may take a long time."
+    )
 
 __all__ = [
     "main",

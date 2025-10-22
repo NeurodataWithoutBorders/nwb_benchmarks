@@ -1,4 +1,5 @@
 from nwb_benchmarks.core import get_https_url
+
 # similar to params_remote_file_reading.py but with follow_redirects=False since download does not work with redirected url
 
 hdf5_params = (
