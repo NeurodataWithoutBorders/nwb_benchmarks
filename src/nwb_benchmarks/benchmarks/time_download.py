@@ -62,7 +62,6 @@ class LindiDownloadDandiAPIBenchmark(BaseDownloadDandiAPIBenchmark):
 
     params = lindi_remote_rfs_params
 
-    @skip_benchmark_if(not RUN_DOWNLOAD_BENCHMARKS)
     def time_download_lindi_dandi_api(self, params: dict[str, str]):
         """Download a remote Lindi file using the DANDI API."""
         download(urls=params["https_url"], output_dir=self.tmpdir.name)
