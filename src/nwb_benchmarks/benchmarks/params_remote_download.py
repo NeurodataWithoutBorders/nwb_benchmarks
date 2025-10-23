@@ -78,6 +78,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
-            follow_redirects=False,),
+            follow_redirects=False,
+        ),
     ),
 )
