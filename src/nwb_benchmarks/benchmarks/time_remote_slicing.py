@@ -300,6 +300,25 @@ class HDF5PyNWBROS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
 
+class HDF5PyNWBROS3PreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and the ROS3 driver with preloaded
+    data.
+    """
+
+    params = hdf5_params
+
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+        slice_range = params["slice_range"]
+
+        self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+        self._temp = self.data_to_slice[slice_range]
+
+
 class LindiLocalJSONContinuousSliceBenchmark(ContinuousSliceBenchmark):
     """
     Time the read of a continuous data slice from remote HDF5 NWB files by reading the local LINDI JSON files with
@@ -338,6 +357,24 @@ class ZarrPyNWBS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
 
+class ZarrPyNWBS3PreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with S3 with preloaded data.
+    """
+
+    params = zarr_params
+
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+        slice_range = params["slice_range"]
+
+        self.nwbfile, self.io = read_zarr_pynwb_s3(https_url=https_url, mode="r")
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+        self._temp = self.data_to_slice[slice_range]
+
+
 class ZarrPyNWBS3ForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenchmark):
     """
     Time the read of a continuous data slice from remote Zarr NWB files using pynwb with S3 and without using
@@ -353,3 +390,22 @@ class ZarrPyNWBS3ForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenc
         self.nwbfile, self.io = read_zarr_pynwb_s3(https_url=https_url, mode="r-")
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
+
+
+class ZarrPyNWBS3ForceNoConsolidatedPreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with S3 and without using
+    consolidated metadata with preloaded data.
+    """
+
+    params = zarr_params
+
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+        slice_range = params["slice_range"]
+
+        self.nwbfile, self.io = read_zarr_pynwb_s3(https_url=https_url, mode="r-")
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+        self._temp = self.data_to_slice[slice_range]
