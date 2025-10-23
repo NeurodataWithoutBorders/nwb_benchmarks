@@ -1,13 +1,12 @@
 """Basic benchmarks for timing download of remote NWB files using different methods."""
 
-import os
 import shutil
 
 from asv_runner.benchmarks.mark import skip_benchmark_if
 from dandi.download import download
 
 from nwb_benchmarks import RUN_DOWNLOAD_BENCHMARKS
-from nwb_benchmarks.core import BaseBenchmark, download_file
+from nwb_benchmarks.core import BaseBenchmark
 from nwb_benchmarks.setup import get_temporary_directory
 
 from .params_remote_download import hdf5_params, lindi_remote_rfs_params, zarr_params
@@ -56,22 +55,14 @@ class ZarrDownloadDandiAPIBenchmark(BaseDownloadDandiAPIBenchmark):
         download(urls=params["https_url"], output_dir=self.tmpdir.name)
 
 
-class LindiDownloadFsspecBenchmark(BaseBenchmark):
+class LindiDownloadDandiAPIBenchmark(BaseDownloadDandiAPIBenchmark):
     """
     Time the download of a remote LINDI JSON file.
     """
 
     params = lindi_remote_rfs_params
 
-    def setup(self, params: dict[str, str]):
-        https_url = params["https_url"]
-        self.lindi_file = os.path.basename(https_url) + ".lindi.json"
-        self.teardown(params)
-
-    def teardown(self, params: dict[str, str]):
-        if os.path.exists(self.lindi_file):
-            os.remove(self.lindi_file)
-
-    def time_download_lindi_fsspec(self, params: dict[str, str]):
-        https_url = params["https_url"]
-        download_file(url=https_url, local_path=self.lindi_file)
+    @skip_benchmark_if(not RUN_DOWNLOAD_BENCHMARKS)
+    def time_download_lindi_dandi_api(self, params: dict[str, str]):
+        """Download a remote Lindi file using the DANDI API."""
+        download(urls=params["https_url"], output_dir=self.tmpdir.name)

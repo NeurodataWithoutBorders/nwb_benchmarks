@@ -62,6 +62,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
+            follow_redirects=False,
         ),
     ),
     dict(
@@ -69,6 +70,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+            follow_redirects=False,
         ),
     ),
     dict(
@@ -76,6 +78,6 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
-        ),
+            follow_redirects=False,),
     ),
 )
