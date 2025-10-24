@@ -35,12 +35,6 @@ class Results:
         def process_network_results(benchmark_results: dict) -> dict:
             """Add additional network metrics."""
             results = benchmark_results.copy()
-            if results["total_transfer_time_in_seconds"] != 0:
-                results["percent_network_time"] = (
-                    results["network_total_time_in_seconds"] / results["total_transfer_time_in_seconds"]
-                )
-            else:
-                results["percent_network_time"] = float("nan")
 
             if results["total_traffic_in_number_of_web_packets"] != 0:
                 results["mean_time_per_web_packet"] = (
