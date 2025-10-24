@@ -15,14 +15,14 @@ class BenchmarkDatabase:
         self,
         results_directory: Optional[Path] = None,
         db_directory: Optional[Path] = None,
-        machine_id: str = "87fee773e425b4b1d3978fbf762d57effb0e8df8",
+        machine_id: str = None,
     ):
         """Initialize database handler with directories and machine ID.
 
         Args:
             results_directory: Directory containing benchmark results
             db_directory: Directory for database storage
-            machine_id: Machine ID for filtering results (default: lbl-mac)
+            machine_id: Machine ID for filtering results
         """
         self.machine_id = machine_id
 
@@ -78,7 +78,9 @@ class BenchmarkDatabase:
         return (
             df
             # Filter for specific machine early to reduce data volume
-            .filter(pl.col("machine_id") == self.machine_id)
+            .filter(pl.when(self.machine_id is not None)
+                      .then(pl.col("machine_id") == self.machine_id)
+                      .otherwise(pl.lit(True)))
             # Extract benchmark name components
             .with_columns(
                 [
@@ -120,7 +122,7 @@ class BenchmarkDatabase:
             .collect()
         )
 
-    def load_results(self) -> pl.DataFrame:
+    def get_results(self) -> pl.DataFrame:
         """
         Load and preprocess benchmark results with caching.
 
@@ -131,9 +133,9 @@ class BenchmarkDatabase:
             lazy_df = pl.scan_parquet(self.db_directory / "results.parquet")
             self._results_df = self._preprocess_results(lazy_df)
 
-        return self._results_df
+        return self._results_df        
 
     def filter_tests(self, benchmark_type: str) -> pl.LazyFrame:
         """Filter benchmark tests."""
-        results_df = self.load_results()
+        results_df = self.get_results()
         return results_df.filter(pl.col("benchmark_name_type") == benchmark_type)

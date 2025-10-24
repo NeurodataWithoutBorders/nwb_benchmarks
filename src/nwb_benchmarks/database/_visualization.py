@@ -372,7 +372,7 @@ class BenchmarkVisualizer:
         plt.savefig(self.output_directory / "method_rankings_heatmap.pdf", dpi=300)
         plt.close()
 
-    def generate_all_plots(self, db: BenchmarkDatabase):
+    def plot_all(self, db: BenchmarkDatabase):
         """Generate all benchmark visualization plots."""
         # 1. WHICH LIBRARY SHOULD I USE TO STREAM DATA
 
