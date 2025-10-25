@@ -1,6 +1,7 @@
 import textwrap
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from packaging import version
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -240,7 +241,7 @@ class BenchmarkVisualizer:
         """Plot read benchmark results."""
         print(f"Plotting read benchmarks for {benchmark_type}...")
 
-        filtered_df = db.filter_tests(benchmark_type)
+        filtered_df = db.filter_tests(benchmark_type).collect()
         prefix = self._get_filename_prefix(network_tracking)
 
         # Create base plot kwargs
@@ -282,7 +283,7 @@ class BenchmarkVisualizer:
         """Plot slice benchmark results."""
         print(f"Plotting slice benchmarks for {benchmark_type}...")
 
-        filtered_df = db.filter_tests(benchmark_type)
+        filtered_df = db.filter_tests(benchmark_type).collect()
         prefix = self._get_filename_prefix(network_tracking)
 
         # Create base plot kwargs
@@ -330,7 +331,7 @@ class BenchmarkVisualizer:
         """Plot download vs stream benchmark comparison."""
         print("Plotting download vs stream benchmark comparison...")
 
-        slice_df = db.filter_tests(benchmark_type)
+        slice_df = db.filter_tests(benchmark_type).collect()
         prefix = self._get_filename_prefix(network_tracking)
 
         plot_kwargs = {
@@ -348,8 +349,8 @@ class BenchmarkVisualizer:
         """Create heatmap showing method rankings across benchmarks."""
         print("Plotting method rankings heatmap...")
 
-        slice_df = db.filter_tests("time_remote_slicing")
-        read_df = db.filter_tests("time_remote_file_reading")
+        slice_df = db.filter_tests("time_remote_slicing").collect()
+        read_df = db.filter_tests("time_remote_file_reading").collect()
 
         fig, axes = plt.subplots(3, 1, figsize=(8, 16))
         axes[0] = self.plot_benchmark_heatmap(
@@ -370,6 +371,58 @@ class BenchmarkVisualizer:
 
         plt.tight_layout()
         plt.savefig(self.output_directory / "method_rankings_heatmap.pdf", dpi=300)
+        plt.close()
+
+    @staticmethod
+    def set_package_version_categorical(group):
+        # TODO - idk if this is actually sorting or not
+        sorted_versions = sorted(
+            group['package_version'].unique(), 
+            key=lambda v: version.parse(v),
+        )
+        group['package_version'] = pd.Categorical(
+            group['package_version'],
+            categories=sorted_versions,
+            ordered=True
+        )
+        return group
+
+    def plot_performance_over_time(self, db: BenchmarkDatabase, order: List[str], 
+                                   hue: str = "benchmark_name_operation",
+                                   benchmark_type: str = "time_remote_file_reading"):
+        """Plot performance changes over time for a given benchmark type."""
+        print(f"Plotting performance over time")
+        
+        # get polars dataframe and filter
+        df = db.join_results_with_environments()
+        df = (
+            df
+            .filter(pl.col("benchmark_name_type") == benchmark_type)
+            .collect()
+            .to_pandas()
+            .groupby('package_name')
+            .apply(self.set_package_version_categorical, include_groups=False)
+            .reset_index(level=0)
+        )
+        
+        g = sns.catplot(
+            data=df,
+            x="package_version",
+            y="value",
+            col="modality",
+            row="package_name",
+            hue=hue,
+            hue_order=order,
+            palette="Paired",
+            kind="point",
+            sharey=True,
+            sharex=False,
+        )
+
+        g.set(xlabel="Package version", ylabel="Time (s)")
+
+        sns.despine()
+        plt.savefig(self.output_directory / f"performance_over_{benchmark_type}.pdf", dpi=300)
         plt.close()
 
     def plot_all(self, db: BenchmarkDatabase):
@@ -410,5 +463,13 @@ class BenchmarkVisualizer:
 
         # 3. TODO - HOW DOES PERFORMANCE CHANGE ACROSS VERSIONS/TIME
         # need to add regression tests for different libraries selecting a specific approach
-        # different versions (6/2023, 6/2024, 6/2025)
-        # performance on a single test (speed) vs. version (h5py, ros3, etc.)
+        # different versions (6/2024, 6/2025, now, etc.)
+        # performance on a single test (speed) vs. version (h5py, fsspec, etc.)
+        self.plot_performance_over_time(db, 
+                                        self.pynwb_reading_order, 
+                                        hue="benchmark_name_operation", 
+                                        benchmark_type="time_remote_file_reading")
+        self.plot_performance_over_time(db, 
+                                        self.slicing_order, 
+                                        hue="benchmark_name_test", 
+                                        benchmark_type="time_remote_slicing")
