@@ -32,6 +32,7 @@ class BenchmarkDatabase:
         self.db_directory = db_directory or cache_dir / "nwb-benchmarks-database"
 
         self._results_df = None
+        self._environments_df = None
 
     def create_database(self, minimum_results_version: str = "3.0.0", minimum_machines_version: str = "1.4.0") -> None:
         """Create new database file with latest results."""
@@ -78,9 +79,10 @@ class BenchmarkDatabase:
         return (
             df
             # Filter for specific machine early to reduce data volume
-            .filter(pl.when(self.machine_id is not None)
-                      .then(pl.col("machine_id") == self.machine_id)
-                      .otherwise(pl.lit(True)))
+            .filter(
+                pl.col("machine_id") == self.machine_id if self.machine_id is not None 
+                else pl.lit(True)
+            )
             # Extract benchmark name components
             .with_columns(
                 [
@@ -119,10 +121,30 @@ class BenchmarkDatabase:
                 .alias("scaling_value"),
             )
             .with_columns((pl.col("scaling_value").rank(method="dense") - 1).over("modality").alias("slice_number"))
-            .collect()
         )
 
-    def get_results(self) -> pl.DataFrame:
+    def _preprocess_environments(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        """Apply all preprocessing transformations to the environments dataframe."""
+
+        # TODO - define packages elsewhere or provide as optional input
+        # TODO do we need the build? I will lean towards skipping unless it's super important
+        packages = ['h5py', 'fsspec', 'lindi', 'remfile', 'zarr', 'hdmf-zarr', 'hdmf', 'pynwb']
+        
+        return (df
+                .select(["environment_id", *packages])
+                .with_columns([
+                    pl.col(pkg).str.extract(r"^([\d.]+)", group_index=1)
+                    for pkg in packages
+                ])
+                .unpivot(
+                    index="environment_id",
+                    on=packages,
+                    variable_name="package_name",
+                    value_name="package_version",)
+                .filter(pl.col("package_version").is_not_null())
+                )
+
+    def get_results(self) -> pl.LazyFrame:
         """
         Load and preprocess benchmark results with caching.
 
@@ -133,7 +155,28 @@ class BenchmarkDatabase:
             lazy_df = pl.scan_parquet(self.db_directory / "results.parquet")
             self._results_df = self._preprocess_results(lazy_df)
 
-        return self._results_df        
+        return self._results_df
+
+    def get_environments(self) -> pl.LazyFrame:
+        """
+        Load and preprocess benchmark environments with caching.
+
+        Returns:
+            Preprocessed benchmark environments as a DataFrame
+        """
+        if self._environments_df is None:
+            lazy_df = pl.scan_parquet(self.db_directory / "environments.parquet")
+            self._environments_df = self._preprocess_environments(lazy_df)
+
+        return self._environments_df  
+
+    def join_results_with_environments(self) -> pl.LazyFrame:
+        """Join streaming package versions with results using the environments table."""
+        return self.get_results().join(
+                    self.get_environments(),
+                    on="environment_id",
+                    how="left",
+                )
 
     def filter_tests(self, benchmark_type: str) -> pl.LazyFrame:
         """Filter benchmark tests."""
