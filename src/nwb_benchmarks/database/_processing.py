@@ -7,6 +7,7 @@ import polars as pl
 
 from nwb_benchmarks.database._parquet import repackage_as_parquet
 
+PACKAGES_OF_INTEREST = ['h5py', 'fsspec', 'lindi', 'remfile', 'zarr', 'hdmf_zarr', 'hdmf', 'pynwb']
 
 class BenchmarkDatabase:
     """Handles database preprocessing and loading for NWB benchmarks."""
@@ -25,6 +26,7 @@ class BenchmarkDatabase:
             machine_id: Machine ID for filtering results
         """
         self.machine_id = machine_id
+        self.packages_of_interest = PACKAGES_OF_INTEREST
 
         # Set default directories if not provided
         cache_dir = Path.home() / ".cache" / "nwb-benchmarks"
@@ -125,20 +127,19 @@ class BenchmarkDatabase:
 
     def _preprocess_environments(self, df: pl.LazyFrame) -> pl.LazyFrame:
         """Apply all preprocessing transformations to the environments dataframe."""
-
-        # TODO - define packages elsewhere or provide as optional input
-        # TODO do we need the build? I will lean towards skipping unless it's super important
-        packages = ['h5py', 'fsspec', 'lindi', 'remfile', 'zarr', 'hdmf-zarr', 'hdmf', 'pynwb']
         
         return (df
-                .select(["environment_id", *packages])
+                # get only relevant package columns
+                .select(["environment_id", *self.packages_of_interest])
+                # remove build information
                 .with_columns([
-                    pl.col(pkg).str.extract(r"^([\d.]+)", group_index=1)
-                    for pkg in packages
+                    pl.col(pkg).str.extract(r"^([\d.]+)", group_index=1) 
+                    for pkg in self.packages_of_interest
                 ])
+                # unpivot packages into long format for plotting
                 .unpivot(
                     index="environment_id",
-                    on=packages,
+                    on=self.packages_of_interest,
                     variable_name="package_name",
                     value_name="package_version",)
                 .filter(pl.col("package_version").is_not_null())
