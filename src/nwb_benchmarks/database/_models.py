@@ -205,7 +205,7 @@ class Environment:
         packages = {
             package["name"]: f'{package["version"]} ({package["build"]})'
             for package in data[preamble]
-            if len(package) == 3
+            if len(package) >= 3
         }
 
         if not any(packages):
