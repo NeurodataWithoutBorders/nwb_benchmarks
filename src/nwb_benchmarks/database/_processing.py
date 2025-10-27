@@ -7,7 +7,7 @@ import polars as pl
 
 from nwb_benchmarks.database._parquet import repackage_as_parquet
 
-PACKAGES_OF_INTEREST = ['h5py', 'fsspec', 'lindi', 'remfile', 'zarr', 'hdmf_zarr', 'hdmf', 'pynwb']
+PACKAGES_OF_INTEREST = ['h5py', 'fsspec', 'lindi', 'remfile', 'zarr', 'hdmf-zarr', 'hdmf', 'pynwb']
 
 class BenchmarkDatabase:
     """Handles database preprocessing and loading for NWB benchmarks."""
@@ -123,7 +123,7 @@ class BenchmarkDatabase:
                 .cast(pl.Int64)
                 .alias("scaling_value"),
             )
-            .with_columns((pl.col("scaling_value").rank(method="dense") - 1).over("modality").alias("slice_number"))
+            .with_columns((pl.col("scaling_value").rank(method="dense")).over("modality").alias("slice_number"))
             # Create unified cleaned benchmark name
             .with_columns(
                 pl.when(pl.col("benchmark_name_label") == "ContinuousSliceBenchmark")
