@@ -109,8 +109,8 @@ class BenchmarkDatabase:
             # Handle preloaded information
             .with_columns(
                 [
-                    pl.col("benchmark_name_test").str.contains("Preloaded").alias("is_preloaded"),
-                    pl.col("benchmark_name_test").str.replace(" Preloaded", "").alias("benchmark_name_test"),
+                    pl.col("benchmark_name_test").str.contains("preloaded").alias("is_preloaded"),
+                    pl.col("benchmark_name_test").str.replace(" preloaded", "").alias("benchmark_name_test"),
                 ]
             )
             # Extract scaling information
