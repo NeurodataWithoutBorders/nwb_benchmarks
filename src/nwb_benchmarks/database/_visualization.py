@@ -16,19 +16,6 @@ class BenchmarkVisualizer:
     """Handles plotting and visualization of benchmark results."""
 
     # Default benchmark orders
-    slicing_order = [
-        "HDF5 PyNWB Fsspec S3 No Cache",
-        "HDF5 PyNWB Fsspec Https No Cache",
-        "HDF5 PyNWB Remfile No Cache",
-        "HDF5 PyNWB Fsspec S3 With Cache",
-        "HDF5 PyNWB Fsspec Https With Cache",
-        "HDF5 PyNWB Remfile With Cache",
-        "HDF5 PyNWB ROS3",
-        "Lindi Local JSON",
-        "Zarr PyNWB S3",
-        "Zarr PyNWB S3 Force No Consolidated",
-    ]
-
     file_open_order = [
         "hdf5 h5py remfile no cache",
         "hdf5 h5py fsspec https no cache",
@@ -58,8 +45,11 @@ class BenchmarkVisualizer:
         "zarr pynwb s3",
         "zarr pynwb s3 force no consolidated",
     ]
+    # TODO - where does lindi local json value go / what should it be called
 
-    download_order = ["Lindi"]
+    download_order = ["hdf5 dandi api", 
+                      "zarr dandi api",
+                      "lindi dandi api"]
 
     def __init__(self, output_directory: Optional[Path] = None):
         """Initialize visualizer with output directory.
@@ -186,7 +176,7 @@ class BenchmarkVisualizer:
         )
 
     def plot_benchmark_heatmap(
-        self, df: pl.LazyFrame, group: str, metric_order: List[str], ax: Optional[plt.Axes] = None
+        self, df: pl.LazyFrame, metric_order: List[str], group: str = "benchmark_name_clean", ax: Optional[plt.Axes] = None
     ) -> plt.Axes:
         """Create heatmap visualization of benchmark results."""
         heatmap_df = self._create_heatmap_df(df, group, metric_order)
@@ -233,7 +223,7 @@ class BenchmarkVisualizer:
         db: BenchmarkDatabase,
         order: List[str],
         benchmark_type: str = "time_remote_file_reading",
-        col_name: str = "benchmark_name_operation",
+        col_name: str = "benchmark_name_clean",
         network_tracking: bool = False,
         kind: str = "box",
         suffix: str = "pynwb",
@@ -276,7 +266,7 @@ class BenchmarkVisualizer:
         db: BenchmarkDatabase,
         order: List[str],
         benchmark_type: str = "time_remote_slicing",
-        col_name: str = "benchmark_name_test",
+        col_name: str = "benchmark_name_clean",
         network_tracking: bool = False,
         kind: str = "box",
     ):
@@ -325,18 +315,26 @@ class BenchmarkVisualizer:
         self,
         db: BenchmarkDatabase,
         order: List[str],
-        benchmark_type: str = "time_remote_slicing",
         network_tracking: bool = False,
     ):
         """Plot download vs stream benchmark comparison."""
         print("Plotting download vs stream benchmark comparison...")
 
-        slice_df = db.filter_tests(benchmark_type).collect()
+        download_df = db.filter_tests("time_download").collect().to_pandas()
+        slice_df = db.filter_tests("time_remote_slicing").collect().to_pandas()
+        read_df = db.filter_tests("time_remote_file_reading").collect().to_pandas()
         prefix = self._get_filename_prefix(network_tracking)
+
+        # Get averages for each metric
+        file_open_avg = read_df.groupby('benchmark_name_clean')['value'].mean()
+        file_slicing_avg = slice_df.groupby('benchmark_name_clean')['value'].mean()
+
+        # TODO - combine download + local read times 
+        # TODO - combine read + slice times
 
         plot_kwargs = {
             "df": slice_df,
-            "group": "benchmark_name_test",
+            "group": "benchmark_name_clean",
             "metric_order": order,
             "filename": self.output_directory / f"{prefix}slicing_vs_time.pdf",
             "row": "variable" if network_tracking else "is_preloaded",
@@ -354,15 +352,15 @@ class BenchmarkVisualizer:
 
         fig, axes = plt.subplots(3, 1, figsize=(8, 16))
         axes[0] = self.plot_benchmark_heatmap(
-            df=read_df, group="benchmark_name_operation", metric_order=self.file_open_order, ax=axes[0]
+            df=read_df, metric_order=self.file_open_order, ax=axes[0]
         )
 
         axes[1] = self.plot_benchmark_heatmap(
-            df=read_df, group="benchmark_name_operation", metric_order=self.pynwb_reading_order, ax=axes[1]
+            df=read_df, metric_order=self.pynwb_reading_order, ax=axes[1]
         )
 
         axes[2] = self.plot_benchmark_heatmap(
-            df=slice_df, group="benchmark_name_test", metric_order=self.slicing_order, ax=axes[2]
+            df=slice_df, metric_order=self.pynwb_reading_order, ax=axes[2]
         )
 
         axes[0].set_title("Remote File Reading")
@@ -387,8 +385,8 @@ class BenchmarkVisualizer:
         )
         return group
 
-    def plot_performance_over_time(self, db: BenchmarkDatabase, order: List[str], 
-                                   hue: str = "benchmark_name_operation",
+    def plot_performance_across_versions(self, db: BenchmarkDatabase, order: List[str], 
+                                   hue: str = "benchmark_name_clean",
                                    benchmark_type: str = "time_remote_file_reading"):
         """Plot performance changes over time for a given benchmark type."""
         print(f"Plotting performance over time")
@@ -432,16 +430,9 @@ class BenchmarkVisualizer:
         # Remote file reading benchmarks
         self.plot_read_benchmarks(db, self.file_open_order, suffix="")
         self.plot_read_benchmarks(db, self.pynwb_reading_order, suffix="_pynwb")
-        self.plot_read_benchmarks(
-            db,
-            self.download_order,
-            benchmark_type="time_download_lindi",
-            col_name="benchmark_name_test",
-            suffix="_lindidownload",
-        )
 
         # Remote file slicing
-        self.plot_slice_benchmarks(db, self.slicing_order)
+        self.plot_slice_benchmarks(db, self.pynwb_reading_order)
 
         # Network tracking analysis
         benchmark_type = "network_tracking_remote_file_reading"
@@ -451,25 +442,21 @@ class BenchmarkVisualizer:
         )
 
         benchmark_type = "network_tracking_remote_slicing"
-        self.plot_slice_benchmarks(db, self.slicing_order, benchmark_type=benchmark_type, network_tracking=True)
+        self.plot_slice_benchmarks(db, self.pynwb_reading_order, benchmark_type=benchmark_type, network_tracking=True)
 
         # Method rankings
         self.plot_method_rankings(db)
 
-        # 2. TODO - WHEN TO DOWNLOAD VS. STREAM DATA?
-        # need to plot baseline download line + time to open + slice vs. number of slices
-        # this approach has outline but does not include time to open or baseline download time
-        self.plot_download_vs_stream_benchmarks(db, self.slicing_order)
+        # 2. WHEN TO DOWNLOAD VS. STREAM DATA?
+        # baseline download line + time to open + slice locally vs. number of slices
+        # time to open + slice locally vs. number of slices
+        self.plot_download_vs_stream_benchmarks(db, self.pynwb_reading_order)
 
-        # 3. TODO - HOW DOES PERFORMANCE CHANGE ACROSS VERSIONS/TIME
-        # need to add regression tests for different libraries selecting a specific approach
-        # different versions (6/2024, 6/2025, now, etc.)
-        # performance on a single test (speed) vs. version (h5py, fsspec, etc.)
-        self.plot_performance_over_time(db, 
+        # 3. HOW DOES PERFORMANCE CHANGE ACROSS VERSIONS/TIME
+        # performance on a single test (time to read/slice) vs. version (h5py, fsspec, etc.)
+        self.plot_performance_across_versions(db, 
                                         self.pynwb_reading_order, 
-                                        hue="benchmark_name_operation", 
                                         benchmark_type="time_remote_file_reading")
-        self.plot_performance_over_time(db, 
-                                        self.slicing_order, 
-                                        hue="benchmark_name_test", 
+        self.plot_performance_across_versions(db, 
+                                        self.pynwb_reading_order, 
                                         benchmark_type="time_remote_slicing")
