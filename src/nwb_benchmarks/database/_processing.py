@@ -64,7 +64,7 @@ class BenchmarkDatabase:
             .replace("FileReadBenchmark", "")
             .replace("DownloadBenchmark", "")
         )
-        return self.split_camel_case(short_name)
+        return self.split_camel_case(short_name).lower()
 
     def _preprocess_results(self, df: pl.LazyFrame) -> pl.DataFrame:
         """Apply all preprocessing transformations to the results dataframe."""
@@ -75,6 +75,7 @@ class BenchmarkDatabase:
             pl.col("benchmark_name_operation")
             .str.replace("time_read_", "")
             .str.replace("track_network_read_", "")
+            .str.replace("time_download_", "")
             .str.replace_all("_", " ")
         )
 
@@ -123,6 +124,15 @@ class BenchmarkDatabase:
                 .alias("scaling_value"),
             )
             .with_columns((pl.col("scaling_value").rank(method="dense") - 1).over("modality").alias("slice_number"))
+            # Create unified cleaned benchmark name
+            .with_columns(
+                pl.when(pl.col("benchmark_name_label") == "ContinuousSliceBenchmark")
+                .then(pl.col("benchmark_name_test"))
+                .when(pl.col("benchmark_name_label").is_in(["FileReadBenchmark", "DownloadDandiAPIBenchmark"]))
+                .then(pl.col("benchmark_name_operation"))
+                .otherwise(pl.col("benchmark_name_test"))  # fallback
+                .alias("benchmark_name_clean")
+            )
         )
 
     def _preprocess_environments(self, df: pl.LazyFrame) -> pl.LazyFrame:
