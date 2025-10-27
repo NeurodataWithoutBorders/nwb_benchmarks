@@ -7,7 +7,8 @@ import polars as pl
 
 from nwb_benchmarks.database._parquet import repackage_as_parquet
 
-PACKAGES_OF_INTEREST = ['h5py', 'fsspec', 'lindi', 'remfile', 'zarr', 'hdmf-zarr', 'hdmf', 'pynwb']
+PACKAGES_OF_INTEREST = ["h5py", "fsspec", "lindi", "remfile", "zarr", "hdmf-zarr", "hdmf", "pynwb"]
+
 
 class BenchmarkDatabase:
     """Handles database preprocessing and loading for NWB benchmarks."""
@@ -82,10 +83,7 @@ class BenchmarkDatabase:
         return (
             df
             # Filter for specific machine early to reduce data volume
-            .filter(
-                pl.col("machine_id") == self.machine_id if self.machine_id is not None 
-                else pl.lit(True)
-            )
+            .filter(pl.col("machine_id") == self.machine_id if self.machine_id is not None else pl.lit(True))
             # Extract benchmark name components
             .with_columns(
                 [
@@ -122,8 +120,7 @@ class BenchmarkDatabase:
                 .str.extract(r"slice\(0, (\d+),", group_index=1)
                 .cast(pl.Int64)
                 .alias("scaling_value"),
-            )
-            .with_columns((pl.col("scaling_value").rank(method="dense")).over("modality").alias("slice_number"))
+            ).with_columns((pl.col("scaling_value").rank(method="dense")).over("modality").alias("slice_number"))
             # Create unified cleaned benchmark name
             .with_columns(
                 pl.when(pl.col("benchmark_name_label") == "ContinuousSliceBenchmark")
@@ -137,23 +134,21 @@ class BenchmarkDatabase:
 
     def _preprocess_environments(self, df: pl.LazyFrame) -> pl.LazyFrame:
         """Apply all preprocessing transformations to the environments dataframe."""
-        
-        return (df
-                # get only relevant package columns
-                .select(["environment_id", *self.packages_of_interest])
-                # remove build information
-                .with_columns([
-                    pl.col(pkg).str.extract(r"^([\d.]+)", group_index=1) 
-                    for pkg in self.packages_of_interest
-                ])
-                # unpivot packages into long format for plotting
-                .unpivot(
-                    index="environment_id",
-                    on=self.packages_of_interest,
-                    variable_name="package_name",
-                    value_name="package_version",)
-                .filter(pl.col("package_version").is_not_null())
-                )
+
+        return (
+            df
+            # get only relevant package columns
+            .select(["environment_id", *self.packages_of_interest])
+            # remove build information
+            .with_columns([pl.col(pkg).str.extract(r"^([\d.]+)", group_index=1) for pkg in self.packages_of_interest])
+            # unpivot packages into long format for plotting
+            .unpivot(
+                index="environment_id",
+                on=self.packages_of_interest,
+                variable_name="package_name",
+                value_name="package_version",
+            ).filter(pl.col("package_version").is_not_null())
+        )
 
     def get_results(self) -> pl.LazyFrame:
         """
@@ -179,15 +174,15 @@ class BenchmarkDatabase:
             lazy_df = pl.scan_parquet(self.db_directory / "environments.parquet")
             self._environments_df = self._preprocess_environments(lazy_df)
 
-        return self._environments_df  
+        return self._environments_df
 
     def join_results_with_environments(self) -> pl.LazyFrame:
         """Join streaming package versions with results using the environments table."""
         return self.get_results().join(
-                    self.get_environments(),
-                    on="environment_id",
-                    how="left",
-                )
+            self.get_environments(),
+            on="environment_id",
+            how="left",
+        )
 
     def filter_tests(self, benchmark_type: str) -> pl.LazyFrame:
         """Filter benchmark tests."""
