@@ -12,7 +12,7 @@ from nwb_benchmarks.setup import get_temporary_directory
 from .params_remote_download import hdf5_params, lindi_remote_rfs_params, zarr_params
 
 
-class BaseDownloadDandiAPIBenchmark(BaseBenchmark):
+class BaseDandiAPIDownloadBenchmark(BaseBenchmark):
     """
     Base class for timing the download of remote NWB files using the DANDI API.
     """
@@ -27,7 +27,7 @@ class BaseDownloadDandiAPIBenchmark(BaseBenchmark):
             self.tmpdir.cleanup()
 
 
-class HDF5DownloadDandiAPIBenchmark(BaseDownloadDandiAPIBenchmark):
+class HDF5DandiAPIDownloadBenchmark(BaseDandiAPIDownloadBenchmark):
     """
     Time the download of remote HDF5 NWB files using the DANDI API.
     """
@@ -41,7 +41,7 @@ class HDF5DownloadDandiAPIBenchmark(BaseDownloadDandiAPIBenchmark):
         download(urls=params["https_url"], output_dir=self.tmpdir.name)
 
 
-class ZarrDownloadDandiAPIBenchmark(BaseDownloadDandiAPIBenchmark):
+class ZarrDandiAPIDownloadBenchmark(BaseDandiAPIDownloadBenchmark):
     """
     Time the download of remote Zarr NWB files using the DANDI API.
     """
@@ -55,7 +55,7 @@ class ZarrDownloadDandiAPIBenchmark(BaseDownloadDandiAPIBenchmark):
         download(urls=params["https_url"], output_dir=self.tmpdir.name)
 
 
-class LindiDownloadDandiAPIBenchmark(BaseDownloadDandiAPIBenchmark):
+class LindiDandiAPIDownloadBenchmark(BaseDandiAPIDownloadBenchmark):
     """
     Time the download of a remote LINDI JSON file.
     """
