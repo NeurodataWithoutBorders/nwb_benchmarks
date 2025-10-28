@@ -4,6 +4,7 @@ import json
 import pathlib
 import re
 import uuid
+from datetime import datetime
 
 import packaging.version
 import typing_extensions
@@ -13,7 +14,7 @@ import typing_extensions
 class Result:
     uuid: str
     version: str
-    timestamp: str
+    timestamp: datetime
     commit_hash: str
     environment_id: str
     machine_id: str
@@ -26,6 +27,43 @@ class Result:
 @dataclasses.dataclass
 class Results:
     results: list[Result]
+
+    @staticmethod
+    def normalize_time_and_network_results(benchmark_results) -> dict:
+        """Convert benchmark results to a consistent dict format with list values."""
+
+        def process_network_results(benchmark_results: dict) -> dict:
+            """Add additional network metrics."""
+            results = benchmark_results.copy()
+
+            if results["total_traffic_in_number_of_web_packets"] != 0:
+                results["mean_time_per_web_packet"] = (
+                    results["total_transfer_time_in_seconds"] / results["total_traffic_in_number_of_web_packets"]
+                )
+            else:
+                results["mean_time_per_web_packet"] = float("nan")
+
+            return results
+
+        if isinstance(benchmark_results, dict):
+            value_dict = process_network_results(benchmark_results)
+        else:
+            value_dict = dict(time=benchmark_results)
+
+        # Ensure all values are lists
+        return {k: v if isinstance(v, list) else [float(v)] for k, v in value_dict.items()}
+
+    @staticmethod
+    def parse_parameter_case(s):
+        # replace any slice(...) with "slice(...)" for safe parsing
+        modified_s = re.sub(r"slice\([^)]+\)", r'"\g<0>"', s)
+        output = ast.literal_eval(modified_s)
+
+        # if the parsed string is not a dict (older benchmarks results), convert it to one
+        if not isinstance(output, dict):
+            output = {"https_url": output[0].strip("'")}
+
+        return output
 
     @classmethod
     def safe_load_from_json(cls, file_path: pathlib.Path) -> typing_extensions.Self | None:
@@ -43,43 +81,22 @@ class Results:
         environment_id = data["environment_id"]
         machine_id = data["machine_id"]
 
-        def normalize_time_and_network_results(benchmark_results) -> dict:
-            """Convert benchmark results to a consistent dict format with list values."""
-            if isinstance(benchmark_results, dict):
-                value_dict = benchmark_results
-            else:
-                value_dict = dict(time=benchmark_results)
-
-            # Ensure all values are lists
-            return {k: v if isinstance(v, list) else [float(v)] for k, v in value_dict.items()}
-
-        def parse_parameter_case(s):
-            # replace any slice(...) with "slice(...)" for safe parsing
-            modified_s = re.sub(r"slice\([^)]+\)", r'"\g<0>"', s)
-            output = ast.literal_eval(modified_s)
-
-            # if the parsed string is not a dict (older benchmarks results), convert it to one
-            if not isinstance(output, dict):
-                output = {"https_url": output[0].strip("'")}
-
-            return output
-
         results = [
             Result(
                 uuid=str(uuid.uuid4()),  # TODO: add this to each results file so it is persistent
                 version=database_version,
-                timestamp=timestamp,
+                timestamp=datetime.strptime(timestamp, "%Y-%m-%d-%H-%M-%S"),
                 commit_hash=commit_hash,
                 environment_id=environment_id,
                 machine_id=machine_id,
                 benchmark_name=benchmark_name,
-                parameter_case=parse_parameter_case(parameter_case),
+                parameter_case=cls.parse_parameter_case(parameter_case),
                 value=value,
                 variable=variable_name,
             )
             for benchmark_name, parameter_cases in data["results"].items()
             for parameter_case, benchmark_results in parameter_cases.items()
-            for variable_name, values in normalize_time_and_network_results(benchmark_results).items()
+            for variable_name, values in cls.normalize_time_and_network_results(benchmark_results).items()
             for value in values
         ]
 
@@ -94,6 +111,7 @@ class Results:
             "commit_hash": [result.commit_hash for result in self.results],
             "environment_id": [result.environment_id for result in self.results],
             "machine_id": [result.machine_id for result in self.results],
+            "timestamp": [result.timestamp for result in self.results],
             "benchmark_name": [result.benchmark_name for result in self.results],
             "parameter_case_name": [result.parameter_case.get("name") for result in self.results],
             "parameter_case_https_url": [result.parameter_case.get("https_url") for result in self.results],
@@ -187,7 +205,7 @@ class Environment:
         packages = {
             package["name"]: f'{package["version"]} ({package["build"]})'
             for package in data[preamble]
-            if len(package) == 3
+            if len(package) >= 3
         }
 
         if not any(packages):
