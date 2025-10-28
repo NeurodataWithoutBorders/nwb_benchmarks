@@ -1,93 +1,190 @@
-import dataclasses
-import pathlib
+import re
+from functools import lru_cache
+from pathlib import Path
+from typing import Optional
 
-import packaging
-import polars
+import polars as pl
 
-from ._models import Environment, Machine, Results
+from nwb_benchmarks.database._parquet import repackage_as_parquet
+
+PACKAGES_OF_INTEREST = ["h5py", "fsspec", "lindi", "remfile", "zarr", "hdmf-zarr", "hdmf", "pynwb"]
 
 
-def concat_dataclasses_to_parquet(
-    directory: pathlib.Path,
-    output_directory: pathlib.Path,
-    dataclass_name: str,
-    dataclass: dataclasses.dataclass,
-    concat_how: str = "diagonal_relaxed",
-    minimum_version: str = "1.0.0",
-) -> None:
-    """Generic function to process any data type (machines, environments, results)
+class BenchmarkDatabase:
+    """Handles database preprocessing and loading for NWB benchmarks."""
 
-    Args:
-        directory (pathlib.Path): Path to the root directory containing data subdirectories.
-        output_directory (pathlib.Path): Path to the output directory where the parquet file will be saved.
-        dataclass_name (str): Name of the data class, used for input and output filenames.
-        dataclass: The dataclass type to process (Machine, Environment, Results).
-        concat_how (str, optional): How to concatenate dataframes. Defaults to "diagonal_relaxed".
-        minimum_version (str, optional): Minimum version of the database to include. Defaults to "1.0.0".
-    Returns:
+    def __init__(
+        self,
+        results_directory: Optional[Path] = None,
+        db_directory: Optional[Path] = None,
+        machine_id: str = None,
+    ):
+        """Initialize database handler with directories and machine ID.
 
-    """
+        Args:
+            results_directory: Directory containing benchmark results
+            db_directory: Directory for database storage
+            machine_id: Machine ID for filtering results
+        """
+        self.machine_id = machine_id
+        self.packages_of_interest = PACKAGES_OF_INTEREST
 
-    data_frames = []
-    data_directory = directory / dataclass_name
+        # Set default directories if not provided
+        cache_dir = Path.home() / ".cache" / "nwb-benchmarks"
+        self.results_directory = results_directory or cache_dir / "nwb-benchmarks-results"
+        self.db_directory = db_directory or cache_dir / "nwb-benchmarks-database"
 
-    for file_path in data_directory.iterdir():
-        obj = dataclass.safe_load_from_json(file_path=file_path)
+        self._results_df = None
+        self._environments_df = None
 
-        if obj is None:
-            continue
+    def create_database(self, minimum_results_version: str = "3.0.0", minimum_machines_version: str = "1.4.0") -> None:
+        """Create new database file with latest results."""
+        repackage_as_parquet(
+            directory=self.results_directory,
+            output_directory=self.db_directory,
+            minimum_results_version=minimum_results_version,
+            minimum_machines_version=minimum_machines_version,
+        )
 
-        data_frame = obj.to_dataframe()
+    @staticmethod
+    @lru_cache(maxsize=128)
+    def split_camel_case(text: str) -> str:
+        """Split camel case text into words."""
+        text = re.sub(r"PyNWBS3", "PyNWB S3", text)
+        text = re.sub(r"NWBROS3", "NWB ROS3", text)
+        result = re.sub("([a-z0-9])([A-Z])", r"\1 \2", text)
+        result = re.sub("([A-Z]+)([A-Z][a-z])", r"\1 \2", result)
+        result = re.sub("Py NWB", "PyNWB", result)
+        return result
 
-        # filter by minimum version (before concatenation to avoid issues with different results structures)
-        # TODO - should environment have a version?
-        if "version" in data_frame.columns:
-            data_frame = data_frame.filter(
-                polars.col("version").map_elements(
-                    lambda x: packaging.version.parse(x) >= packaging.version.parse(minimum_version),
-                    return_dtype=polars.Boolean,
-                )
+    @lru_cache(maxsize=128)
+    def clean_benchmark_name_test(self, name: str) -> str:
+        """Clean benchmark test names."""
+        short_name = (
+            name.replace("ContinuousSliceBenchmark", "")
+            .replace("FileReadBenchmark", "")
+            .replace("DownloadBenchmark", "")
+        )
+        return self.split_camel_case(short_name).lower()
+
+    def _preprocess_results(self, df: pl.LazyFrame) -> pl.DataFrame:
+        """Apply all preprocessing transformations to the results dataframe."""
+        print("Preprocessing benchmark results...")
+
+        # clean benchmark expression
+        clean_benchmark_operation_expr = (
+            pl.col("benchmark_name_operation")
+            .str.replace("time_read_", "")
+            .str.replace("track_network_read_", "")
+            .str.replace("time_download_", "")
+            .str.replace_all("_", " ")
+        )
+
+        return (
+            df
+            # Filter for specific machine early to reduce data volume
+            .filter(pl.col("machine_id") == self.machine_id if self.machine_id is not None else pl.lit(True))
+            # Extract benchmark name components
+            .with_columns(
+                [
+                    pl.col("parameter_case_name").str.extract(r"^(Ophys|Ecephys|Icephys)").alias("modality"),
+                    pl.col("benchmark_name").str.split(".").list.get(0).alias("benchmark_name_type"),
+                    pl.col("benchmark_name").str.split(".").list.get(1).alias("benchmark_name_test"),
+                    pl.col("benchmark_name").str.split(".").list.get(2).alias("benchmark_name_operation"),
+                ]
             )
+            # Clean operation names using expressions
+            .with_columns(clean_benchmark_operation_expr.alias("benchmark_name_operation"))
+            # Extract benchmark labels and clean test names
+            .with_columns(
+                [
+                    pl.col("benchmark_name_test")
+                    .str.extract(r"(ContinuousSliceBenchmark|FileReadBenchmark|DownloadBenchmark)")
+                    .alias("benchmark_name_label"),
+                    pl.col("benchmark_name_test")
+                    .map_elements(self.clean_benchmark_name_test, return_dtype=pl.String)
+                    .alias("benchmark_name_test"),
+                ]
+            )
+            # Handle preloaded information
+            .with_columns(
+                [
+                    pl.col("benchmark_name_test").str.contains("preloaded").alias("is_preloaded"),
+                    pl.col("benchmark_name_test").str.replace(" preloaded", "").alias("benchmark_name_test"),
+                ]
+            )
+            # Extract scaling information
+            .with_columns(
+                pl.col("parameter_case_slice_range")
+                .list.first()
+                .str.extract(r"slice\(0, (\d+),", group_index=1)
+                .cast(pl.Int64)
+                .alias("scaling_value"),
+            ).with_columns((pl.col("scaling_value").rank(method="dense")).over("modality").alias("slice_number"))
+            # Create unified cleaned benchmark name
+            .with_columns(
+                pl.when(pl.col("benchmark_name_label") == "ContinuousSliceBenchmark")
+                .then(pl.col("benchmark_name_test"))
+                .when(pl.col("benchmark_name_label").is_in(["FileReadBenchmark", "DownloadDandiAPIBenchmark"]))
+                .then(pl.col("benchmark_name_operation"))
+                .otherwise(pl.col("benchmark_name_test"))  # fallback
+                .alias("benchmark_name_clean")
+            )
+        )
 
-        data_frames.append(data_frame)
+    def _preprocess_environments(self, df: pl.LazyFrame) -> pl.LazyFrame:
+        """Apply all preprocessing transformations to the environments dataframe."""
 
-    if data_frames:
-        database = polars.concat(items=data_frames, how=concat_how)
-        output_file_path = output_directory / f"{dataclass_name}.parquet"
-        database.write_parquet(file=output_file_path)
+        return (
+            df
+            # get only relevant package columns
+            .select(["environment_id", *self.packages_of_interest])
+            # remove build information
+            .with_columns([pl.col(pkg).str.extract(r"^([\d.]+)", group_index=1) for pkg in self.packages_of_interest])
+            # unpivot packages into long format for plotting
+            .unpivot(
+                index="environment_id",
+                on=self.packages_of_interest,
+                variable_name="package_name",
+                value_name="package_version",
+            ).filter(pl.col("package_version").is_not_null())
+        )
 
+    def get_results(self) -> pl.LazyFrame:
+        """
+        Load and preprocess benchmark results with caching.
 
-def repackage_as_parquet(
-    directory: pathlib.Path, output_directory: pathlib.Path, minimum_version: str = "1.0.0"
-) -> None:
-    """Repackage JSON results files as parquet databases for easier querying."""
+        Returns:
+            Preprocessed benchmark results as a DataFrame
+        """
+        if self._results_df is None:
+            lazy_df = pl.scan_parquet(self.db_directory / "results.parquet")
+            self._results_df = self._preprocess_results(lazy_df)
 
-    # Machines
-    concat_dataclasses_to_parquet(
-        directory=directory,
-        output_directory=output_directory,
-        dataclass_name="machines",
-        dataclass=Machine,
-        concat_how="diagonal_relaxed",
-        minimum_version=minimum_version,
-    )
+        return self._results_df
 
-    # Environments
-    concat_dataclasses_to_parquet(
-        directory=directory,
-        output_directory=output_directory,
-        dataclass_name="environments",
-        dataclass=Environment,
-        concat_how="diagonal",
-        minimum_version=minimum_version,
-    )
+    def get_environments(self) -> pl.LazyFrame:
+        """
+        Load and preprocess benchmark environments with caching.
 
-    # Results
-    concat_dataclasses_to_parquet(
-        directory=directory,
-        output_directory=output_directory,
-        dataclass_name="results",
-        dataclass=Results,
-        concat_how="diagonal_relaxed",
-        minimum_version=minimum_version,
-    )
+        Returns:
+            Preprocessed benchmark environments as a DataFrame
+        """
+        if self._environments_df is None:
+            lazy_df = pl.scan_parquet(self.db_directory / "environments.parquet")
+            self._environments_df = self._preprocess_environments(lazy_df)
+
+        return self._environments_df
+
+    def join_results_with_environments(self) -> pl.LazyFrame:
+        """Join streaming package versions with results using the environments table."""
+        return self.get_results().join(
+            self.get_environments(),
+            on="environment_id",
+            how="left",
+        )
+
+    def filter_tests(self, benchmark_type: str) -> pl.LazyFrame:
+        """Filter benchmark tests."""
+        results_df = self.get_results()
+        return results_df.filter(pl.col("benchmark_name_type") == benchmark_type)
