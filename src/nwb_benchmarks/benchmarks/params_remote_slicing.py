@@ -194,6 +194,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
+            follow_redirects=False,
         ),
         object_name="ElectricalSeries",
         slice_range=(slice(0, 262_144 * 5), slice(0, 384)),  # 60 chunks
