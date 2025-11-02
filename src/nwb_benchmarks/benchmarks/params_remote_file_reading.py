@@ -36,10 +36,6 @@ hdf5_params = (
     # ),
 )
 
-# Parameters for LINDI when HDF5 files are remote without using an existing LINDI JSON reference file system on
-# the remote server (i.e., we create the LINDI JSON file for these in these tests)
-lindi_hdf5_params = hdf5_params
-
 # Parameters for LINDI pointing to a remote LINDI reference file system JSON file. I.e., here we do not
 # to create the JSON but can load it directly from the remote store
 lindi_remote_rfs_params = (
@@ -48,6 +44,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
+            follow_redirects=False,
         ),
     ),
     dict(
@@ -55,6 +52,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-R6/sub-R6_behavior+ophys.nwb.lindi.json",
+            follow_redirects=False,
         ),
     ),
     dict(
@@ -62,6 +60,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
+            follow_redirects=False,
         ),
     ),
     # dict(

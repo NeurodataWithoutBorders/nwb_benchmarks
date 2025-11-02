@@ -123,3 +123,19 @@ def clean_cache(ignore_errors: bool = False) -> None:
             shutil.rmtree(path=path, ignore_errors=ignore_errors)
         else:
             path.unlink(missing_ok=True)
+
+
+def get_persistent_download_directory() -> pathlib.Path:
+    """
+    Get the persistent download directory for NWB Benchmarks.
+    Files downloaded here are not deleted automatically.
+
+    Returns
+    -------
+    pathlib.Path
+        The persistent download directory path.
+    """
+    benchmarks_home_directory = get_benchmarks_home_directory()
+    download_directory = benchmarks_home_directory / "downloads"
+    download_directory.mkdir(exist_ok=True)
+    return download_directory

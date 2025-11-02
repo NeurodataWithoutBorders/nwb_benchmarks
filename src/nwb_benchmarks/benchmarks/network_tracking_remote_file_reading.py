@@ -5,16 +5,14 @@ The benchmarks should be consistent with the timing benchmarks - each function s
 network activity tracker.
 """
 
-import os
 import shutil
 
-from asv_runner.benchmarks.mark import skip_benchmark, skip_benchmark_if
+from asv_runner.benchmarks.mark import skip_benchmark_if
 
 from nwb_benchmarks import TSHARK_PATH
 from nwb_benchmarks.core import (
     BaseBenchmark,
-    create_lindi_reference_file_system,
-    download_file,
+    download_asset_if_not_exists,
     network_activity_tracker,
     read_hdf5_h5py_fsspec_https_no_cache,
     read_hdf5_h5py_fsspec_https_with_cache,
@@ -39,7 +37,6 @@ from nwb_benchmarks.core import (
 
 from .params_remote_file_reading import (
     hdf5_params,
-    lindi_hdf5_params,
     lindi_remote_rfs_params,
     zarr_params,
 )
@@ -339,38 +336,13 @@ class HDF5PyNWBRemfilePreloadedWithCacheFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
-class LindiCreateLocalJSONFileBenchmark(BaseBenchmark):
-    """
-    Track the network activity during read of remote HDF5 files and the creation of a LINDI JSON file using lindi.
-    """
-
-    params = lindi_hdf5_params
-
-    def setup(self, params: dict[str, str]):
-        https_url = params["https_url"]
-        self.lindi_file = os.path.basename(https_url) + ".nwb.lindi.json"
-        self.teardown(params)
-
-    def teardown(self, params: dict[str, str]):
-        if os.path.exists(self.lindi_file):
-            os.remove(self.lindi_file)
-
-    # TODO This benchmark takes a long time to index all of the chunks for these files! Do not run until ready
-    @skip_benchmark
-    def track_network_read_create_lindi_json(self, params: dict[str, str]):
-        """Read a remote HDF5 file to create a LINDI JSON file."""
-        https_url = params["https_url"]
-        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
-            create_lindi_reference_file_system(https_url=https_url, outfile_path=self.lindi_file)
-        return network_tracker.asv_network_statistics
-
-
 class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
     """
     Track the network activity during read of remote HDF5 files by reading the local LINDI JSON files with lindi and
     h5py or pynwb.
 
-    This downloads the already created remote LINDI JSON files during setup.
+    This downloads the remote LINDI JSON file during setup if it does not already exist in the persistent download
+    directory.
 
     Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
     """
@@ -380,17 +352,13 @@ class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
     def setup(self, params: dict[str, str]):
         """Download the LINDI JSON file."""
         https_url = params["https_url"]
-        self.lindi_file = os.path.basename(https_url) + ".lindi.json"
-        self.teardown(params)
-        download_file(url=https_url, local_path=self.lindi_file)
+        self.lindi_file = download_asset_if_not_exists(https_url=https_url)
 
     def teardown(self, params: dict[str, str]):
         if hasattr(self, "io"):
             self.io.close()
         if hasattr(self, "client"):
             self.client.close()
-        if os.path.exists(self.lindi_file):
-            os.remove(self.lindi_file)
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_read_lindi_h5py(self, params: dict[str, str]):

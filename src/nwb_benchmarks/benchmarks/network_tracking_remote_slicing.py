@@ -16,11 +16,11 @@ from nwb_benchmarks.core import (
     BaseBenchmark,
     get_object_by_name,
     network_activity_tracker,
+    download_read_hdf5_pynwb_lindi,
     read_hdf5_pynwb_fsspec_https_no_cache,
     read_hdf5_pynwb_fsspec_https_with_cache,
     read_hdf5_pynwb_fsspec_s3_no_cache,
     read_hdf5_pynwb_fsspec_s3_with_cache,
-    read_hdf5_pynwb_lindi,
     read_hdf5_pynwb_remfile_no_cache,
     read_hdf5_pynwb_remfile_with_cache,
     read_hdf5_pynwb_ros3,
@@ -336,10 +336,8 @@ class LindiLocalJSONContinuousSliceBenchmark(ContinuousSliceBenchmark):
     Time the read of a continuous data slice from remote HDF5 NWB files by reading the local LINDI JSON files with
     lindi and pynwb.
 
-    This downloads the already created remote LINDI JSON files during setup.
-
-    This should be about the same as reading a data slice from an NWB file that is instantiated with a remote LINDI JSON
-    file because, in that case, the first thing that LINDI does is download the remote file to a temporary directory.
+    This downloads the remote LINDI JSON file during setup if it does not already exist in the persistent download
+    directory.
     """
 
     params = lindi_remote_rfs_params
@@ -348,9 +346,31 @@ class LindiLocalJSONContinuousSliceBenchmark(ContinuousSliceBenchmark):
         https_url = params["https_url"]
         object_name = params["object_name"]
 
-        self.nwbfile, self.io, self.client = read_hdf5_pynwb_lindi(rfs=https_url)
+        self.nwbfile, self.io, self.client = download_read_hdf5_pynwb_lindi(https_url=https_url)
         self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
         self.data_to_slice = self.neurodata_object.data
+
+
+class LindiLocalJSONPreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+    """
+    Time the read of a continuous data slice from remote HDF5 NWB files by reading the local LINDI JSON files with
+    lindi and pynwb after preloading the data into any caches.
+
+    This downloads the remote LINDI JSON file during setup if it does not already exist in the persistent download
+    directory.
+    """
+
+    params = lindi_remote_rfs_params
+
+    def setup(self, params: dict[str, str | Tuple[slice]]):
+        https_url = params["https_url"]
+        object_name = params["object_name"]
+        slice_range = params["slice_range"]
+
+        self.nwbfile, self.io, self.client = download_read_hdf5_pynwb_lindi(https_url=https_url)
+        self.neurodata_object = get_object_by_name(nwbfile=self.nwbfile, object_name=object_name)
+        self.data_to_slice = self.neurodata_object.data
+        self._temp = self.data_to_slice[slice_range]
 
 
 class ZarrPyNWBS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
