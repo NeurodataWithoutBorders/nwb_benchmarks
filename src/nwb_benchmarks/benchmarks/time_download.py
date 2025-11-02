@@ -1,4 +1,5 @@
 """Basic benchmarks for timing download of remote NWB files using different methods."""
+
 from abc import ABC
 
 from asv_runner.benchmarks.mark import skip_benchmark_if
