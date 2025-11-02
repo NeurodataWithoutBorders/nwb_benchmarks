@@ -1,4 +1,5 @@
 """Basic benchmarks for timing download of remote NWB files using different methods."""
+from abc import ABC
 
 from asv_runner.benchmarks.mark import skip_benchmark_if
 from dandi.download import DownloadExisting, download
@@ -10,7 +11,7 @@ from nwb_benchmarks.setup import get_persistent_download_directory
 from .params_remote_download import hdf5_params, lindi_remote_rfs_params, zarr_params
 
 
-class BaseDandiAPIDownloadBenchmark(BaseBenchmark):
+class BaseDandiAPIDownloadBenchmark(BaseBenchmark, ABC):
     """
     Base class for timing the download of remote NWB files using the DANDI API.
     """
