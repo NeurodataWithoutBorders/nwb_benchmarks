@@ -203,7 +203,7 @@ lindi_remote_rfs_params = (
         name="OphysTestCase1",
         https_url=get_https_url(
             dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+            dandi_path="sub-R6/sub-R6_behavior+ophys.nwb.lindi.json",
             follow_redirects=False,
         ),
         object_name="TwoPhotonSeries",
@@ -213,7 +213,7 @@ lindi_remote_rfs_params = (
         name="OphysTestCase2",
         https_url=get_https_url(
             dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+            dandi_path="sub-R6/sub-R6_behavior+ophys.nwb.lindi.json",
             follow_redirects=False,
         ),
         object_name="TwoPhotonSeries",
@@ -223,7 +223,7 @@ lindi_remote_rfs_params = (
         name="OphysTestCase3",
         https_url=get_https_url(
             dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+            dandi_path="sub-R6/sub-R6_behavior+ophys.nwb.lindi.json",
             follow_redirects=False,
         ),
         object_name="TwoPhotonSeries",
@@ -233,7 +233,7 @@ lindi_remote_rfs_params = (
         name="OphysTestCase4",
         https_url=get_https_url(
             dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+            dandi_path="sub-R6/sub-R6_behavior+ophys.nwb.lindi.json",
             follow_redirects=False,
         ),
         object_name="TwoPhotonSeries",
@@ -243,7 +243,7 @@ lindi_remote_rfs_params = (
         name="OphysTestCase5",
         https_url=get_https_url(
             dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+            dandi_path="sub-R6/sub-R6_behavior+ophys.nwb.lindi.json",
             follow_redirects=False,
         ),
         object_name="TwoPhotonSeries",
