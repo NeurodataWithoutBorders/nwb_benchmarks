@@ -2,7 +2,7 @@
 
 from ._base_benchmark import BaseBenchmark
 from ._capture_connections import CaptureConnections
-from ._dandi import get_https_url, get_asset_path_from_url, download_asset_if_not_exists
+from ._dandi import download_asset_if_not_exists, get_asset_path_from_url, get_https_url
 from ._network_profiler import NetworkProfiler
 from ._network_statistics import NetworkStatistics
 from ._network_tracker import network_activity_tracker

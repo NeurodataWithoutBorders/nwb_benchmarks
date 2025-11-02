@@ -1,7 +1,7 @@
 import posixpath
 
 from dandi.dandiapi import DandiAPIClient
-from dandi.download import parse_dandi_url, download, DownloadExisting
+from dandi.download import DownloadExisting, download, parse_dandi_url
 
 from ..setup import get_persistent_download_directory
 

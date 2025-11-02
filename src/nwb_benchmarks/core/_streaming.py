@@ -23,7 +23,6 @@ from s3fs.core import S3File
 from . import download_asset_if_not_exists
 from ..setup import get_temporary_directory
 
-
 # Useful if running in verbose model
 warnings.filterwarnings(action="ignore", message="No cached namespaces found in .*")
 warnings.filterwarnings(action="ignore", message="Ignoring cached namespace .*")

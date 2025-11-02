@@ -1,6 +1,7 @@
 """Basic benchmarks for timing download of remote NWB files using different methods."""
+
 from asv_runner.benchmarks.mark import skip_benchmark_if
-from dandi.download import download, DownloadExisting
+from dandi.download import DownloadExisting, download
 
 from nwb_benchmarks import RUN_DOWNLOAD_BENCHMARKS
 from nwb_benchmarks.core import BaseBenchmark
@@ -13,6 +14,7 @@ class BaseDandiAPIDownloadBenchmark(BaseBenchmark):
     """
     Base class for timing the download of remote NWB files using the DANDI API.
     """
+
     # Download each file only once per timing run even if download time < asv sample_time setting
     number = 1
 

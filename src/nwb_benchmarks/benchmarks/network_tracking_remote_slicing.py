@@ -14,9 +14,9 @@ from asv_runner.benchmarks.mark import skip_benchmark_if
 from nwb_benchmarks import TSHARK_PATH
 from nwb_benchmarks.core import (
     BaseBenchmark,
+    download_read_hdf5_pynwb_lindi,
     get_object_by_name,
     network_activity_tracker,
-    download_read_hdf5_pynwb_lindi,
     read_hdf5_pynwb_fsspec_https_no_cache,
     read_hdf5_pynwb_fsspec_https_with_cache,
     read_hdf5_pynwb_fsspec_s3_no_cache,

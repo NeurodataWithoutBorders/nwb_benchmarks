@@ -3,7 +3,11 @@ import os
 from asv_runner.benchmarks.mark import skip_benchmark
 
 from nwb_benchmarks import TSHARK_PATH
-from nwb_benchmarks.core import BaseBenchmark, create_lindi_reference_file_system, network_activity_tracker
+from nwb_benchmarks.core import (
+    BaseBenchmark,
+    create_lindi_reference_file_system,
+    network_activity_tracker,
+)
 
 from .params_remote_file_reading import hdf5_params
 
