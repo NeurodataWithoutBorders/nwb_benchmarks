@@ -1,7 +1,7 @@
 """Basic benchmarks for timing reading of local NWB files and their contents."""
 
-from asv_runner.benchmarks.mark import SkipNotImplemented
 import h5py
+from asv_runner.benchmarks.mark import SkipNotImplemented
 from pynwb import NWBHDF5IO
 
 from nwb_benchmarks.core import (

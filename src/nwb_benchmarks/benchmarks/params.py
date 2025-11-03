@@ -39,7 +39,9 @@ zarr_ecephys_params = dict(
     dandiset_id="000719",
     dandi_path="sub-npI3_ses-20190421_behavior+ecephys_rechunk.nwb.zarr",
 )
-zarr_ecephys_params["https_url_direct"] = "https://dandiarchive.s3.amazonaws.com/zarr/d097af6b-8fd8-4d83-b649-fc6518e95d25/"
+zarr_ecephys_params["https_url_direct"] = (
+    "https://dandiarchive.s3.amazonaws.com/zarr/d097af6b-8fd8-4d83-b649-fc6518e95d25/"
+)
 zarr_ecephys_params["https_url_no_redirect"] = get_https_url(
     zarr_ecephys_params["dandiset_id"], zarr_ecephys_params["dandi_path"], follow_redirects=False
 )
@@ -48,7 +50,9 @@ zarr_ophys_params = dict(
     dandiset_id="000719",
     dandi_path="sub-R6_ses-20200206T210000_behavior+ophys_DirectoryStore_rechunked.nwb.zarr",
 )
-zarr_ophys_params["https_url_direct"] = "https://dandiarchive.s3.amazonaws.com/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/"
+zarr_ophys_params["https_url_direct"] = (
+    "https://dandiarchive.s3.amazonaws.com/zarr/c8c6b848-fbc6-4f58-85ff-e3f2618ee983/"
+)
 zarr_ophys_params["https_url_no_redirect"] = get_https_url(
     zarr_ophys_params["dandiset_id"], zarr_ophys_params["dandi_path"], follow_redirects=False
 )
@@ -57,7 +61,9 @@ zarr_icephys_params = dict(
     dandiset_id="000719",
     dandi_path="icephys_DS_11_21_24/sub-1214579789_ses-1214621812_icephys_DirectoryStore.nwb.zarr",
 )
-zarr_icephys_params["https_url_direct"] = "https://dandiarchive.s3.amazonaws.com/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/"
+zarr_icephys_params["https_url_direct"] = (
+    "https://dandiarchive.s3.amazonaws.com/zarr/18e75d22-f527-4051-a4c8-c7e0f1e7dad1/"
+)
 zarr_icephys_params["https_url_no_redirect"] = get_https_url(
     zarr_icephys_params["dandiset_id"], zarr_icephys_params["dandi_path"], follow_redirects=False
 )

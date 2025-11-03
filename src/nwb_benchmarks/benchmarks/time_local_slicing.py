@@ -6,7 +6,6 @@ from typing import Tuple
 from asv_runner.benchmarks.mark import SkipNotImplemented
 from pynwb import NWBHDF5IO
 
-
 from nwb_benchmarks.core import (
     BaseBenchmark,
     get_asset_path_from_url,
