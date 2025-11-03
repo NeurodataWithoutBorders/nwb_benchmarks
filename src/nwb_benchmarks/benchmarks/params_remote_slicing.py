@@ -154,6 +154,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
+            follow_redirects=False,
         ),
         object_name="ElectricalSeries",
         slice_range=(slice(0, 262_144), slice(0, 384)),  # 12 chunks
@@ -163,6 +164,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
+            follow_redirects=False,
         ),
         object_name="ElectricalSeries",
         slice_range=(slice(0, 262_144 * 2), slice(0, 384)),  # 24 chunks
@@ -172,6 +174,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
+            follow_redirects=False,
         ),
         object_name="ElectricalSeries",
         slice_range=(slice(0, 262_144 * 3), slice(0, 384)),  # 36 chunks
@@ -181,6 +184,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
+            follow_redirects=False,
         ),
         object_name="ElectricalSeries",
         slice_range=(slice(0, 262_144 * 4), slice(0, 384)),  # 48 chunks
@@ -190,6 +194,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-npI3/sub-npI3_behavior+ecephys.nwb.lindi.json",
+            follow_redirects=False,
         ),
         object_name="ElectricalSeries",
         slice_range=(slice(0, 262_144 * 5), slice(0, 384)),  # 60 chunks
@@ -198,7 +203,8 @@ lindi_remote_rfs_params = (
         name="OphysTestCase1",
         https_url=get_https_url(
             dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+            dandi_path="sub-R6/sub-R6_behavior+ophys.nwb.lindi.json",
+            follow_redirects=False,
         ),
         object_name="TwoPhotonSeries",
         slice_range=(slice(0, 20), slice(0, 796), slice(0, 512)),  # 1 chunk
@@ -207,7 +213,8 @@ lindi_remote_rfs_params = (
         name="OphysTestCase2",
         https_url=get_https_url(
             dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+            dandi_path="sub-R6/sub-R6_behavior+ophys.nwb.lindi.json",
+            follow_redirects=False,
         ),
         object_name="TwoPhotonSeries",
         slice_range=(slice(0, 20 * 2), slice(0, 796), slice(0, 512)),  # 2 chunks
@@ -216,7 +223,8 @@ lindi_remote_rfs_params = (
         name="OphysTestCase3",
         https_url=get_https_url(
             dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+            dandi_path="sub-R6/sub-R6_behavior+ophys.nwb.lindi.json",
+            follow_redirects=False,
         ),
         object_name="TwoPhotonSeries",
         slice_range=(slice(0, 20 * 3), slice(0, 796), slice(0, 512)),  # 3 chunks
@@ -225,7 +233,8 @@ lindi_remote_rfs_params = (
         name="OphysTestCase4",
         https_url=get_https_url(
             dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+            dandi_path="sub-R6/sub-R6_behavior+ophys.nwb.lindi.json",
+            follow_redirects=False,
         ),
         object_name="TwoPhotonSeries",
         slice_range=(slice(0, 20 * 4), slice(0, 796), slice(0, 512)),  # 4 chunks
@@ -234,7 +243,8 @@ lindi_remote_rfs_params = (
         name="OphysTestCase5",
         https_url=get_https_url(
             dandiset_id="213889",
-            dandi_path="sub-R6_ses-20200206T210000_behavior+ophys/sub-R6_ses-20200206T210000_behavior+ophys.lindi.json",
+            dandi_path="sub-R6/sub-R6_behavior+ophys.nwb.lindi.json",
+            follow_redirects=False,
         ),
         object_name="TwoPhotonSeries",
         slice_range=(slice(0, 20 * 5), slice(0, 796), slice(0, 512)),  # 5 chunks
@@ -244,6 +254,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
+            follow_redirects=False,
         ),
         object_name="data_00002_AD0",
         slice_range=(slice(0, 81_920),),  # 10 chunks
@@ -253,6 +264,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
+            follow_redirects=False,
         ),
         object_name="data_00002_AD0",
         slice_range=(slice(0, 81_920 * 2),),  # 20 chunks
@@ -262,6 +274,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
+            follow_redirects=False,
         ),
         object_name="data_00002_AD0",
         slice_range=(slice(0, 81_920 * 3),),  # 30 chunks
@@ -271,6 +284,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
+            follow_redirects=False,
         ),
         object_name="data_00002_AD0",
         slice_range=(slice(0, 81_920 * 4),),  # 40 chunks
@@ -280,6 +294,7 @@ lindi_remote_rfs_params = (
         https_url=get_https_url(
             dandiset_id="213889",
             dandi_path="sub-1214579789_ses-1214621812_icephys/sub-1214579789_ses-1214621812_icephys.lindi.json",
+            follow_redirects=False,
         ),
         object_name="data_00002_AD0",
         slice_range=(slice(0, 81_920 * 5),),  # 50 chunks

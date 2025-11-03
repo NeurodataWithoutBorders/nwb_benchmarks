@@ -1,4 +1,9 @@
+import posixpath
+
 from dandi.dandiapi import DandiAPIClient
+from dandi.download import DownloadExisting, download, parse_dandi_url
+
+from ..setup import get_persistent_download_directory
 
 
 def get_https_url(dandiset_id: str, dandi_path: str, follow_redirects: bool | int = 1) -> str:
@@ -27,3 +32,46 @@ def get_https_url(dandiset_id: str, dandi_path: str, follow_redirects: bool | in
 
     https_url = asset.get_content_url(follow_redirects=follow_redirects, strip_query=True)
     return https_url
+
+
+def get_asset_path_from_url(https_url: str) -> str:
+    """
+    Given a DANDI HTTPS URL, return the basename of the asset path within the dandiset.
+    This is the filename of the asset if one were to call dandi.download on the URL.
+
+    Parameters
+    ----------
+    https_url : str
+        The HTTPS URL of the asset on DANDI.
+
+    Returns
+    -------
+    str
+        The basename of the asset path within the dandiset.
+    """
+    dandi_url = parse_dandi_url(https_url)
+    asset = list(dandi_url.get_assets(dandi_url.get_client()))[0]
+    return posixpath.basename(asset.path)
+
+
+def download_asset_if_not_exists(https_url: str) -> str:
+    """
+    Download the asset from the given DANDI HTTPS URL if it does not already exist in the persistent download directory.
+
+    NOTE: Getting the asset path from the URL can take a little time so this function should not be included in the
+    timing or network tracking of benchmarks.
+
+    Parameters
+    ----------
+    https_url : str
+        The HTTPS URL of the asset on DANDI.
+
+    Returns
+    -------
+    str
+        The file path of the downloaded asset.
+    """
+    download_dir = get_persistent_download_directory()
+    download(urls=https_url, output_dir=download_dir, existing=DownloadExisting.OVERWRITE_DIFFERENT)
+    filename = get_asset_path_from_url(https_url=https_url)
+    return str(download_dir / filename)
