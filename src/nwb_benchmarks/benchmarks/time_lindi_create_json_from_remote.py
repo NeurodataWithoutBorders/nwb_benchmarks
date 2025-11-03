@@ -4,7 +4,7 @@ from asv_runner.benchmarks.mark import skip_benchmark
 
 from nwb_benchmarks.core import BaseBenchmark, create_lindi_reference_file_system
 
-from .params_remote_file_reading import hdf5_params
+from .params import hdf5_redirected_read_params
 
 
 class LindiCreateJSONFromRemoteFileBenchmark(BaseBenchmark):
@@ -12,7 +12,7 @@ class LindiCreateJSONFromRemoteFileBenchmark(BaseBenchmark):
     Time the creation of a LINDI JSON file for a remote NWB HDF5 file using lindi.
     """
 
-    params = hdf5_params
+    params = hdf5_redirected_read_params
 
     def setup(self, params: dict[str, str]):
         https_url = params["https_url"]
