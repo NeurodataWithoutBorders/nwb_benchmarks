@@ -35,10 +35,10 @@ from nwb_benchmarks.core import (
     read_zarr_zarrpython_s3,
 )
 
-from .params_remote_file_reading import (
-    hdf5_params,
-    lindi_remote_rfs_params,
-    zarr_params,
+from .params import (
+    hdf5_redirected_read_params,
+    lindi_no_redirect_download_params,
+    zarr_direct_read_params,
 )
 
 
@@ -51,7 +51,7 @@ class HDF5H5pyFileReadBenchmark(BaseBenchmark):
     Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
     """
 
-    params = hdf5_params
+    params = hdf5_redirected_read_params
 
     def teardown(self, params: dict[str, str]):
         if hasattr(self, "file"):
@@ -126,7 +126,7 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
     Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
     """
 
-    params = hdf5_params
+    params = hdf5_redirected_read_params
 
     def teardown(self, params: dict[str, str]):
         if hasattr(self, "file"):
@@ -207,7 +207,7 @@ class HDF5PyNWBFsspecHttpsPreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     Time the read of remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded data without cache.
     """
 
-    params = hdf5_params
+    params = hdf5_redirected_read_params
 
     def setup(self, params: dict[str, str]):
         https_url = params["https_url"]
@@ -229,7 +229,7 @@ class HDF5PyNWBFsspecHttpsPreloadedWithCacheFileReadBenchmark(BaseBenchmark):
     Time the read of remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded cache.
     """
 
-    params = hdf5_params
+    params = hdf5_redirected_read_params
 
     def setup(self, params: dict[str, str]):
         https_url = params["https_url"]
@@ -253,7 +253,7 @@ class HDF5PyNWBFsspecS3PreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     Time the read of remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded data without cache.
     """
 
-    params = hdf5_params
+    params = hdf5_redirected_read_params
 
     def setup(self, params: dict[str, str]):
         https_url = params["https_url"]
@@ -273,7 +273,7 @@ class HDF5PyNWBFsspecS3PreloadedWithCacheFileReadBenchmark(BaseBenchmark):
     Time the read of remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded cache.
     """
 
-    params = hdf5_params
+    params = hdf5_redirected_read_params
 
     def setup(self, params: dict[str, str]):
         https_url = params["https_url"]
@@ -297,7 +297,7 @@ class HDF5PyNWBRemfilePreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     Time the read of remote HDF5 NWB files using pynwb and remfile with preloaded data without cache.
     """
 
-    params = hdf5_params
+    params = hdf5_redirected_read_params
 
     def setup(self, params: dict[str, str]):
         https_url = params["https_url"]
@@ -317,7 +317,7 @@ class HDF5PyNWBRemfilePreloadedWithCacheFileReadBenchmark(BaseBenchmark):
     Time the read of remote HDF5 NWB files using pynwb and remfile with preloaded cache.
     """
 
-    params = hdf5_params
+    params = hdf5_redirected_read_params
 
     def setup(self, params: dict[str, str]):
         https_url = params["https_url"]
@@ -347,7 +347,7 @@ class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
     Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
     """
 
-    params = lindi_remote_rfs_params
+    params = lindi_no_redirect_download_params
 
     def setup(self, params: dict[str, str]):
         """Download the LINDI JSON file."""
@@ -382,7 +382,7 @@ class ZarrZarrPythonFileReadBenchmark(BaseBenchmark):
     Note: in all cases, store the in-memory objects to avoid timing garbage collection steps.
     """
 
-    params = zarr_params
+    params = zarr_direct_read_params
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_read_zarr_https(self, params: dict[str, str]):
@@ -424,7 +424,7 @@ class ZarrPyNWBFileReadBenchmark(BaseBenchmark):
     Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
     """
 
-    params = zarr_params
+    params = zarr_direct_read_params
 
     def teardown(self, params: dict[str, str]):
         if hasattr(self, "io"):

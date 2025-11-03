@@ -9,7 +9,11 @@ from nwb_benchmarks import RUN_DOWNLOAD_BENCHMARKS
 from nwb_benchmarks.core import BaseBenchmark
 from nwb_benchmarks.setup import get_persistent_download_directory
 
-from .params_remote_download import hdf5_params, lindi_remote_rfs_params, zarr_params
+from .params import (
+    hdf5_no_redirect_download_params,
+    lindi_no_redirect_download_params,
+    zarr_no_redirect_download_params,
+)
 
 
 class BaseDandiAPIDownloadBenchmark(BaseBenchmark, ABC):
@@ -34,7 +38,7 @@ class HDF5DandiAPIDownloadBenchmark(BaseDandiAPIDownloadBenchmark):
     If the file already exists in the download directory, it will be overwritten.
     """
 
-    params = hdf5_params
+    params = hdf5_no_redirect_download_params
 
     # NOTE - these benchmarks download the full file which can take a long time.
     # Only run explicitly using RUN_DOWNLOAD_BENCHMARKS=true when needed.
@@ -51,7 +55,7 @@ class ZarrDandiAPIDownloadBenchmark(BaseDandiAPIDownloadBenchmark):
     If the file already exists in the download directory, it will be overwritten.
     """
 
-    params = zarr_params
+    params = zarr_no_redirect_download_params
 
     # NOTE - these benchmarks download the full file which can take a long time.
     # Only run explicitly using RUN_DOWNLOAD_BENCHMARKS=true when needed.
@@ -68,7 +72,7 @@ class LindiDandiAPIDownloadBenchmark(BaseDandiAPIDownloadBenchmark):
     If the file already exists in the download directory, it will be overwritten.
     """
 
-    params = lindi_remote_rfs_params
+    params = lindi_no_redirect_download_params
 
     def time_download_lindi_dandi_api(self, params: dict[str, str]):
         """Download a remote Lindi file using the DANDI API."""
