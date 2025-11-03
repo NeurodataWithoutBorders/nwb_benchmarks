@@ -263,6 +263,27 @@ class HDF5PyNWBRemfilePreloadedWithCacheFileReadBenchmark(BaseBenchmark):
         )
 
 
+class HDF5PyNWBRos3PreloadedFileReadBenchmark(BaseBenchmark):
+    """
+    Time the read of remote HDF5 NWB files using the ROS3 HDF5 driver with preloaded cache.
+    """
+
+    params = hdf5_redirected_read_params
+
+    def setup(self, params: dict[str, str]):
+        https_url = params["https_url"]
+        self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
+
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+
+    def time_read_hdf5_pynwb_ros3_preloaded_with_cache(self, params: dict[str, str]):
+        """Read remote NWB file using the ROS3 HDF5 driver with preloaded cache."""
+        https_url = params["https_url"]
+        self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
+
+
 class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
     """
     Time the read of remote HDF5 NWB files by reading the local LINDI JSON files using lindi and h5py or pynwb.
