@@ -34,6 +34,7 @@ hdf5_icephys_params["https_url_no_redirect"] = get_https_url(
     hdf5_icephys_params["dandiset_id"], hdf5_icephys_params["dandi_path"], follow_redirects=False
 )
 
+# The Zarr https_url_directs point directly to the S3 URL for Zarr access - copied from the DANDI asset page
 zarr_ecephys_params = dict(
     dandiset_id="000719",
     dandi_path="sub-npI3_ses-20190421_behavior+ecephys_rechunk.nwb.zarr",
