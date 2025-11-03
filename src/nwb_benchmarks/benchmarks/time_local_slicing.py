@@ -16,8 +16,8 @@ from nwb_benchmarks.core import (
 from nwb_benchmarks.setup import get_persistent_download_directory
 
 from .params import (
-    hdf5_no_redirect_read_slice_params,
-    zarr_no_redirect_read_slice_params,
+    hdf5_no_redirect_download_slice_params,
+    zarr_no_redirect_download_slice_params,
 )
 
 
@@ -60,7 +60,7 @@ class HDF5PyNWBLocalContinuousSliceBenchmark(ContinuousSliceBenchmark):
     Time the read of a continuous data slice from local HDF5 NWB files using pynwb.
     """
 
-    params = hdf5_no_redirect_read_slice_params
+    params = hdf5_no_redirect_download_slice_params
 
     def setup(self, params: dict[str, str | Tuple[slice]]):
         super().setup(params=params)
@@ -77,7 +77,7 @@ class HDF5PyNWBLocalPreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
     Time the read of a continuous data slice from local HDF5 NWB files using pynwb.
     """
 
-    params = hdf5_no_redirect_read_slice_params
+    params = hdf5_no_redirect_download_slice_params
 
     def setup(self, params: dict[str, str | Tuple[slice]]):
         super().setup(params=params)
@@ -96,7 +96,7 @@ class ZarrPyNWBLocalContinuousSliceBenchmark(ContinuousSliceBenchmark):
     Time the read of a continuous data slice from local Zarr NWB files using pynwb.
     """
 
-    params = zarr_no_redirect_read_slice_params
+    params = zarr_no_redirect_download_slice_params
 
     def setup(self, params: dict[str, str | Tuple[slice]]):
         super().setup(params=params)
@@ -112,7 +112,7 @@ class ZarrPyNWBLocalPreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
     Time the read of a continuous data slice from local Zarr NWB files using pynwb.
     """
 
-    params = zarr_no_redirect_read_slice_params
+    params = zarr_no_redirect_download_slice_params
 
     def setup(self, params: dict[str, str | Tuple[slice]]):
         super().setup(params=params)

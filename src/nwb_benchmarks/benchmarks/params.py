@@ -86,7 +86,7 @@ lindi_icephys_params["https_url_no_redirect"] = get_https_url(
     lindi_icephys_params["dandiset_id"], lindi_icephys_params["dandi_path"], follow_redirects=False
 )
 
-################################### READ AND DOWNLOAD PARAMETERS ###################################
+################################### REMOTE FILE READ PARAMETERS ###################################
 hdf5_redirected_read_params = (
     dict(
         name="EcephysTestCase",
@@ -99,41 +99,6 @@ hdf5_redirected_read_params = (
     dict(
         name="IcephysTestCase",
         https_url=hdf5_icephys_params["https_url_redirected"],
-    ),
-)
-
-# dandi API does not know how to handle redirected URLs, so only use no-redirect URLs for download benchmarks
-# and for local file reading benchmarks that look for the already downloaded files
-hdf5_no_redirect_download_params = (
-    dict(
-        name="EcephysTestCase",
-        https_url=hdf5_ecephys_params["https_url_no_redirect"],
-    ),
-    dict(
-        name="OphysTestCase",
-        https_url=hdf5_ophys_params["https_url_no_redirect"],
-    ),
-    dict(
-        name="IcephysTestCase",
-        https_url=hdf5_icephys_params["https_url_no_redirect"],
-    ),
-)
-
-# Parameters for LINDI pointing to an existing remote LINDI reference file system JSON file
-# LINDI files are only accessed in these benchmarks by downloading the entire file so there is no
-# separate set of parameters for reading with redirects
-lindi_no_redirect_download_params = (
-    dict(
-        name="EcephysTestCase",
-        https_url=lindi_ecephys_params["https_url_no_redirect"],
-    ),
-    dict(
-        name="OphysTestCase",
-        https_url=lindi_ophys_params["https_url_no_redirect"],
-    ),
-    dict(
-        name="IcephysTestCase",
-        https_url=lindi_icephys_params["https_url_no_redirect"],
     ),
 )
 
@@ -154,6 +119,25 @@ zarr_direct_read_params = (
     ),
 )
 
+################################### DOWNLOAD AND LOCAL FILE READ PARAMETERS ###################################
+
+# dandi API does not know how to handle redirected URLs, so only use no-redirect URLs for download benchmarks
+# and for local file reading benchmarks that look for the already downloaded files
+hdf5_no_redirect_download_params = (
+    dict(
+        name="EcephysTestCase",
+        https_url=hdf5_ecephys_params["https_url_no_redirect"],
+    ),
+    dict(
+        name="OphysTestCase",
+        https_url=hdf5_ophys_params["https_url_no_redirect"],
+    ),
+    dict(
+        name="IcephysTestCase",
+        https_url=hdf5_icephys_params["https_url_no_redirect"],
+    ),
+)
+
 # dandi API does not know how to handle redirected URLs, so only use no-redirect URLs for download benchmarks
 # and for local file reading benchmarks that look for the already downloaded files
 zarr_no_redirect_download_params = (
@@ -171,7 +155,27 @@ zarr_no_redirect_download_params = (
     ),
 )
 
-#################################### SLICE PARAMETERS ###################################
+#################################### LINDI DOWNLOAD AND FILE READ PARAMETERS ###################################
+
+# Parameters for LINDI pointing to an existing remote LINDI reference file system JSON file
+# LINDI files are only accessed in these benchmarks by downloading the entire file so there is no
+# separate set of parameters for reading with redirects
+lindi_no_redirect_download_params = (
+    dict(
+        name="EcephysTestCase",
+        https_url=lindi_ecephys_params["https_url_no_redirect"],
+    ),
+    dict(
+        name="OphysTestCase",
+        https_url=lindi_ophys_params["https_url_no_redirect"],
+    ),
+    dict(
+        name="IcephysTestCase",
+        https_url=lindi_icephys_params["https_url_no_redirect"],
+    ),
+)
+
+#################################### REMOTE FILE SLICE PARAMETERS ###################################
 # ecephys data has shape (N, 384) and chunk shape (262144, 32)
 ecephys_slices = [(slice(0, 262_144 * i), slice(0, 32)) for i in range(1, 6)]
 
@@ -240,10 +244,10 @@ for index, slice_range in enumerate(icephys_slices):
         )
     )
 
-################################### LOCAL FILE SLICING PARAMETERS ###################################
-hdf5_no_redirect_read_slice_params = []
+################################### LOCAL FILE SLICE PARAMETERS ###################################
+hdf5_no_redirect_download_slice_params = []
 for index, slice_range in enumerate(ecephys_slices):
-    hdf5_no_redirect_read_slice_params.append(
+    hdf5_no_redirect_download_slice_params.append(
         dict(
             name=f"EcephysTestCase{index + 1}",
             https_url=hdf5_ecephys_params["https_url_no_redirect"],
@@ -253,7 +257,7 @@ for index, slice_range in enumerate(ecephys_slices):
     )
 
 for index, slice_range in enumerate(ophys_slices):
-    hdf5_no_redirect_read_slice_params.append(
+    hdf5_no_redirect_download_slice_params.append(
         dict(
             name=f"OphysTestCase{index + 1}",
             https_url=hdf5_ophys_params["https_url_no_redirect"],
@@ -262,7 +266,7 @@ for index, slice_range in enumerate(ophys_slices):
         )
     )
 for index, slice_range in enumerate(icephys_slices):
-    hdf5_no_redirect_read_slice_params.append(
+    hdf5_no_redirect_download_slice_params.append(
         dict(
             name=f"IcephysTestCase{index + 1}",
             https_url=hdf5_icephys_params["https_url_no_redirect"],
@@ -271,9 +275,9 @@ for index, slice_range in enumerate(icephys_slices):
         )
     )
 
-zarr_no_redirect_read_slice_params = []
+zarr_no_redirect_download_slice_params = []
 for index, slice_range in enumerate(ecephys_slices):
-    zarr_no_redirect_read_slice_params.append(
+    zarr_no_redirect_download_slice_params.append(
         dict(
             name=f"EcephysTestCase{index + 1}",
             https_url=zarr_ecephys_params["https_url_no_redirect"],
@@ -282,7 +286,7 @@ for index, slice_range in enumerate(ecephys_slices):
         )
     )
 for index, slice_range in enumerate(ophys_slices):
-    zarr_no_redirect_read_slice_params.append(
+    zarr_no_redirect_download_slice_params.append(
         dict(
             name=f"OphysTestCase{index + 1}",
             https_url=zarr_ophys_params["https_url_no_redirect"],
@@ -291,7 +295,7 @@ for index, slice_range in enumerate(ophys_slices):
         )
     )
 for index, slice_range in enumerate(icephys_slices):
-    zarr_no_redirect_read_slice_params.append(
+    zarr_no_redirect_download_slice_params.append(
         dict(
             name=f"IcephysTestCase{index + 1}",
             https_url=zarr_icephys_params["https_url_no_redirect"],
@@ -300,7 +304,7 @@ for index, slice_range in enumerate(icephys_slices):
         )
     )
 
-############################### LINDI DOWNLOAD AND SLICE PARAMETERS ###################################
+############################### LINDI SLICE PARAMETERS ###################################
 
 lindi_no_redirect_download_slice_params = []
 for index, slice_range in enumerate(ecephys_slices):
