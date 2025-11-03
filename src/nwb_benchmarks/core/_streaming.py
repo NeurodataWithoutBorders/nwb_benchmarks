@@ -20,6 +20,7 @@ from fsspec.implementations.cached import CachingFileSystem
 from fsspec.implementations.http import HTTPFile
 from s3fs.core import S3File
 
+from . import download_asset_if_not_exists
 from ..setup import get_temporary_directory
 
 # Useful if running in verbose model
@@ -286,6 +287,26 @@ def read_hdf5_pynwb_lindi(rfs: Union[dict, str]) -> Tuple[pynwb.NWBFile, pynwb.N
     io = pynwb.NWBHDF5IO(file=client, mode="r")
     nwbfile = io.read()
     return (nwbfile, io, client)
+
+
+# TODO: The return type hint should have lindi.LindiH5pyFile instead of h5py.File but see
+# https://github.com/NeurodataWithoutBorders/nwb_benchmarks/issues/136
+def download_read_hdf5_pynwb_lindi(https_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File]:
+    """
+    Download and read an HDF5 NWB file from an S3 URL using LINDI.
+
+    Downloads the remote LINDI JSON file if it does not already exist in the persistent download directory.
+
+    Note that when lindi.LindiH5pyFile.from_lindi_file is called on a remote file, the first thing it does is
+    download the file locally to a temporary directory and then reads it from there. So this function
+    pre-downloads the file to a persistent location to avoid re-downloading it multiple times if this function
+    is called multiple times with the same URL. And it allows us to benchmark the read performance without including
+    the download time.
+
+    :param https_url: The HTTPS URL of the NWB file.
+    """
+    filename = download_asset_if_not_exists(https_url=https_url)
+    return read_hdf5_pynwb_lindi(rfs=filename)
 
 
 def read_zarr_zarrpython_https(https_url: str, open_without_consolidated_metadata: bool = False) -> zarr.Group:

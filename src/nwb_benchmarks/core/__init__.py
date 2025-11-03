@@ -2,14 +2,14 @@
 
 from ._base_benchmark import BaseBenchmark
 from ._capture_connections import CaptureConnections
-from ._dandi import get_https_url
-from ._download import download_file
+from ._dandi import download_asset_if_not_exists, get_asset_path_from_url, get_https_url
 from ._network_profiler import NetworkProfiler
 from ._network_statistics import NetworkStatistics
 from ._network_tracker import network_activity_tracker
 from ._nwb_helpers import get_object_by_name
 from ._streaming import (
     create_lindi_reference_file_system,
+    download_read_hdf5_pynwb_lindi,
     read_hdf5_h5py_fsspec_https_no_cache,
     read_hdf5_h5py_fsspec_https_with_cache,
     read_hdf5_h5py_fsspec_s3_no_cache,
@@ -41,10 +41,12 @@ __all__ = [
     "NetworkStatistics",
     "clean_results",
     "create_lindi_reference_file_system",
-    "download_file",
+    "download_asset_if_not_exists",
     "get_https_url",
+    "get_asset_path_from_url",
     "get_object_by_name",
     "network_activity_tracker",
+    "download_read_hdf5_pynwb_lindi",
     "read_hdf5_h5py_fsspec_https_no_cache",
     "read_hdf5_h5py_fsspec_https_with_cache",
     "read_hdf5_h5py_fsspec_s3_no_cache",
