@@ -401,7 +401,7 @@ class ZarrPyNWBS3ForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenc
     consolidated metadata.
     """
 
-    params = zarr_direct_slice_params
+    params = zarr_direct_read_slice_params
 
     def setup(self, params: dict[str, str | Tuple[slice]]):
         https_url = params["https_url"]
@@ -418,7 +418,7 @@ class ZarrPyNWBS3ForceNoConsolidatedPreloadedContinuousSliceBenchmark(Continuous
     consolidated metadata with preloaded data.
     """
 
-    params = zarr_direct_slice_params
+    params = zarr_direct_read_slice_params
 
     def setup(self, params: dict[str, str | Tuple[slice]]):
         https_url = params["https_url"]
