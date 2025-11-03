@@ -34,7 +34,7 @@ from .params import (
 )
 
 
-class ContinuousSliceBenchmark(BaseBenchmark, ABC):
+class TrackNetworkContinuousSliceBenchmark(BaseBenchmark, ABC):
     """
     Base class for benchmarking slice access to NWB data.
 
@@ -74,9 +74,9 @@ class ContinuousSliceBenchmark(BaseBenchmark, ABC):
         return network_tracker.asv_network_statistics
 
 
-class HDF5PyNWBFsspecHttpsNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBFsspecHttpsNoCacheContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with HTTPS without
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with HTTPS without
     cache.
     """
 
@@ -91,9 +91,9 @@ class HDF5PyNWBFsspecHttpsNoCacheContinuousSliceBenchmark(ContinuousSliceBenchma
         self.data_to_slice = self.neurodata_object.data
 
 
-class HDF5PyNWBFsspecHttpsWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBFsspecHttpsWithCacheContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with HTTPS with cache.
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with HTTPS with cache.
     """
 
     params = hdf5_redirected_read_slice_params
@@ -109,9 +109,9 @@ class HDF5PyNWBFsspecHttpsWithCacheContinuousSliceBenchmark(ContinuousSliceBench
         self.data_to_slice = self.neurodata_object.data
 
 
-class HDF5PyNWBFsspecHttpsPreloadedNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBFsspecHttpsPreloadedNoCacheContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded
     data without cache.
     """
 
@@ -128,9 +128,9 @@ class HDF5PyNWBFsspecHttpsPreloadedNoCacheContinuousSliceBenchmark(ContinuousSli
         self._temp = self.data_to_slice[slice_range]
 
 
-class HDF5PyNWBFsspecHttpsPreloadedWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBFsspecHttpsPreloadedWithCacheContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded
     cache.
     """
 
@@ -149,9 +149,9 @@ class HDF5PyNWBFsspecHttpsPreloadedWithCacheContinuousSliceBenchmark(ContinuousS
         self._temp = self.data_to_slice[slice_range]
 
 
-class HDF5PyNWBFsspecS3NoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBFsspecS3NoCacheContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with S3 without cache.
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with S3 without cache.
     """
 
     params = hdf5_redirected_read_slice_params
@@ -165,9 +165,9 @@ class HDF5PyNWBFsspecS3NoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark)
         self.data_to_slice = self.neurodata_object.data
 
 
-class HDF5PyNWBFsspecS3WithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBFsspecS3WithCacheContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with S3 with cache.
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with S3 with cache.
     """
 
     params = hdf5_redirected_read_slice_params
@@ -183,9 +183,9 @@ class HDF5PyNWBFsspecS3WithCacheContinuousSliceBenchmark(ContinuousSliceBenchmar
         self.data_to_slice = self.neurodata_object.data
 
 
-class HDF5PyNWBFsspecS3PreloadedNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBFsspecS3PreloadedNoCacheContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded
     data without cache.
     """
 
@@ -202,9 +202,9 @@ class HDF5PyNWBFsspecS3PreloadedNoCacheContinuousSliceBenchmark(ContinuousSliceB
         self._temp = self.data_to_slice[slice_range]
 
 
-class HDF5PyNWBFsspecS3PreloadedWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBFsspecS3PreloadedWithCacheContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded
     cache.
     """
 
@@ -223,9 +223,9 @@ class HDF5PyNWBFsspecS3PreloadedWithCacheContinuousSliceBenchmark(ContinuousSlic
         self._temp = self.data_to_slice[slice_range]
 
 
-class HDF5PyNWBRemfileNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBRemfileNoCacheContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile without cache.
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile without cache.
     """
 
     params = hdf5_redirected_read_slice_params
@@ -239,9 +239,9 @@ class HDF5PyNWBRemfileNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
 
-class HDF5PyNWBRemfileWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBRemfileWithCacheContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile with cache.
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile with cache.
     """
 
     params = hdf5_redirected_read_slice_params
@@ -257,9 +257,9 @@ class HDF5PyNWBRemfileWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark
         self.data_to_slice = self.neurodata_object.data
 
 
-class HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile with preloaded
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile with preloaded
     data without cache.
     """
 
@@ -276,9 +276,9 @@ class HDF5PyNWBRemfilePreloadedNoCacheContinuousSliceBenchmark(ContinuousSliceBe
         self._temp = self.data_to_slice[slice_range]
 
 
-class HDF5PyNWBRemfilePreloadedWithCacheContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBRemfilePreloadedWithCacheContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile with preloaded cache.
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and remfile with preloaded cache.
     """
 
     params = hdf5_redirected_read_slice_params
@@ -296,9 +296,9 @@ class HDF5PyNWBRemfilePreloadedWithCacheContinuousSliceBenchmark(ContinuousSlice
         self._temp = self.data_to_slice[slice_range]
 
 
-class HDF5PyNWBROS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBROS3ContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and the ROS3 driver.
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and the ROS3 driver.
     """
 
     params = hdf5_redirected_read_slice_params
@@ -312,9 +312,9 @@ class HDF5PyNWBROS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
 
-class HDF5PyNWBROS3PreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class HDF5PyNWBROS3PreloadedContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files using pynwb and the ROS3 driver with preloaded
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files using pynwb and the ROS3 driver with preloaded
     data.
     """
 
@@ -331,9 +331,9 @@ class HDF5PyNWBROS3PreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self._temp = self.data_to_slice[slice_range]
 
 
-class LindiLocalJSONContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class LindiLocalJSONContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files by reading the local LINDI JSON files with
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files by reading the local LINDI JSON files with
     lindi and pynwb.
 
     This downloads the remote LINDI JSON file during setup if it does not already exist in the persistent download
@@ -351,9 +351,9 @@ class LindiLocalJSONContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
 
-class LindiLocalJSONPreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class LindiLocalJSONPreloadedContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote HDF5 NWB files by reading the local LINDI JSON files with
+    Track the network activity during read of a continuous data slice from remote HDF5 NWB files by reading the local LINDI JSON files with
     lindi and pynwb after preloading the data into any caches.
 
     This downloads the remote LINDI JSON file during setup if it does not already exist in the persistent download
@@ -373,9 +373,9 @@ class LindiLocalJSONPreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self._temp = self.data_to_slice[slice_range]
 
 
-class ZarrPyNWBS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class ZarrPyNWBS3ContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with S3.
+    Track the network activity during read of a continuous data slice from remote Zarr NWB files using pynwb with S3.
     """
 
     params = zarr_direct_read_slice_params
@@ -389,9 +389,9 @@ class ZarrPyNWBS3ContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self.data_to_slice = self.neurodata_object.data
 
 
-class ZarrPyNWBS3PreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class ZarrPyNWBS3PreloadedContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with S3 with preloaded data.
+    Track the network activity during read of a continuous data slice from remote Zarr NWB files using pynwb with S3 with preloaded data.
     """
 
     params = zarr_direct_read_slice_params
@@ -407,9 +407,9 @@ class ZarrPyNWBS3PreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
         self._temp = self.data_to_slice[slice_range]
 
 
-class ZarrPyNWBS3ForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class ZarrPyNWBS3ForceNoConsolidatedContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with S3 and without using
+    Track the network activity during read of a continuous data slice from remote Zarr NWB files using pynwb with S3 and without using
     consolidated metadata.
     """
 
@@ -424,9 +424,9 @@ class ZarrPyNWBS3ForceNoConsolidatedContinuousSliceBenchmark(ContinuousSliceBenc
         self.data_to_slice = self.neurodata_object.data
 
 
-class ZarrPyNWBS3ForceNoConsolidatedPreloadedContinuousSliceBenchmark(ContinuousSliceBenchmark):
+class ZarrPyNWBS3ForceNoConsolidatedPreloadedContinuousSliceBenchmark(TrackNetworkContinuousSliceBenchmark):
     """
-    Time the read of a continuous data slice from remote Zarr NWB files using pynwb with S3 and without using
+    Track the network activity during read of a continuous data slice from remote Zarr NWB files using pynwb with S3 and without using
     consolidated metadata with preloaded data.
     """
 

@@ -99,6 +99,8 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
     params = hdf5_redirected_read_params
 
     def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
         if hasattr(self, "file"):
             self.file.close()
         if hasattr(self, "bytestream"):
@@ -160,6 +162,14 @@ class HDF5PyNWBFsspecHttpsPreloadedNoCacheFileReadBenchmark(BaseBenchmark):
         https_url = params["https_url"]
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_https_no_cache(https_url=https_url)
 
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
+
     def time_read_hdf5_pynwb_fsspec_https_preloaded_no_cache(self, params: dict[str, str]):
         """Read remote NWB file using pynwb and fsspec with HTTPS with preloaded data without cache."""
         https_url = params["https_url"]
@@ -178,6 +188,17 @@ class HDF5PyNWBFsspecHttpsPreloadedWithCacheFileReadBenchmark(BaseBenchmark):
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_https_with_cache(
             https_url=https_url
         )
+
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
+        if hasattr(self, "tmpdir"):
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
+            self.tmpdir.cleanup()
 
     def time_read_hdf5_pynwb_fsspec_https_preloaded_with_cache(self, params: dict[str, str]):
         """Read remote NWB file using pynwb and fsspec with HTTPS with preloaded cache."""
@@ -198,6 +219,14 @@ class HDF5PyNWBFsspecS3PreloadedNoCacheFileReadBenchmark(BaseBenchmark):
         https_url = params["https_url"]
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(https_url=https_url)
 
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
+
     def time_read_hdf5_pynwb_fsspec_s3_preloaded_no_cache(self, params: dict[str, str]):
         """Read remote NWB file using pynwb and fsspec with S3 with preloaded data without cache."""
         https_url = params["https_url"]
@@ -216,6 +245,17 @@ class HDF5PyNWBFsspecS3PreloadedWithCacheFileReadBenchmark(BaseBenchmark):
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_s3_with_cache(
             https_url=https_url
         )
+
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
+        if hasattr(self, "tmpdir"):
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
+            self.tmpdir.cleanup()
 
     def time_read_hdf5_pynwb_fsspec_s3_preloaded_with_cache(self, params: dict[str, str]):
         """Read remote NWB file using pynwb and fsspec with S3 with preloaded cache."""
@@ -236,6 +276,14 @@ class HDF5PyNWBRemfilePreloadedNoCacheFileReadBenchmark(BaseBenchmark):
         https_url = params["https_url"]
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(https_url=https_url)
 
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
+
     def time_read_hdf5_pynwb_remfile_preloaded_no_cache(self, params: dict[str, str]):
         """Read remote NWB file using pynwb and remfile with preloaded data without cache."""
         https_url = params["https_url"]
@@ -255,12 +303,44 @@ class HDF5PyNWBRemfilePreloadedWithCacheFileReadBenchmark(BaseBenchmark):
             https_url=https_url
         )
 
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
+        if hasattr(self, "tmpdir"):
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
+            self.tmpdir.cleanup()
+
     def time_read_hdf5_pynwb_remfile_preloaded_with_cache(self, params: dict[str, str]):
         """Read remote NWB file using pynwb and remfile with preloaded cache."""
         https_url = params["https_url"]
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_remfile_with_cache(
             https_url=https_url
         )
+
+
+class HDF5PyNWBRos3PreloadedFileReadBenchmark(BaseBenchmark):
+    """
+    Time the read of remote HDF5 NWB files using the ROS3 HDF5 driver with preloaded cache.
+    """
+
+    params = hdf5_redirected_read_params
+
+    def setup(self, params: dict[str, str]):
+        https_url = params["https_url"]
+        self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
+
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+
+    def time_read_hdf5_pynwb_ros3_preloaded_with_cache(self, params: dict[str, str]):
+        """Read remote NWB file using the ROS3 HDF5 driver with preloaded cache."""
+        https_url = params["https_url"]
+        self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
 
 
 class LindiLocalJSONFileReadBenchmark(BaseBenchmark):

@@ -3,6 +3,9 @@ Basic benchmarks for profiling network statistics for streaming access to NWB fi
 
 The benchmarks should be consistent with the timing benchmarks - each function should be the same but wrapped in a
 network activity tracker.
+
+Note: even though garbage collection does not affect network activity, we still store the in-memory objects to be
+consistent with timing benchmarks.
 """
 
 import shutil
@@ -47,8 +50,6 @@ class HDF5H5pyFileReadBenchmark(BaseBenchmark):
     Track the network activity during read of remote HDF5 files with h5py using each streaming method.
 
     There is no formal parsing of the `pynwb.NWBFile` object.
-
-    Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
     """
 
     params = hdf5_redirected_read_params
@@ -122,13 +123,13 @@ class HDF5H5pyFileReadBenchmark(BaseBenchmark):
 class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
     """
     Track the network activity during read of remote HDF5 NWB files with pynwb using each streaming method.
-
-    Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
     """
 
     params = hdf5_redirected_read_params
 
     def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
         if hasattr(self, "file"):
             self.file.close()
         if hasattr(self, "bytestream"):
@@ -204,7 +205,7 @@ class HDF5PyNWBFileReadBenchmark(BaseBenchmark):
 
 class HDF5PyNWBFsspecHttpsPreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     """
-    Time the read of remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded data without cache.
+    Track the network activity during read of remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded data without cache.
     """
 
     params = hdf5_redirected_read_params
@@ -212,6 +213,14 @@ class HDF5PyNWBFsspecHttpsPreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     def setup(self, params: dict[str, str]):
         https_url = params["https_url"]
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_https_no_cache(https_url=https_url)
+
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_read_hdf5_pynwb_fsspec_https_preloaded_no_cache(self, params: dict[str, str]):
@@ -226,7 +235,7 @@ class HDF5PyNWBFsspecHttpsPreloadedNoCacheFileReadBenchmark(BaseBenchmark):
 
 class HDF5PyNWBFsspecHttpsPreloadedWithCacheFileReadBenchmark(BaseBenchmark):
     """
-    Time the read of remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded cache.
+    Track the network activity during read of remote HDF5 NWB files using pynwb and fsspec with HTTPS with preloaded cache.
     """
 
     params = hdf5_redirected_read_params
@@ -236,6 +245,17 @@ class HDF5PyNWBFsspecHttpsPreloadedWithCacheFileReadBenchmark(BaseBenchmark):
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_https_with_cache(
             https_url=https_url
         )
+
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
+        if hasattr(self, "tmpdir"):
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
+            self.tmpdir.cleanup()
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_read_hdf5_pynwb_fsspec_https_preloaded_with_cache(self, params: dict[str, str]):
@@ -250,7 +270,7 @@ class HDF5PyNWBFsspecHttpsPreloadedWithCacheFileReadBenchmark(BaseBenchmark):
 
 class HDF5PyNWBFsspecS3PreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     """
-    Time the read of remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded data without cache.
+    Track the network activity during read of remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded data without cache.
     """
 
     params = hdf5_redirected_read_params
@@ -258,6 +278,14 @@ class HDF5PyNWBFsspecS3PreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     def setup(self, params: dict[str, str]):
         https_url = params["https_url"]
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_fsspec_s3_no_cache(https_url=https_url)
+
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_read_hdf5_pynwb_fsspec_s3_preloaded_no_cache(self, params: dict[str, str]):
@@ -270,7 +298,7 @@ class HDF5PyNWBFsspecS3PreloadedNoCacheFileReadBenchmark(BaseBenchmark):
 
 class HDF5PyNWBFsspecS3PreloadedWithCacheFileReadBenchmark(BaseBenchmark):
     """
-    Time the read of remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded cache.
+    Track the network activity during read of remote HDF5 NWB files using pynwb and fsspec with S3 with preloaded cache.
     """
 
     params = hdf5_redirected_read_params
@@ -280,6 +308,17 @@ class HDF5PyNWBFsspecS3PreloadedWithCacheFileReadBenchmark(BaseBenchmark):
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_fsspec_s3_with_cache(
             https_url=https_url
         )
+
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
+        if hasattr(self, "tmpdir"):
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
+            self.tmpdir.cleanup()
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_read_hdf5_pynwb_fsspec_s3_preloaded_with_cache(self, params: dict[str, str]):
@@ -294,7 +333,7 @@ class HDF5PyNWBFsspecS3PreloadedWithCacheFileReadBenchmark(BaseBenchmark):
 
 class HDF5PyNWBRemfilePreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     """
-    Time the read of remote HDF5 NWB files using pynwb and remfile with preloaded data without cache.
+    Track the network activity during read of remote HDF5 NWB files using pynwb and remfile with preloaded data without cache.
     """
 
     params = hdf5_redirected_read_params
@@ -302,6 +341,14 @@ class HDF5PyNWBRemfilePreloadedNoCacheFileReadBenchmark(BaseBenchmark):
     def setup(self, params: dict[str, str]):
         https_url = params["https_url"]
         self.nwbfile, self.io, self.file, self.bytestream = read_hdf5_pynwb_remfile_no_cache(https_url=https_url)
+
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_read_hdf5_pynwb_remfile_preloaded_no_cache(self, params: dict[str, str]):
@@ -314,7 +361,7 @@ class HDF5PyNWBRemfilePreloadedNoCacheFileReadBenchmark(BaseBenchmark):
 
 class HDF5PyNWBRemfilePreloadedWithCacheFileReadBenchmark(BaseBenchmark):
     """
-    Time the read of remote HDF5 NWB files using pynwb and remfile with preloaded cache.
+    Track the network activity during read of remote HDF5 NWB files using pynwb and remfile with preloaded cache.
     """
 
     params = hdf5_redirected_read_params
@@ -324,6 +371,17 @@ class HDF5PyNWBRemfilePreloadedWithCacheFileReadBenchmark(BaseBenchmark):
         self.nwbfile, self.io, self.file, self.bytestream, self.tmpdir = read_hdf5_pynwb_remfile_with_cache(
             https_url=https_url
         )
+
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+        if hasattr(self, "file"):
+            self.file.close()
+        if hasattr(self, "bytestream"):
+            self.bytestream.close()
+        if hasattr(self, "tmpdir"):
+            shutil.rmtree(path=self.tmpdir.name, ignore_errors=True)
+            self.tmpdir.cleanup()
 
     @skip_benchmark_if(TSHARK_PATH is None)
     def track_network_read_hdf5_pynwb_remfile_preloaded_with_cache(self, params: dict[str, str]):
@@ -336,6 +394,30 @@ class HDF5PyNWBRemfilePreloadedWithCacheFileReadBenchmark(BaseBenchmark):
         return network_tracker.asv_network_statistics
 
 
+class HDF5PyNWBRos3PreloadedFileReadBenchmark(BaseBenchmark):
+    """
+    Track the network activity during read of remote HDF5 NWB files using the ROS3 HDF5 driver with preloaded cache.
+    """
+
+    params = hdf5_redirected_read_params
+
+    def setup(self, params: dict[str, str]):
+        https_url = params["https_url"]
+        self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
+
+    def teardown(self, params: dict[str, str]):
+        if hasattr(self, "io"):
+            self.io.close()
+
+    @skip_benchmark_if(TSHARK_PATH is None)
+    def track_network_read_hdf5_pynwb_ros3_preloaded_with_cache(self, params: dict[str, str]):
+        """Read remote NWB file using the ROS3 HDF5 driver with preloaded cache."""
+        https_url = params["https_url"]
+        with network_activity_tracker(tshark_path=TSHARK_PATH) as network_tracker:
+            self.nwbfile, self.io, _ = read_hdf5_pynwb_ros3(https_url=https_url)
+        return network_tracker.asv_network_statistics
+
+
 class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
     """
     Track the network activity during read of remote HDF5 files by reading the local LINDI JSON files with lindi and
@@ -343,8 +425,6 @@ class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
 
     This downloads the remote LINDI JSON file during setup if it does not already exist in the persistent download
     directory.
-
-    Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
     """
 
     params = lindi_no_redirect_download_params
@@ -378,8 +458,6 @@ class LindiLocalJSONFileReadBenchmark(BaseBenchmark):
 class ZarrZarrPythonFileReadBenchmark(BaseBenchmark):
     """
     Track the network activity during read of remote Zarr files with Zarr-Python only (not using PyNWB)
-
-    Note: in all cases, store the in-memory objects to avoid timing garbage collection steps.
     """
 
     params = zarr_direct_read_params
@@ -420,8 +498,6 @@ class ZarrZarrPythonFileReadBenchmark(BaseBenchmark):
 class ZarrPyNWBFileReadBenchmark(BaseBenchmark):
     """
     Track the network activity during read of remote Zarr NWB files with pynwb.
-
-    Note: in all cases, store the in-memory objects to be consistent with timing benchmarks.
     """
 
     params = zarr_direct_read_params
