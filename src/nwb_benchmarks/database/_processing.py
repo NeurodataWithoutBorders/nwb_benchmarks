@@ -18,6 +18,7 @@ class BenchmarkDatabase:
         results_directory: Optional[Path] = None,
         db_directory: Optional[Path] = None,
         machine_id: str = None,
+        exclude_older: str = None,
     ):
         """Initialize database handler with directories and machine ID.
 
@@ -28,6 +29,7 @@ class BenchmarkDatabase:
         """
         self.machine_id = machine_id
         self.packages_of_interest = PACKAGES_OF_INTEREST
+        self.exclude_older = exclude_older
 
         # Set default directories if not provided
         cache_dir = Path.home() / ".cache" / "nwb-benchmarks"
@@ -84,6 +86,8 @@ class BenchmarkDatabase:
             df
             # Filter for specific machine early to reduce data volume
             .filter(pl.col("machine_id") == self.machine_id if self.machine_id is not None else pl.lit(True))
+            # Filter for timestamp early to reduce data volume
+            .filter(pl.col('timestamp') >= pl.lit(self.exclude_older).str.to_datetime() if self.exclude_older is not None else pl.lit(True))
             # Extract benchmark name components
             .with_columns(
                 [
