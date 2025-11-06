@@ -206,3 +206,31 @@ class BenchmarkDatabase:
         """Filter benchmark tests."""
         results_df = self.get_results()
         return results_df.filter(pl.col("benchmark_name_type") == benchmark_type)
+
+    def combine_read_and_slice_times(self, read_col_name: str, slice_col_name: str, with_baseline: bool = False) -> pl.LazyFrame:
+        if with_baseline:
+            # add artificial baseline of slice_number 0 with value = 0
+            df_a = pl.concat([
+                    self.filter_tests(read_col_name)
+                    .with_columns([
+                        pl.lit(0).cast(pl.UInt32).alias("slice_number"),
+                        pl.lit(0.0).alias("value"),
+                    ]),
+                    self.filter_tests(slice_col_name)
+                ])
+        else:
+            df_a = self.filter_tests(slice_col_name)
+
+        return (
+            df_a.join(
+                # get average file read time
+                self.filter_tests(read_col_name)
+                .group_by(["modality", "benchmark_name_clean"])
+                .agg(pl.col("value").mean().alias("avg_file_open_time")), # TODO check what average includes
+                # match on benchmark_name_clean + parameter_case_name
+                on=["modality", "benchmark_name_clean"],
+                how="left",
+            )
+            # add average file open time to each slice time
+            .with_columns((pl.col("value") + pl.col("avg_file_open_time")).alias("total_time"))
+        )
