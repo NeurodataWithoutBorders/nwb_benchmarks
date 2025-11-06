@@ -79,6 +79,7 @@ class BenchmarkDatabase:
             .str.replace("time_read_", "")
             .str.replace("track_network_read_", "")
             .str.replace("time_download_", "")
+            .str.replace("zarrpython", "zarr")
             .str.replace_all("_", " ")
         )
 
@@ -110,11 +111,24 @@ class BenchmarkDatabase:
                     .alias("benchmark_name_test"),
                 ]
             )
-            # Handle preloaded information
+            # Handle preloaded and local information
             .with_columns(
                 [
                     pl.col("benchmark_name_test").str.contains("preloaded").alias("is_preloaded"),
                     pl.col("benchmark_name_test").str.replace(" preloaded", "").alias("benchmark_name_test"),
+                ]
+            )
+            .with_columns(
+                [
+                    pl.col("benchmark_name").str.contains("local").alias("is_local"),
+                    pl.col("benchmark_name_test").str.replace(" local", "").str.replace("json", "pynwb").alias("benchmark_name_test"),
+                    pl.when(pl.col("benchmark_name_operation").str.contains("local"))
+                    .then(
+                        pl.col("benchmark_name_operation")
+                        .str.replace(r"local (.*)", pl.col("benchmark_name_test") + " $1")
+                    )
+                    .otherwise(pl.col("benchmark_name_operation"))
+                    .alias("benchmark_name_operation") 
                 ]
             )
             # Extract scaling information
@@ -129,7 +143,7 @@ class BenchmarkDatabase:
             .with_columns(
                 pl.when(pl.col("benchmark_name_label") == "ContinuousSliceBenchmark")
                 .then(pl.col("benchmark_name_test"))
-                .when(pl.col("benchmark_name_label").is_in(["FileReadBenchmark", "DownloadDandiAPIBenchmark"]))
+                .when(pl.col("benchmark_name_label").is_in(["FileReadBenchmark", "DownloadBenchmark"]))
                 .then(pl.col("benchmark_name_operation"))
                 .otherwise(pl.col("benchmark_name_test"))  # fallback
                 .alias("benchmark_name_clean")
