@@ -135,7 +135,7 @@ def get_persistent_download_directory() -> pathlib.Path:
     pathlib.Path
         The persistent download directory path.
     """
-    benchmarks_home_directory = get_benchmarks_home_directory()
-    download_directory = benchmarks_home_directory / "downloads"
+    cache_directory = get_cache_directory()
+    download_directory = cache_directory / "downloads"
     download_directory.mkdir(exist_ok=True)
     return download_directory
