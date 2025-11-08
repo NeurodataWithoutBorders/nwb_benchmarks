@@ -115,7 +115,7 @@ def clean_cache(ignore_errors: bool = False) -> None:
     """
     Clean the cache directory for NWB Benchmarks.
 
-    Deletes the entire cache directory if it exists.
+    Deletes the entire cache directory except for the persistent download subdirectory.
     """
     cache_directory = get_cache_directory()
     paths = set(cache_directory.iterdir()) - {cache_directory / "downloads"}
