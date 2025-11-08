@@ -118,7 +118,8 @@ def clean_cache(ignore_errors: bool = False) -> None:
     Deletes the entire cache directory if it exists.
     """
     cache_directory = get_cache_directory()
-    for path in cache_directory.iterdir():
+    paths = set(cache_directory.iterdir()) - {cache_directory / "downloads"}
+    for path in paths:
         if path.is_dir():
             shutil.rmtree(path=path, ignore_errors=ignore_errors)
         else:
