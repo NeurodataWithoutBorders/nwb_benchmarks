@@ -21,8 +21,6 @@ DEFAULT_BENCHMARK_ORDER = [
     "hdf5 h5py fsspec s3 with cache",
     "hdf5 h5py ros3",
     "lindi h5py",
-    "zarr https",
-    "zarr https force no consolidated",
     "zarr s3",
     "zarr s3 force no consolidated",
 ]
@@ -53,6 +51,7 @@ class BenchmarkVisualizer:
         """Setup matplotlib settings for editable text in Illustrator."""
         matplotlib.rcParams["pdf.fonttype"] = 42
         matplotlib.rcParams["ps.fonttype"] = 42
+        matplotlib.rcParams['font.family'] = 'Arial'
 
     @staticmethod
     def _format_stat_text(mean: float, std: float, count: int) -> str:
