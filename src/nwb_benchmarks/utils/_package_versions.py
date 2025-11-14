@@ -57,6 +57,6 @@ def create_older_environment_yaml(
 if __name__ == "__main__":
     # restrict key packages of interest to specific dates
     # no versions of lindi pre 2024-03 and other more difficult dependency resolution issues, so stop at 2024-06-30
-    packages_to_restrict = ["h5py", "dandi", "zarr", "fsspec", "lindi"]
+    packages_to_restrict = ["h5py", "dandi", "zarr", "fsspec", "lindi", "s3fs", "aiohttp", "boto3"]
     create_older_environment_yaml(exclude_newer_date="2025-06-30", packages_to_restrict=packages_to_restrict)
     create_older_environment_yaml(exclude_newer_date="2024-06-30", packages_to_restrict=packages_to_restrict)
