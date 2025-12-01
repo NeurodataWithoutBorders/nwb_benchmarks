@@ -234,3 +234,21 @@ class BenchmarkDatabase:
             # add average file open time to each slice time
             .with_columns((pl.col("value") + pl.col("avg_file_open_time")).alias("total_time"))
         )
+    
+    def combine_download_read_and_slice_times(self, read_col_name: str, slice_col_name: str, with_baseline: bool = False) -> pl.LazyFrame:
+        download_df = self.filter_tests("time_download")
+        local_read_and_slice_df = self.combine_read_and_slice_times(read_col_name=read_col_name,
+                                                                    slice_col_name=slice_col_name,
+                                                                    with_baseline=with_baseline)
+
+        return local_read_and_slice_df.join(
+                        download_df
+                        .with_columns(pl.col("benchmark_name_clean").str.replace("dandi api", "pynwb").alias("benchmark_name_clean"))
+                        .group_by(["modality", "benchmark_name_clean"])
+                        .agg(pl.col("value").mean().alias("avg_download_time")),
+                        on=["modality", "benchmark_name_clean"],
+                        how="left",
+                    ).with_columns([
+                        (pl.col("avg_download_time") + pl.col("total_time")).alias("total_time"),
+                        (pl.col("benchmark_name_clean").str.replace("pynwb", "").alias("benchmark_name_clean"))
+                    ])

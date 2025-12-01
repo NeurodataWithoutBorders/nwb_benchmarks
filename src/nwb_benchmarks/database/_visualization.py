@@ -366,60 +366,53 @@ class BenchmarkVisualizer:
     ):
         """Plot download vs stream benchmark comparison."""
         print("Plotting download vs stream benchmark comparison...")
-        
-        # plot time vs number of slices
         prefix = self._get_filename_prefix(network_tracking)
         base_filename = self.output_directory / f"{prefix}slicing"
-        slice_df_combined = db.combine_read_and_slice_times(read_col_name="time_remote_file_reading",
-                                                            slice_col_name="time_remote_slicing")
         plot_kwargs = {
-            "df": slice_df_combined.collect().to_pandas(),
             "group": "benchmark_name_clean",
-            "metric_order": self.pynwb_read_order if order is None else order,
             "row": "variable" if network_tracking else "is_preloaded",
             "sharex": "row" if network_tracking else True,
         }
-        self.plot_benchmark_slices_vs_time(y_value="value", filename=f"{base_filename}_vs_time.pdf", **plot_kwargs)
 
         # add plots of total time (read + slice) with baseline number of slices (indicates file read only time)
         slice_df_combined_with_baseline = db.combine_read_and_slice_times(read_col_name="time_remote_file_reading",
                                                                           slice_col_name="time_remote_slicing",
                                                                           with_baseline=True)
-        plot_kwargs.update({"df": slice_df_combined_with_baseline.collect().to_pandas()})
         self.plot_benchmark_slices_vs_time(
-            y_value="total_time", filename=f"{base_filename}_vs_read_and_slice_time.pdf", **plot_kwargs
+            df=slice_df_combined_with_baseline.collect().to_pandas(),
+            metric_order=self.pynwb_read_order if order is None else order,
+            y_value="total_time", 
+            filename=f"{base_filename}_vs_remote_read_and_slice_time.pdf", 
+            **plot_kwargs
         )
 
         # add plots of local read + slice times
         local_df_combined = db.combine_read_and_slice_times(read_col_name="time_local_file_reading",
                                                             slice_col_name="time_local_slicing",
                                                             with_baseline=True)
-        plot_kwargs.update({"df": local_df_combined.collect().to_pandas(),
-                            'metric_order': None})
         self.plot_benchmark_slices_vs_time(
-            y_value="total_time", filename=f"{base_filename}_vs_local_read_and_slice_time.pdf", **plot_kwargs
+            df=local_df_combined.collect().to_pandas(),
+            metric_order=None,
+            y_value="total_time", 
+            filename=f"{base_filename}_vs_local_read_and_slice_time.pdf", 
+            **plot_kwargs
         )
 
         # combine download + local read + slice times
-        download_df = db.filter_tests("time_download")
-        local_df_combined_with_download = local_df_combined.join(
-                download_df
-                .with_columns(pl.col("benchmark_name_clean").str.replace("dandi api", "pynwb").alias("benchmark_name_clean"))
-                .group_by(["modality", "benchmark_name_clean"])
-                .agg(pl.col("value").mean().alias("avg_download_time")),
-                on=["modality", "benchmark_name_clean"],
-                how="left",
-            ).with_columns([
-                (pl.col("avg_download_time") + pl.col("total_time")).alias("total_time"),
-                (pl.col("benchmark_name_clean").str.replace("pynwb", "").alias("benchmark_name_clean"))
-            ])
-        plot_kwargs.update({"df": local_df_combined_with_download.collect().to_pandas(),
-                            'metric_order': ['hdf5 ', 'zarr ', 'lindi ']})
+        local_df_combined_with_download = db.combine_download_read_and_slice_times(read_col_name="time_local_file_reading",
+                                                                                   slice_col_name="time_local_slicing",
+                                                                                   with_baseline=True)
         self.plot_benchmark_slices_vs_time(
-            y_value="total_time", filename=f"{base_filename}_vs_download_time.pdf", **plot_kwargs
+            df=local_df_combined_with_download.collect().to_pandas(),
+            metric_order=['hdf5 ', 'zarr ', 'lindi '],
+            y_value="total_time",
+            filename=f"{base_filename}_vs_download_time.pdf", 
+            **plot_kwargs
         )
         
         # calculate intersection points and add to plots
+        slice_df_combined = db.combine_read_and_slice_times(read_col_name="time_remote_file_reading",
+                                                            slice_col_name="time_remote_slicing")
         intersections = []
         for (modality, benchmark_name, is_preloaded), remote_group in slice_df_combined.collect().group_by(["modality", "benchmark_name_clean", "is_preloaded"]):            
             local_group = local_df_combined_with_download.filter(
@@ -439,16 +432,14 @@ class BenchmarkVisualizer:
 
         intersections_df = pl.DataFrame(intersections)
 
-        # add intersection information 
-        plot_kwargs = {
-            "df": slice_df_combined.collect().to_pandas(),
-            "group": "benchmark_name_clean",
-            "metric_order": self.pynwb_read_order if order is None else order,
-            "row": "variable" if network_tracking else "is_preloaded",
-            "sharex": "row" if network_tracking else True,
-            "intersections_df": intersections_df.to_pandas(),
-        }
-        self.plot_benchmark_slices_vs_time(y_value="value", filename=f"{base_filename}_vs_time.pdf", **plot_kwargs)
+        self.plot_benchmark_slices_vs_time(
+            df=slice_df_combined_with_baseline.collect().to_pandas(),
+            metric_order=self.pynwb_read_order if order is None else order,
+            y_value="value", 
+            filename=f"{base_filename}_vs_time.pdf",
+            intersections_df=intersections_df.to_pandas(),
+            **plot_kwargs
+        )
 
     def plot_method_rankings(self, db: BenchmarkDatabase):
         """Create heatmap showing method rankings across benchmarks."""
