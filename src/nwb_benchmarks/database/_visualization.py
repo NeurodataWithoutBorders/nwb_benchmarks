@@ -102,15 +102,6 @@ class BenchmarkVisualizer:
         return plot_kwargs
 
     @staticmethod
-    def _set_package_version_categorical(group):
-        sorted_versions = sorted(
-            group["package_version"].unique(),
-            key=lambda v: version.parse(v),
-        )
-        group["package_version"] = pd.Categorical(group["package_version"], categories=sorted_versions, ordered=True)
-        return group
-
-    @staticmethod
     def _add_annotations_df(intersections_df: pl.DataFrame, order: List[str], **kwargs):
         """Add intersection annotations to plot."""
         ax = plt.gca()
@@ -473,31 +464,35 @@ class BenchmarkVisualizer:
         """Plot performance changes over time for a given benchmark type."""
         print(f"Plotting performance over time")
 
-        # get polars dataframe and filter
         df = db.join_results_with_environments()
         df = (
             df.filter(pl.col("benchmark_name_type") == benchmark_type)
             .collect()
             .to_pandas()
-            .groupby("package_name")
-            .apply(self._set_package_version_categorical, include_groups=False)
-            .reset_index(level=0)
         )
-
-        g = sns.catplot(
-            data=df,
-            x="package_version",
-            y="value",
+        
+        # using FacetGrid instead of catplot to support different ordering per subplot
+        g = sns.FacetGrid(
+            df,
             col="modality",
             row="package_name",
-            hue=hue,
-            hue_order=self.pynwb_read_order if order is None else order,
-            palette="Paired",
-            kind="point",
             sharey=True,
             sharex=False,
         )
-
+        
+        def plot_versions(data, **kwargs):
+            sns.pointplot(
+                data=data,
+                x="package_version",
+                y="value",
+                hue=hue,
+                hue_order=self.pynwb_read_order if order is None else order,
+                palette="Paired",
+                order=sorted(data["package_version"].unique(), key=lambda v: version.parse(v)),
+                **kwargs
+            )
+        
+        g.map_dataframe(plot_versions)
         g.set(xlabel="Package version", ylabel="Time (s)")
 
         sns.despine()

@@ -7,7 +7,7 @@ import polars as pl
 
 from nwb_benchmarks.database._parquet import repackage_as_parquet
 
-PACKAGES_OF_INTEREST = ["h5py", "fsspec", "lindi", "remfile", "zarr", "hdmf-zarr", "hdmf", "pynwb"]
+PACKAGES_OF_INTEREST = ["h5py", "dandi", "zarr", "fsspec", "lindi", "s3fs", "aiohttp", "boto3", "hdmf-zarr", "hdmf", "pynwb"]
 
 
 class BenchmarkDatabase:
