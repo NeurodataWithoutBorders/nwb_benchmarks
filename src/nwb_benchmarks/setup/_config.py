@@ -115,10 +115,11 @@ def clean_cache(ignore_errors: bool = False) -> None:
     """
     Clean the cache directory for NWB Benchmarks.
 
-    Deletes the entire cache directory if it exists.
+    Deletes the entire cache directory except for the persistent download subdirectory.
     """
     cache_directory = get_cache_directory()
-    for path in cache_directory.iterdir():
+    paths = set(cache_directory.iterdir()) - {cache_directory / "downloads"}
+    for path in paths:
         if path.is_dir():
             shutil.rmtree(path=path, ignore_errors=ignore_errors)
         else:
@@ -135,7 +136,7 @@ def get_persistent_download_directory() -> pathlib.Path:
     pathlib.Path
         The persistent download directory path.
     """
-    benchmarks_home_directory = get_benchmarks_home_directory()
-    download_directory = benchmarks_home_directory / "downloads"
+    cache_directory = get_cache_directory()
+    download_directory = cache_directory / "downloads"
     download_directory.mkdir(exist_ok=True)
     return download_directory
