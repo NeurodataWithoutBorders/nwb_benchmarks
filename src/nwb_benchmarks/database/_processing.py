@@ -34,7 +34,7 @@ class BenchmarkDatabase:
         # Set default directories if not provided
         cache_dir = Path.home() / ".cache" / "nwb-benchmarks"
         self.results_directory = results_directory or cache_dir / "nwb-benchmarks-results"
-        self.db_directory = db_directory or cache_dir / "nwb-benchmarks-database"
+        self.db_directory = db_directory or cache_dir 
 
         self._results_df = None
         self._environments_df = None
