@@ -8,6 +8,8 @@ import pandas as pd
 import polars as pl
 import seaborn as sns
 import numpy as np
+import warnings
+
 from packaging import version
 
 from nwb_benchmarks.database._processing import BenchmarkDatabase
@@ -137,8 +139,13 @@ class BenchmarkVisualizer:
         metric_order: List[str],
         group: str = "benchmark_name_clean",
         ax: Optional[plt.Axes] = None,
+        title: str = "",
     ) -> plt.Axes:
         """Create heatmap visualization of benchmark results."""
+        if df.to_pandas().empty:
+            warnings.warn(f"No data available to plot for benchmark heatmap. Skipping plot.")
+            return
+        
         heatmap_df = self._create_heatmap_df(df, group, metric_order)
 
         if ax is None:
@@ -152,6 +159,8 @@ class BenchmarkVisualizer:
             min_idx = heatmap_df[col].idxmin()
             i = heatmap_df.index.get_loc(min_idx)
             ax.text(j + 0.5, i + 0.5, "     *", fontsize=20, ha="center", va="center", color="black", weight="bold")
+
+        ax.set_title(title)
 
         return ax
 
@@ -171,7 +180,7 @@ class BenchmarkVisualizer:
         """Create distribution plot for benchmarks."""
         catplot_kwargs = catplot_kwargs or {}
         if df.empty:
-            print(f"Warning: No data available to plot for {filename}. Skipping plot.")
+            warnings.warn(f"Warning: No data available to plot for {filename}. Skipping plot.")
             return
 
         g = sns.catplot(
@@ -216,7 +225,7 @@ class BenchmarkVisualizer:
     ):
         """Plot benchmark performance vs slice size."""
         if df.empty:
-            print(f"Warning: No data available to plot for {filename}. Skipping plot.")
+            warnings.warn(f"Warning: No data available to plot for {filename}. Skipping plot.")
             return
     
         g = sns.catplot(
@@ -440,15 +449,9 @@ class BenchmarkVisualizer:
         read_df = db.filter_tests("time_remote_file_reading").collect()
 
         fig, axes = plt.subplots(3, 1, figsize=(8, 16))
-        axes[0] = self.plot_benchmark_heatmap(df=read_df, metric_order=self.file_open_order, ax=axes[0])
-
-        axes[1] = self.plot_benchmark_heatmap(df=read_df, metric_order=self.pynwb_read_order, ax=axes[1])
-
-        axes[2] = self.plot_benchmark_heatmap(df=slice_df, metric_order=self.pynwb_read_order, ax=axes[2])
-
-        axes[0].set_title("Remote File Reading")
-        axes[1].set_title("Remote File Reading - PyNWB")
-        axes[2].set_title("Remote Slicing")
+        axes[0] = self.plot_benchmark_heatmap(df=read_df, metric_order=self.file_open_order, ax=axes[0], title="Remote File Reading")
+        axes[1] = self.plot_benchmark_heatmap(df=read_df, metric_order=self.pynwb_read_order, ax=axes[1], title="Remote File Reading - PyNWB")
+        axes[2] = self.plot_benchmark_heatmap(df=slice_df, metric_order=self.pynwb_read_order, ax=axes[2], title="Remote Slicing")
 
         plt.tight_layout()
         plt.savefig(self.output_directory / "method_rankings_heatmap.pdf", dpi=300)
@@ -471,6 +474,10 @@ class BenchmarkVisualizer:
             .to_pandas()
         )
         
+        if df.empty:
+            warnings.warn(f"Warning: No data available to plot for performance_over_{benchmark_type}.pdf. Skipping plot.")
+            return
+
         # using FacetGrid instead of catplot to support different ordering per subplot
         g = sns.FacetGrid(
             df,
