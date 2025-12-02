@@ -1,9 +1,11 @@
 import textwrap
+import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import polars as pl
 import seaborn as sns
@@ -20,8 +22,6 @@ DEFAULT_BENCHMARK_ORDER = [
     "hdf5 h5py fsspec s3 with cache",
     "hdf5 h5py ros3",
     "lindi h5py",
-    "zarr https",
-    "zarr https force no consolidated",
     "zarr s3",
     "zarr s3 force no consolidated",
 ]
@@ -52,6 +52,7 @@ class BenchmarkVisualizer:
         """Setup matplotlib settings for editable text in Illustrator."""
         matplotlib.rcParams["pdf.fonttype"] = 42
         matplotlib.rcParams["ps.fonttype"] = 42
+        matplotlib.rcParams["font.family"] = "Arial"
 
     @staticmethod
     def _format_stat_text(mean: float, std: float, count: int) -> str:
@@ -102,14 +103,35 @@ class BenchmarkVisualizer:
         return plot_kwargs
 
     @staticmethod
-    def _set_package_version_categorical(group):
-        # TODO - idk if this is actually sorting or not
-        sorted_versions = sorted(
-            group["package_version"].unique(),
-            key=lambda v: version.parse(v),
+    def _add_annotations_df(intersections_df: pl.DataFrame, order: List[str], **kwargs):
+        """Add intersection annotations to plot."""
+        ax = plt.gca()
+
+        # Get the grouping values from data
+        all_modalities = kwargs["data"]["modality"].unique()
+        assert len(all_modalities) == 1, "Expected a single modality per subplot."
+
+        is_preloaded = kwargs["data"]["is_preloaded"].unique()
+        assert len(is_preloaded) == 1, "Expected a single preloaded parameter per subplot."
+
+        summary_text = ["# slices to intersect with download time \n"]
+        modality_intersections = intersections_df.query(
+            f'modality == "{all_modalities[0]}" and is_preloaded == {is_preloaded[0]}'
         )
-        group["package_version"] = pd.Categorical(group["package_version"], categories=sorted_versions, ordered=True)
-        return group
+        for label in order:
+            row = modality_intersections.query(f'benchmark_name_clean == "{label}"')
+            if not row.empty:
+                summary_text.append(f"{label}: {row['intersection_slice'].tolist()[0]:.2f}\n")
+
+        ax.text(
+            0.1,
+            0.9,
+            "".join(summary_text),
+            transform=ax.transAxes,
+            fontsize=8,
+            ha="left",
+            va="top",
+        )
 
     def _create_heatmap_df(self, df: pl.DataFrame, group: str, metric_order: List[str]) -> pd.DataFrame:
         """Prepare data for heatmap visualization."""
@@ -126,8 +148,13 @@ class BenchmarkVisualizer:
         metric_order: List[str],
         group: str = "benchmark_name_clean",
         ax: Optional[plt.Axes] = None,
+        title: str = "",
     ) -> plt.Axes:
         """Create heatmap visualization of benchmark results."""
+        if df.to_pandas().empty:
+            warnings.warn(f"No data available to plot for benchmark heatmap. Skipping plot.")
+            return
+
         heatmap_df = self._create_heatmap_df(df, group, metric_order)
 
         if ax is None:
@@ -141,6 +168,8 @@ class BenchmarkVisualizer:
             min_idx = heatmap_df[col].idxmin()
             i = heatmap_df.index.get_loc(min_idx)
             ax.text(j + 0.5, i + 0.5, "     *", fontsize=20, ha="center", va="center", color="black", weight="bold")
+
+        ax.set_title(title)
 
         return ax
 
@@ -159,6 +188,9 @@ class BenchmarkVisualizer:
     ):
         """Create distribution plot for benchmarks."""
         catplot_kwargs = catplot_kwargs or {}
+        if df.empty:
+            warnings.warn(f"Warning: No data available to plot for {filename}. Skipping plot.")
+            return
 
         g = sns.catplot(
             data=df,
@@ -198,8 +230,13 @@ class BenchmarkVisualizer:
         filename: Path,
         row: Optional[str] = None,
         sharex: bool = True,
+        intersections_df: Optional[pl.DataFrame] = None,
     ):
         """Plot benchmark performance vs slice size."""
+        if df.empty:
+            warnings.warn(f"Warning: No data available to plot for {filename}. Skipping plot.")
+            return
+
         g = sns.catplot(
             data=df,
             x="slice_number",
@@ -213,6 +250,10 @@ class BenchmarkVisualizer:
             sharey=False,
             kind="point",
         )
+
+        # Add intersection annotations
+        if intersections_df is not None:
+            g.map_dataframe(self._add_annotations_df, intersections_df=intersections_df, order=metric_order)
 
         g.set(xlabel="Relative slice size", ylabel="Time (s)")
         sns.despine()
@@ -312,6 +353,20 @@ class BenchmarkVisualizer:
         )
         self.plot_benchmark_dist(**base_kwargs)
 
+    @staticmethod
+    def calculate_intersection(group_a, group_b):
+        """Calculate intersection point for a single group"""
+        m1, b1 = np.polyfit(group_a["slice_number"], group_a["total_time"], 1)
+        m2, b2 = np.polyfit(group_b["slice_number"], group_b["total_time"], 1)
+
+        if abs(m1 - m2) < 1e-10:  # parallel lines
+            return None, None
+
+        intersection_x = (b2 - b1) / (m1 - m2)
+        intersection_y = m1 * intersection_x + b1
+
+        return intersection_x, intersection_y
+
     def plot_download_vs_stream_benchmarks(
         self,
         db: BenchmarkDatabase,
@@ -320,41 +375,86 @@ class BenchmarkVisualizer:
     ):
         """Plot download vs stream benchmark comparison."""
         print("Plotting download vs stream benchmark comparison...")
-
-        # combine read + slice times
-        slice_df_combined = (
-            db.filter_tests("time_remote_slicing")
-            # join slice and file read data
-            .join(
-                # get average remote file read time
-                db.filter_tests("time_remote_file_reading")
-                .group_by(["modality", "benchmark_name_clean"])
-                .agg(pl.col("value").mean().alias("avg_file_open_time")),
-                # match on benchmark_name_clean + parameter_case_name
-                on=["modality", "benchmark_name_clean"],
-                how="left",
-            )
-            # add average file open time to each slice time
-            # NOTE - should the file open + slice times be added per run or is average ok?
-            .with_columns((pl.col("value") + pl.col("avg_file_open_time")).alias("total_time"))
-        )
-
-        # TODO - combine download + local read times
-        # download_df = db.filter_tests("time_download")
-
-        # plot time vs number of slices (TODO - plot with extrapolation)
         prefix = self._get_filename_prefix(network_tracking)
         base_filename = self.output_directory / f"{prefix}slicing"
         plot_kwargs = {
-            "df": slice_df_combined.collect().to_pandas(),
             "group": "benchmark_name_clean",
-            "metric_order": self.pynwb_read_order if order is None else order,
             "row": "variable" if network_tracking else "is_preloaded",
             "sharex": "row" if network_tracking else True,
         }
-        self.plot_benchmark_slices_vs_time(y_value="value", filename=f"{base_filename}_vs_time.pdf", **plot_kwargs)
+
+        # add plots of total time (read + slice) with baseline number of slices (indicates file read only time)
+        slice_df_combined_with_baseline = db.combine_read_and_slice_times(
+            read_col_name="time_remote_file_reading", slice_col_name="time_remote_slicing", with_baseline=True
+        )
         self.plot_benchmark_slices_vs_time(
-            y_value="total_time", filename=f"{base_filename}_vs_total_time.pdf", **plot_kwargs
+            df=slice_df_combined_with_baseline.collect().to_pandas(),
+            metric_order=self.pynwb_read_order if order is None else order,
+            y_value="total_time",
+            filename=f"{base_filename}_vs_remote_read_and_slice_time.pdf",
+            **plot_kwargs,
+        )
+
+        # add plots of local read + slice times
+        local_df_combined = db.combine_read_and_slice_times(
+            read_col_name="time_local_file_reading", slice_col_name="time_local_slicing", with_baseline=True
+        )
+        self.plot_benchmark_slices_vs_time(
+            df=local_df_combined.collect().to_pandas(),
+            metric_order=None,
+            y_value="total_time",
+            filename=f"{base_filename}_vs_local_read_and_slice_time.pdf",
+            **plot_kwargs,
+        )
+
+        # combine download + local read + slice times
+        local_df_combined_with_download = db.combine_download_read_and_slice_times(
+            read_col_name="time_local_file_reading", slice_col_name="time_local_slicing", with_baseline=True
+        )
+        self.plot_benchmark_slices_vs_time(
+            df=local_df_combined_with_download.collect().to_pandas(),
+            metric_order=["hdf5 ", "zarr ", "lindi "],
+            y_value="total_time",
+            filename=f"{base_filename}_vs_download_time.pdf",
+            **plot_kwargs,
+        )
+
+        # calculate intersection points and add to plots
+        slice_df_combined = db.combine_read_and_slice_times(
+            read_col_name="time_remote_file_reading", slice_col_name="time_remote_slicing"
+        )
+        intersections = []
+        for (modality, benchmark_name, is_preloaded), remote_group in slice_df_combined.collect().group_by(
+            ["modality", "benchmark_name_clean", "is_preloaded"]
+        ):
+            local_group = local_df_combined_with_download.filter(
+                (pl.col("modality") == modality)
+                & (pl.col("benchmark_name_clean") == f"{benchmark_name.split(' ')[0]} ")
+                & (pl.col("is_preloaded") == is_preloaded)
+            ).collect()
+
+            # calculate intersection
+            if not local_group.is_empty():
+                int_x, int_y = self.calculate_intersection(remote_group, local_group)
+                intersections.append(
+                    {
+                        "modality": modality,
+                        "is_preloaded": is_preloaded,
+                        "benchmark_name_clean": benchmark_name,
+                        "intersection_slice": int_x,
+                        "intersection_time": int_y,
+                    }
+                )
+
+        intersections_df = pl.DataFrame(intersections)
+
+        self.plot_benchmark_slices_vs_time(
+            df=slice_df_combined_with_baseline.collect().to_pandas(),
+            metric_order=self.pynwb_read_order if order is None else order,
+            y_value="value",
+            filename=f"{base_filename}_vs_time.pdf",
+            intersections_df=intersections_df.to_pandas(),
+            **plot_kwargs,
         )
 
     def plot_method_rankings(self, db: BenchmarkDatabase):
@@ -365,15 +465,15 @@ class BenchmarkVisualizer:
         read_df = db.filter_tests("time_remote_file_reading").collect()
 
         fig, axes = plt.subplots(3, 1, figsize=(8, 16))
-        axes[0] = self.plot_benchmark_heatmap(df=read_df, metric_order=self.file_open_order, ax=axes[0])
-
-        axes[1] = self.plot_benchmark_heatmap(df=read_df, metric_order=self.pynwb_read_order, ax=axes[1])
-
-        axes[2] = self.plot_benchmark_heatmap(df=slice_df, metric_order=self.pynwb_read_order, ax=axes[2])
-
-        axes[0].set_title("Remote File Reading")
-        axes[1].set_title("Remote File Reading - PyNWB")
-        axes[2].set_title("Remote Slicing")
+        axes[0] = self.plot_benchmark_heatmap(
+            df=read_df, metric_order=self.file_open_order, ax=axes[0], title="Remote File Reading"
+        )
+        axes[1] = self.plot_benchmark_heatmap(
+            df=read_df, metric_order=self.pynwb_read_order, ax=axes[1], title="Remote File Reading - PyNWB"
+        )
+        axes[2] = self.plot_benchmark_heatmap(
+            df=slice_df, metric_order=self.pynwb_read_order, ax=axes[2], title="Remote Slicing"
+        )
 
         plt.tight_layout()
         plt.savefig(self.output_directory / "method_rankings_heatmap.pdf", dpi=300)
@@ -389,31 +489,37 @@ class BenchmarkVisualizer:
         """Plot performance changes over time for a given benchmark type."""
         print(f"Plotting performance over time")
 
-        # get polars dataframe and filter
         df = db.join_results_with_environments()
-        df = (
-            df.filter(pl.col("benchmark_name_type") == benchmark_type)
-            .collect()
-            .to_pandas()
-            .groupby("package_name")
-            .apply(self._set_package_version_categorical, include_groups=False)
-            .reset_index(level=0)
-        )
+        df = df.filter(pl.col("benchmark_name_type") == benchmark_type).collect().to_pandas()
 
-        g = sns.catplot(
-            data=df,
-            x="package_version",
-            y="value",
+        if df.empty:
+            warnings.warn(
+                f"Warning: No data available to plot for performance_over_{benchmark_type}.pdf. Skipping plot."
+            )
+            return
+
+        # using FacetGrid instead of catplot to support different ordering per subplot
+        g = sns.FacetGrid(
+            df,
             col="modality",
             row="package_name",
-            hue=hue,
-            hue_order=self.pynwb_read_order if order is None else order,
-            palette="Paired",
-            kind="point",
             sharey=True,
             sharex=False,
         )
 
+        def plot_versions(data, **kwargs):
+            sns.pointplot(
+                data=data,
+                x="package_version",
+                y="value",
+                hue=hue,
+                hue_order=self.pynwb_read_order if order is None else order,
+                palette="Paired",
+                order=sorted(data["package_version"].unique(), key=lambda v: version.parse(v)),
+                **kwargs,
+            )
+
+        g.map_dataframe(plot_versions)
         g.set(xlabel="Package version", ylabel="Time (s)")
 
         sns.despine()

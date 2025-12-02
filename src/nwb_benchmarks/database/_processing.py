@@ -7,7 +7,19 @@ import polars as pl
 
 from nwb_benchmarks.database._parquet import repackage_as_parquet
 
-PACKAGES_OF_INTEREST = ["h5py", "fsspec", "lindi", "remfile", "zarr", "hdmf-zarr", "hdmf", "pynwb"]
+PACKAGES_OF_INTEREST = [
+    "h5py",
+    "dandi",
+    "zarr",
+    "fsspec",
+    "lindi",
+    "s3fs",
+    "aiohttp",
+    "boto3",
+    "hdmf-zarr",
+    "hdmf",
+    "pynwb",
+]
 
 
 class BenchmarkDatabase:
@@ -18,6 +30,7 @@ class BenchmarkDatabase:
         results_directory: Optional[Path] = None,
         db_directory: Optional[Path] = None,
         machine_id: str = None,
+        exclude_older: str = None,
     ):
         """Initialize database handler with directories and machine ID.
 
@@ -28,11 +41,12 @@ class BenchmarkDatabase:
         """
         self.machine_id = machine_id
         self.packages_of_interest = PACKAGES_OF_INTEREST
+        self.exclude_older = exclude_older
 
         # Set default directories if not provided
         cache_dir = Path.home() / ".cache" / "nwb-benchmarks"
         self.results_directory = results_directory or cache_dir / "nwb-benchmarks-results"
-        self.db_directory = db_directory or cache_dir / "nwb-benchmarks-database"
+        self.db_directory = db_directory or cache_dir
 
         self._results_df = None
         self._environments_df = None
@@ -77,6 +91,7 @@ class BenchmarkDatabase:
             .str.replace("time_read_", "")
             .str.replace("track_network_read_", "")
             .str.replace("time_download_", "")
+            .str.replace("zarrpython", "zarr")
             .str.replace_all("_", " ")
         )
 
@@ -84,6 +99,12 @@ class BenchmarkDatabase:
             df
             # Filter for specific machine early to reduce data volume
             .filter(pl.col("machine_id") == self.machine_id if self.machine_id is not None else pl.lit(True))
+            # Filter for timestamp early to reduce data volume
+            .filter(
+                pl.col("timestamp") >= pl.lit(self.exclude_older).str.to_datetime()
+                if self.exclude_older is not None
+                else pl.lit(True)
+            )
             # Extract benchmark name components
             .with_columns(
                 [
@@ -106,11 +127,28 @@ class BenchmarkDatabase:
                     .alias("benchmark_name_test"),
                 ]
             )
-            # Handle preloaded information
+            # Handle preloaded and local information
             .with_columns(
                 [
                     pl.col("benchmark_name_test").str.contains("preloaded").alias("is_preloaded"),
                     pl.col("benchmark_name_test").str.replace(" preloaded", "").alias("benchmark_name_test"),
+                ]
+            )
+            .with_columns(
+                [
+                    pl.col("benchmark_name").str.contains("local").alias("is_local"),
+                    pl.col("benchmark_name_test")
+                    .str.replace(" local", "")
+                    .str.replace("json", "pynwb")
+                    .alias("benchmark_name_test"),
+                    pl.when(pl.col("benchmark_name_operation").str.contains("local"))
+                    .then(
+                        pl.col("benchmark_name_operation").str.replace(
+                            r"local (.*)", pl.col("benchmark_name_test") + " $1"
+                        )
+                    )
+                    .otherwise(pl.col("benchmark_name_operation"))
+                    .alias("benchmark_name_operation"),
                 ]
             )
             # Extract scaling information
@@ -120,12 +158,13 @@ class BenchmarkDatabase:
                 .str.extract(r"slice\(0, (\d+),", group_index=1)
                 .cast(pl.Int64)
                 .alias("scaling_value"),
-            ).with_columns((pl.col("scaling_value").rank(method="dense")).over("modality").alias("slice_number"))
+            )
+            .with_columns((pl.col("scaling_value").rank(method="dense")).over("modality").alias("slice_number"))
             # Create unified cleaned benchmark name
             .with_columns(
                 pl.when(pl.col("benchmark_name_label") == "ContinuousSliceBenchmark")
                 .then(pl.col("benchmark_name_test"))
-                .when(pl.col("benchmark_name_label").is_in(["FileReadBenchmark", "DownloadDandiAPIBenchmark"]))
+                .when(pl.col("benchmark_name_label").is_in(["FileReadBenchmark", "DownloadBenchmark"]))
                 .then(pl.col("benchmark_name_operation"))
                 .otherwise(pl.col("benchmark_name_test"))  # fallback
                 .alias("benchmark_name_clean")
@@ -188,3 +227,59 @@ class BenchmarkDatabase:
         """Filter benchmark tests."""
         results_df = self.get_results()
         return results_df.filter(pl.col("benchmark_name_type") == benchmark_type)
+
+    def combine_read_and_slice_times(
+        self, read_col_name: str, slice_col_name: str, with_baseline: bool = False
+    ) -> pl.LazyFrame:
+        if with_baseline:
+            # add artificial baseline of slice_number 0 with value = 0
+            df_a = pl.concat(
+                [
+                    self.filter_tests(read_col_name).with_columns(
+                        [
+                            pl.lit(0).cast(pl.UInt32).alias("slice_number"),
+                            pl.lit(0.0).alias("value"),
+                        ]
+                    ),
+                    self.filter_tests(slice_col_name),
+                ]
+            )
+        else:
+            df_a = self.filter_tests(slice_col_name)
+
+        return (
+            df_a.join(
+                # get average file read time
+                self.filter_tests(read_col_name)
+                .group_by(["modality", "benchmark_name_clean"])
+                .agg(pl.col("value").mean().alias("avg_file_open_time")),  # TODO check what average includes
+                # match on benchmark_name_clean + parameter_case_name
+                on=["modality", "benchmark_name_clean"],
+                how="left",
+            )
+            # add average file open time to each slice time
+            .with_columns((pl.col("value") + pl.col("avg_file_open_time")).alias("total_time"))
+        )
+
+    def combine_download_read_and_slice_times(
+        self, read_col_name: str, slice_col_name: str, with_baseline: bool = False
+    ) -> pl.LazyFrame:
+        download_df = self.filter_tests("time_download")
+        local_read_and_slice_df = self.combine_read_and_slice_times(
+            read_col_name=read_col_name, slice_col_name=slice_col_name, with_baseline=with_baseline
+        )
+
+        return local_read_and_slice_df.join(
+            download_df.with_columns(
+                pl.col("benchmark_name_clean").str.replace("dandi api", "pynwb").alias("benchmark_name_clean")
+            )
+            .group_by(["modality", "benchmark_name_clean"])
+            .agg(pl.col("value").mean().alias("avg_download_time")),
+            on=["modality", "benchmark_name_clean"],
+            how="left",
+        ).with_columns(
+            [
+                (pl.col("avg_download_time") + pl.col("total_time")).alias("total_time"),
+                (pl.col("benchmark_name_clean").str.replace("pynwb", "").alias("benchmark_name_clean")),
+            ]
+        )
