@@ -21,14 +21,15 @@ from .setup import (
 # Machine ID for LBL Mac (official benchmark machine)
 LBL_MAC_MACHINE_ID = "87fee773e425b4b1d3978fbf762d57effb0e8df8"
 
+
 def clone_results_repo(repo_path: pathlib.Path) -> pathlib.Path:
     """
     Clone the nwb-benchmarks-results repository if needed.
-    
+
     Returns:
         Path to the results repository directory.
     """
- 
+
     command = "git clone https://github.com/NeurodataWithoutBorders/nwb-benchmarks-results"
     subprocess.run(
         args=command,
@@ -36,16 +37,17 @@ def clone_results_repo(repo_path: pathlib.Path) -> pathlib.Path:
         capture_output=True,
         shell=True,
     )
-    
+
+
 def generate_figures_command(args: argparse.Namespace) -> None:
     """
     Generate manuscript figures from benchmark results.
-    
+
     Args:
         args: Parsed command-line arguments from argparse
     """
     from nwb_benchmarks.database import BenchmarkDatabase, BenchmarkVisualizer
-    
+
     # Determine results directory
     if args.results_dir:
         results_dir = pathlib.Path(args.results_dir)
@@ -57,27 +59,25 @@ def generate_figures_command(args: argparse.Namespace) -> None:
         cache_directory.mkdir(parents=True, exist_ok=True)
         repo_path = cache_directory / "nwb-benchmarks-results"
         if not repo_path.exists():
-            warnings.warn(f'No results repository found at {repo_path}, attempting to clone from GitHub...')
+            warnings.warn(f"No results repository found at {repo_path}, attempting to clone from GitHub...")
             results_dir = clone_results_repo(repo_path)
         else:
             results_dir = repo_path
-    
+
     # Set default output directory if not specified
     output_dir = pathlib.Path(args.output_dir) if args.output_dir else pathlib.Path.cwd() / "figures"
     print(f"\nGenerating figures in {output_dir}...")
 
     # Initialize database handler and create parquet file
     db = BenchmarkDatabase(
-        results_directory=results_dir,
-        machine_id=LBL_MAC_MACHINE_ID,
-        exclude_older=args.exclude_older or "2025-11-01"
+        results_directory=results_dir, machine_id=LBL_MAC_MACHINE_ID, exclude_older=args.exclude_older or "2025-11-01"
     )
     db.create_database()
-    
+
     # Initialize visualizer and generate plots
     visualizer = BenchmarkVisualizer(output_directory=output_dir)
     visualizer.plot_all(db)
-    
+
 
 def main() -> None:
     """Simple wrapper around `asv run` for convenience."""
@@ -203,25 +203,20 @@ def main() -> None:
         set_cache_directory(cache_directory=cache_directory)
     elif command == "generate_figures":
         parser = argparse.ArgumentParser(
-            prog="nwb_benchmarks generate_figures",
-            description="Generate manuscript figures from benchmark results"
+            prog="nwb_benchmarks generate_figures", description="Generate manuscript figures from benchmark results"
         )
-        parser.add_argument(
-            "--output-dir",
-            type=str,
-            help="Directory for output figures (default: ./figures)"
-        )
+        parser.add_argument("--output-dir", type=str, help="Directory for output figures (default: ./figures)")
         parser.add_argument(
             "--results-dir",
             type=str,
-            help="Path to benchmark results directory (default: ~/.cache/nwb-benchmarks/nwb-benchmarks-results or auto-clone from GitHub)"
+            help="Path to benchmark results directory (default: ~/.cache/nwb-benchmarks/nwb-benchmarks-results or auto-clone from GitHub)",
         )
         parser.add_argument(
             "--exclude-older",
             type=str,
-            help="Exclude results older than this date (format: YYYY-MM-DD, default: '2025-11-01')"
+            help="Exclude results older than this date (format: YYYY-MM-DD, default: '2025-11-01')",
         )
-        
+
         args = parser.parse_args(sys.argv[2:])
         generate_figures_command(args)
     else:
