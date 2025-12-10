@@ -396,19 +396,56 @@ class BenchmarkVisualizer:
         )
         self.plot_benchmark_dist(**base_kwargs)
 
-    @staticmethod
-    def calculate_intersection(group_a, group_b):
-        """Calculate intersection point for a single group"""
-        m1, b1 = np.polyfit(group_a["slice_number"], group_a["total_time"], 1)
-        m2, b2 = np.polyfit(group_b["slice_number"], group_b["total_time"], 1)
-
+    def plot_linear_extrapolation_with_intersection(
+        self,
+        remote_group,
+        local_group,
+        benchmark_name: str,
+        ax: plt.Axes,
+        color: str,
+        title: str = "",
+        xlabel: str = "Number of slices",
+        ylabel: str = "Time (s)",
+    ):
+        """Plot linear extrapolation showing intersection between remote and local approaches.
+        """
+        if len(remote_group["slice_number"].unique()) <= 1 or len(local_group["slice_number"].unique()) <= 1:
+            return None  # Not enough data points to fit line
+        
+        # Calculate linear fits
+        m1, b1 = np.polyfit(remote_group["slice_number"], remote_group["total_time"], 1)
+        m2, b2 = np.polyfit(local_group["slice_number"], local_group["total_time"], 1)
+        
         if abs(m1 - m2) < 1e-10:  # parallel lines
-            return None, None
+            return None
 
         intersection_x = (b2 - b1) / (m1 - m2)
         intersection_y = m1 * intersection_x + b1
 
-        return intersection_x, intersection_y
+        if intersection_x < 0 or intersection_y < 0:
+            return None  # Intersection is not in the positive quadrant
+
+        # Create x-range from 0 to slightly past intersection
+        x_max = max(intersection_x * 1.2, intersection_x + 2)
+        x_range = np.linspace(0, x_max, 100)
+        
+        # Calculate y-values for both lines
+        y_remote = m1 * x_range + b1
+        y_local = m2 * x_range + b2
+        
+        # Plot the fitted lines and mark intersection point
+        ax.plot(x_range, y_remote, color=color, linestyle='solid', linewidth=2, label=f'{benchmark_name}')
+        if benchmark_name.startswith('hdf5'):
+            download_color = sns.color_palette('Greens')[-1]
+        elif benchmark_name.startswith('zarr'):
+            download_color = sns.color_palette('Reds')[-1]
+        else:
+            download_color = sns.color_palette('Blues')[-1]
+        ax.plot(x_range, y_local, color=download_color, linestyle='dashed', linewidth=2)
+        ax.plot(intersection_x, intersection_y, 'x', color=color, markersize=8, zorder=5)
+        ax.set(title=title, xlabel=xlabel, ylabel=ylabel)
+
+        return ax
 
     def plot_download_vs_stream_benchmarks(
         self,
@@ -426,79 +463,121 @@ class BenchmarkVisualizer:
             "sharex": "row" if network_tracking else True,
         }
 
-        # add plots of total time (read + slice) with baseline number of slices (indicates file read only time)
-        slice_df_combined_with_baseline = db.combine_read_and_slice_times(
+        # get remote read + slice times combined with baseline number of slices (indicates file read only time)
+        remote_slice_and_read_df = db.combine_read_and_slice_times(
             read_col_name="time_remote_file_reading", slice_col_name="time_remote_slicing", with_baseline=True
         )
         self.plot_benchmark_slices_vs_time(
-            df=slice_df_combined_with_baseline.collect().to_pandas(),
+            df=remote_slice_and_read_df.collect().to_pandas(),
             metric_order=self.pynwb_read_order if order is None else order,
-            y_value="total_time",
-            filename=f"{base_filename}_vs_remote_read_and_slice_time.pdf",
+            y_value="total_time", # includes file read + slice time
+            filename=f"{base_filename}_with_remote_read.pdf",
+            **plot_kwargs,
+        )
+        self.plot_benchmark_slices_vs_time(
+            df=remote_slice_and_read_df.collect().to_pandas(),
+            metric_order=self.pynwb_read_order if order is None else order,
+            y_value="value", # does not include file read time, only slice time
+            filename=f"{base_filename}_range.pdf",
             **plot_kwargs,
         )
 
-        # add plots of local read + slice times
-        local_df_combined = db.combine_read_and_slice_times(
+        # get local read + slice times combined (as if already downloaded the file)
+        local_slice_and_read_df = db.combine_read_and_slice_times(
             read_col_name="time_local_file_reading", slice_col_name="time_local_slicing", with_baseline=True
         )
         self.plot_benchmark_slices_vs_time(
-            df=local_df_combined.collect().to_pandas(),
+            df=local_slice_and_read_df.collect().to_pandas(),
             metric_order=None,
-            y_value="total_time",
-            filename=f"{base_filename}_vs_local_read_and_slice_time.pdf",
+            y_value="total_time", # includes file read + slice time
+            filename=f"{base_filename}_with_local_read.pdf",
             **plot_kwargs,
         )
 
-        # combine download + local read + slice times
-        local_df_combined_with_download = db.combine_download_read_and_slice_times(
+        # Generate linear extrapolation plots showing intersection points
+        # get download + local read + slice (need to download full file and then open and read)
+        download_slice_and_read_df = db.combine_download_read_and_slice_times(
             read_col_name="time_local_file_reading", slice_col_name="time_local_slicing", with_baseline=True
         )
-        self.plot_benchmark_slices_vs_time(
-            df=local_df_combined_with_download.collect().to_pandas(),
-            metric_order=["hdf5 ", "zarr ", "lindi "],
-            y_value="total_time",
-            filename=f"{base_filename}_vs_download_time.pdf",
+        self.plot_benchmark_slice_extrapolations(
+            stream_df=remote_slice_and_read_df,
+            download_df=download_slice_and_read_df,
+            filename=f"{base_filename}_with_extrapolation.pdf",
             **plot_kwargs,
         )
 
-        # calculate intersection points and add to plots
-        slice_df_combined = db.combine_read_and_slice_times(
-            read_col_name="time_remote_file_reading", slice_col_name="time_remote_slicing"
-        )
-        intersections = []
-        for (modality, benchmark_name, is_preloaded), remote_group in slice_df_combined.collect().group_by(
-            ["modality", "benchmark_name_clean", "is_preloaded"]
+    def plot_benchmark_slice_extrapolations(
+        self,
+        stream_df: pl.LazyFrame,
+        download_df: pl.LazyFrame,
+        group: str = "benchmark_name_clean",
+        filename: Path = None,
+        row: Optional[str] = None,
+        sharex: bool = True,
+    ):
+        """Plot linear extrapolations showing streaming vs download crossover points.
+        """
+        collected_download = download_df.collect()
+        collected_stream = stream_df.collect()
+
+        if collected_download.is_empty():
+            warnings.warn(f"Warning: No data available to plot for {filename}. Skipping plot.")
+            return
+
+        # Get unique modalities and row values for subplot layout
+        modalities = sorted(collected_download.select('modality').unique().to_series().to_list())
+        row_values = sorted(collected_download.select(row).unique().to_series().to_list()) if row else [None]
+        benchmarks = sorted(collected_stream.select(group).unique().to_series().to_list())
+
+        # Create mappings for plot
+        hdf5_colors = iter(sns.color_palette("Greens", n_colors=len([b for b in benchmarks if b.startswith('hdf5')])))
+        zarr_colors = iter(sns.color_palette("Reds", n_colors=len([b for b in benchmarks if b.startswith('zarr')])))
+        lindi_colors = iter(sns.color_palette("Blues", n_colors=len([b for b in benchmarks if b.startswith('lindi')])))
+        modality_to_col = {mod: i for i, mod in enumerate(modalities)}
+        row_to_row = {rv: i for i, rv in enumerate(row_values)}
+        benchmarks_to_color = {}
+        for bm in benchmarks:
+            if bm.startswith('hdf5'):
+                benchmarks_to_color[bm] = next(hdf5_colors)
+            elif bm.startswith('zarr'):
+                benchmarks_to_color[bm] = next(zarr_colors)
+            else:
+                benchmarks_to_color[bm] = next(lindi_colors)
+
+        # Create subplots
+        fig, axes = plt.subplots(nrows=len(row_values), ncols=len(modalities), figsize=(15, 10), squeeze=False)
+        
+        # Original loop structure
+        for (modality, benchmark_name, is_preloaded), remote_group in collected_stream.group_by(
+            ["modality", group, row]
         ):
-            local_group = local_df_combined_with_download.filter(
+            local_group = download_df.filter(
                 (pl.col("modality") == modality)
-                & (pl.col("benchmark_name_clean") == f"{benchmark_name.split(' ')[0]} ")
-                & (pl.col("is_preloaded") == is_preloaded)
+                & (pl.col(group) == f"{benchmark_name.split(' ')[0]} ")
+                & (pl.col(row) == is_preloaded)
             ).collect()
 
-            # calculate intersection
             if not local_group.is_empty():
-                int_x, int_y = self.calculate_intersection(remote_group, local_group)
-                intersections.append(
-                    {
-                        "modality": modality,
-                        "is_preloaded": is_preloaded,
-                        "benchmark_name_clean": benchmark_name,
-                        "intersection_slice": int_x,
-                        "intersection_time": int_y,
-                    }
+                # Determine which axis to use based on modality and row value
+                col_idx = modality_to_col[modality]
+                row_idx = row_to_row[is_preloaded]
+                color = benchmarks_to_color[benchmark_name]
+                
+                # Plot the extrapolation
+                self.plot_linear_extrapolation_with_intersection(
+                    remote_group=remote_group,
+                    local_group=local_group,
+                    benchmark_name=benchmark_name,
+                    ax=axes[row_idx, col_idx],
+                    color=color,
+                    title=f'is_preloaded={is_preloaded} | modality = {modality}',
                 )
-
-        intersections_df = pl.DataFrame(intersections)
-
-        self.plot_benchmark_slices_vs_time(
-            df=slice_df_combined_with_baseline.collect().to_pandas(),
-            metric_order=self.pynwb_read_order if order is None else order,
-            y_value="value",
-            filename=f"{base_filename}_vs_time.pdf",
-            intersections_df=intersections_df.to_pandas(),
-            **plot_kwargs,
-        )
+        
+        axes[0, 0].legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=8)
+        sns.despine()
+        plt.tight_layout()
+        plt.savefig(filename, dpi=300)
+        plt.close()
 
     def plot_method_rankings(self, db: BenchmarkDatabase):
         """Create heatmap showing method rankings across benchmarks."""
@@ -577,7 +656,7 @@ class BenchmarkVisualizer:
     def plot_all(self, db: BenchmarkDatabase):
         """Generate all benchmark visualization plots."""
 
-        # 1. WHICH LIBRARY SHOULD I USE TO STREAM DATA
+        # # 1. WHICH LIBRARY SHOULD I USE TO STREAM DATA
         # Remote file reading / slicing benchmarks
         self.plot_read_benchmarks(db, suffix="_pynwb")
         self.plot_read_benchmarks(db, order=self.file_open_order, suffix="")
