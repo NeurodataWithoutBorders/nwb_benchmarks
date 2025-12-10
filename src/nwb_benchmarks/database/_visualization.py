@@ -133,41 +133,84 @@ class BenchmarkVisualizer:
             va="top",
         )
 
-    def _create_heatmap_df(self, df: pl.DataFrame, group: str, metric_order: List[str]) -> pd.DataFrame:
+    def _compute_heatmap_order(self, heatmap_df: pd.DataFrame) -> List[str]:
+        """
+        Compute ordering for heatmap based on:
+        1. Format type (lindi → zarr → hdf5)
+        2. Average performance (ascending) within each format type
+        
+        Args:
+            heatmap_df: Pivoted DataFrame with benchmark names as index and modalities as columns
+            
+        Returns:
+            List of benchmark names in sorted order
+        """
+        # Calculate mean value across all modalities (columns)
+        avg_performance = heatmap_df.mean(axis=1).to_frame(name="avg_value")
+        
+        # Categorize by format type
+        def get_format_order(name):
+            if "lindi" in name.lower():
+                return 0  # lindi first
+            elif "zarr" in name.lower():
+                return 1  # zarr second
+            elif "hdf5" in name.lower():
+                return 2  # hdf5 third
+            else:
+                return 3  # other last
+        
+        avg_performance["format_order"] = avg_performance.index.map(get_format_order)
+        
+        # Sort by format type, then by average value (ascending = fastest first)
+        sorted_df = avg_performance.sort_values(["format_order", "avg_value"])
+        
+        return sorted_df.index.tolist()
+
+    def _create_heatmap_df(self, df: pl.DataFrame, group: str, metric_order: Optional[List[str]] = None) -> pd.DataFrame:
         """Prepare data for heatmap visualization."""
-        return (
+        heatmap_df = (
             df.to_pandas()
             .pivot_table(index=group, columns="modality", values="value", aggfunc="mean")
-            .reindex(metric_order)
             .reindex(["Ecephys", "Ophys", "Icephys"], axis=1)
         )
+        
+        # Compute order from the pivoted data if not provided
+        if metric_order is None:
+            metric_order = self._compute_heatmap_order(heatmap_df)
+        
+        return heatmap_df.reindex(metric_order)
 
     def plot_benchmark_heatmap(
         self,
         df: pl.LazyFrame,
-        metric_order: List[str],
+        metric_order: Optional[List[str]] = None,
         group: str = "benchmark_name_clean",
         ax: Optional[plt.Axes] = None,
         title: str = "",
+        vmin: Optional[float] = None,
+        vmax: Optional[float] = None,
     ) -> plt.Axes:
         """Create heatmap visualization of benchmark results."""
-        if df.to_pandas().empty:
+        collected_df = df.collect()
+        
+        if collected_df.to_pandas().empty:
             warnings.warn(f"No data available to plot for benchmark heatmap. Skipping plot.")
             return
 
-        heatmap_df = self._create_heatmap_df(df, group, metric_order)
+        # Create heatmap dataframe (which will compute order if not provided)
+        heatmap_df = self._create_heatmap_df(collected_df, group, metric_order)
 
         if ax is None:
             _, ax = plt.subplots(figsize=(10, 8))
 
-        sns.heatmap(data=heatmap_df, annot=True, fmt=".2f", cmap="OrRd", ax=ax)
+        sns.heatmap(data=heatmap_df, annot=True, fmt=".3g", cmap="OrRd", ax=ax, vmin=vmin, vmax=vmax)
         ax.set(xlabel="", ylabel="")
 
         # Add star for best method in each modality
         for j, col in enumerate(heatmap_df.columns):
             min_idx = heatmap_df[col].idxmin()
             i = heatmap_df.index.get_loc(min_idx)
-            ax.text(j + 0.5, i + 0.5, "     *", fontsize=20, ha="center", va="center", color="black", weight="bold")
+            ax.text(j + 0.5, i + 0.5, "        *", fontsize=20, ha="center", va="center", color="black", weight="bold")
 
         ax.set_title(title)
 
@@ -461,15 +504,17 @@ class BenchmarkVisualizer:
         """Create heatmap showing method rankings across benchmarks."""
         print("Plotting method rankings heatmap...")
 
-        slice_df = db.filter_tests("time_remote_slicing").collect()
-        read_df = db.filter_tests("time_remote_file_reading").collect()
+        slice_df = db.filter_tests("time_remote_slicing")
+        read_df = db.filter_tests("time_remote_file_reading")
 
         fig, axes = plt.subplots(3, 1, figsize=(8, 16))
         axes[0] = self.plot_benchmark_heatmap(
-            df=read_df, metric_order=self.file_open_order, ax=axes[0], title="Remote File Reading"
+            df=read_df.filter(pl.col('benchmark_name_clean').is_in(self.file_open_order)),
+            ax=axes[0], title="Remote File Reading", vmin=0, vmax=4,
         )
         axes[1] = self.plot_benchmark_heatmap(
-            df=read_df, metric_order=self.pynwb_read_order, ax=axes[1], title="Remote File Reading - PyNWB"
+            df=read_df.filter(pl.col('benchmark_name_clean').is_in(self.pynwb_read_order)),
+            ax=axes[1], title="Remote File Reading - PyNWB", vmin=0, vmax=200,
         )
         axes[2] = self.plot_benchmark_heatmap(
             df=slice_df, metric_order=self.pynwb_read_order, ax=axes[2], title="Remote Slicing"
