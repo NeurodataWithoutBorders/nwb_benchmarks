@@ -516,8 +516,11 @@ class BenchmarkVisualizer:
             df=read_df.filter(pl.col('benchmark_name_clean').is_in(self.pynwb_read_order)),
             ax=axes[1], title="Remote File Reading - PyNWB", vmin=0, vmax=200,
         )
+        # plot only largest slice range for clarity
         axes[2] = self.plot_benchmark_heatmap(
-            df=slice_df, metric_order=self.pynwb_read_order, ax=axes[2], title="Remote Slicing"
+            df=(slice_df.filter(pl.col('benchmark_name_clean').is_in(self.pynwb_read_order))
+                        .filter(pl.col('slice_number') == 5)),
+            ax=axes[2], title="Remote Slicing", vmin=0, vmax=10,
         )
 
         plt.tight_layout()
