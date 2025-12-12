@@ -617,7 +617,9 @@ class BenchmarkVisualizer:
         print(f"Plotting performance over time")
 
         df = db.join_results_with_environments()
-        df = df.filter(pl.col("benchmark_name_type") == benchmark_type).collect().to_pandas()
+        df = (df.filter(pl.col("benchmark_name_type") == benchmark_type)
+              .filter(pl.col('benchmark_name_clean').is_in(self.pynwb_read_order))
+              .collect().to_pandas())
 
         if df.empty:
             warnings.warn(
@@ -625,29 +627,21 @@ class BenchmarkVisualizer:
             )
             return
 
-        # using FacetGrid instead of catplot to support different ordering per subplot
-        g = sns.FacetGrid(
-            df,
+        g = sns.catplot(
+            data=df,
+            x="environment_timepoint",
+            y='value',
             col="modality",
-            row="package_name",
-            sharey=True,
-            sharex=False,
+            row='is_preloaded' if benchmark_type == "time_remote_slicing" else None,
+            hue="benchmark_name_clean",
+            hue_order=self.pynwb_read_order if order is None else order,
+            order=sorted(df["environment_timepoint"].unique()),
+            sharex=True,
+            palette="Paired",
+            sharey=False,
+            kind="point",
         )
-
-        def plot_versions(data, **kwargs):
-            sns.pointplot(
-                data=data,
-                x="package_version",
-                y="value",
-                hue=hue,
-                hue_order=self.pynwb_read_order if order is None else order,
-                palette="Paired",
-                order=sorted(data["package_version"].unique(), key=lambda v: version.parse(v)),
-                **kwargs,
-            )
-
-        g.map_dataframe(plot_versions)
-        g.set(xlabel="Package version", ylabel="Time (s)")
+        g.set(xlabel="Environment timepoint", ylabel="Time (s)")
 
         sns.despine()
         plt.savefig(self.output_directory / f"performance_over_{benchmark_type}.pdf", dpi=300)

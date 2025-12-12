@@ -24,7 +24,7 @@ PACKAGES_OF_INTEREST = [
 ENVIRONMENT_TIMEPOINTS = {
     '9e225115ea6c99b60d419454a9457bb5db93c7b7': '2024_06_25', # all timepoints based on lbl mac
     '15d059d5b6b9047f9bbeb4ac77bb4461411904c7': '2025_06_25',
-    '052cb4d925793bbbc270d9384a60bc24023025b7': '2025_09_01', # note - this environment was created after 2025-09-01 but exact date unknown
+    '052cb4d925793bbbc270d9384a60bc24023025b7': '2025_09_01', # TODO - this environment was created after 2025-09-01 but exact date unknown
 }
 
 class BenchmarkDatabase:
