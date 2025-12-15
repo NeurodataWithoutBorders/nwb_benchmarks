@@ -423,6 +423,7 @@ class BenchmarkVisualizer:
         intersection_y = m1 * intersection_x + b1
 
         if intersection_x < 0 or intersection_y < 0:
+            warnings.warn('Intersection point is not in the positive quadrant.')
             return None  # Intersection is not in the positive quadrant
 
         # Create x-range from 0 to slightly past intersection
@@ -556,6 +557,7 @@ class BenchmarkVisualizer:
                 & (pl.col(group) == f"{benchmark_name.split(' ')[0]} ")
                 & (pl.col(row) == is_preloaded)
             ).collect()
+            # TODO - for all modalities (specifically icephys) add an additional figure that takes the longest slice range and multiply those times
 
             if not local_group.is_empty():
                 # Determine which axis to use based on modality and row value

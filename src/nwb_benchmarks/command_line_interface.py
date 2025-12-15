@@ -69,6 +69,7 @@ def generate_figures_command(args: argparse.Namespace) -> None:
     print(f"\nGenerating figures in {output_dir}...")
 
     # Initialize database handler and create parquet file
+    # TODO _ make LBL mac machine ID configurable
     db = BenchmarkDatabase(
         results_directory=results_dir, machine_id=LBL_MAC_MACHINE_ID, exclude_older=args.exclude_older or "2025-11-01"
     )
