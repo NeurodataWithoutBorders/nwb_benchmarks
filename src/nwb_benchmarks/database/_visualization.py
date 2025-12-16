@@ -214,15 +214,6 @@ class BenchmarkVisualizer:
             ax.text(j + 0.5, i + 0.5, "        *", fontsize=20, ha="center", va="center", color="black", weight="bold")
 
         ax.set_title(title)
-        
-        # Add figure caption
-        caption = (f"Heatmap showing {aggfunc} benchmark performance times (in seconds) across different data modalities. "
-                   "Each cell displays the average time for a specific method-modality combination. "
-                   "The order is sorted by format type (lindi, zarr, hdf5) and then by average performance within each type. "
-                   "Stars (*) indicate the fastest method for each modality. "
-                   "For remote slicing, only the largest slice range was used to compute the averages.")
-        ax.text(0.5, -0.15, caption, transform=ax.transAxes, ha='center', va='top', 
-                fontsize=9, wrap=True, style='italic')
 
         return ax
 
@@ -238,6 +229,7 @@ class BenchmarkVisualizer:
         kind: str = "box",
         palette: str = "Paired",
         catplot_kwargs: Optional[Dict[str, Any]] = None,
+        caption: str = None,
     ):
         """Create distribution plot for benchmarks."""
         catplot_kwargs = catplot_kwargs or {}
@@ -270,9 +262,7 @@ class BenchmarkVisualizer:
             ax.set_title(wrapped_title)
 
         # Add figure caption
-        caption = ("Benchmark execution times across different methods and modalities. "
-                   "Text annotations if present display mean ± standard deviation and sample size (n). ")
-        if kind == "strip":
+        if kind == "strip" and caption is not None:
             caption += ("Each point represents a single benchmark run. ")
         g.figure.text(0.5, -0.01, caption, ha='center', va='top', fontsize=9, wrap=True, style='italic')
 
@@ -332,7 +322,7 @@ class BenchmarkVisualizer:
         col_name: str = "benchmark_name_clean",
         network_tracking: bool = False,
         kind: str = "box",
-        suffix: str = "pynwb",
+        suffix: str = "_pynwb",
     ):
         """Plot read benchmark results."""
         print(f"Plotting read benchmarks for {benchmark_type}...")
@@ -341,12 +331,16 @@ class BenchmarkVisualizer:
         prefix = self._get_filename_prefix(network_tracking)
 
         # Create base plot kwargs
+        caption_suffix = " using pynwb. " if suffix == "_pynwb" else ". "
+        caption = (f"Benchmark execution times across different methods and modalities{caption_suffix}"
+                    "Text annotations, if present, display mean ± standard deviation and sample size (n). ")
         base_kwargs = self._create_plot_kwargs(
             df=filtered_df.to_pandas(),
             group=col_name,
             order=self.pynwb_read_order if order is None else order,
-            filename=self.output_directory / f"{prefix}file_read{suffix}.pdf",
+            filename=self.output_directory / f"{prefix}file_open{suffix}.pdf",
             kind=kind,
+            caption=caption,
         )
 
         # Add network tracking specific options
@@ -362,7 +356,7 @@ class BenchmarkVisualizer:
                 "catplot_kwargs": dict(),
                 "kind": "strip",
                 "add_annotations": False,
-                "filename": self.output_directory / f"{prefix}file_read_scatter{suffix}.pdf",
+                "filename": self.output_directory / f"{prefix}file_open_scatter{suffix}.pdf",
             }
         )
         self.plot_benchmark_dist(**base_kwargs)
@@ -401,6 +395,8 @@ class BenchmarkVisualizer:
                 {
                     "df": slice_df.to_pandas(),
                     "filename": self.output_directory / f"{prefix}slicing_range{slice_num}.pdf",
+                    "caption": (f"Benchmark execution times across different methods and modalities for slice data (range = {slice_num})."
+                                 "Text annotations, if present, display mean ± standard deviation and sample size (n). ")
                 }
             )
             self.plot_benchmark_dist(**base_kwargs)
@@ -536,11 +532,11 @@ class BenchmarkVisualizer:
             download_df=download_slice_and_read_df,
             filename=f"{base_filename}_with_extrapolation.pdf",
             caption=("Linear extrapolation comparing streaming vs. download approaches. "
-                     "Solid lines show streaming performance (remote read + slice), dashed lines show download performance (download + local read + slice). "
+                     "Solid lines show streaming performance (remote open + slice), dashed lines show download performance (download + local open + slice). "
                      "X markers indicate crossover points where downloading becomes faster than streaming. "
                      "The x-axis represents the number of data slices, helping determine when to download vs. stream data. "
-                     "Note that some extrapolations are not included because they did not have intersection points in the positive quadrant "
-                     "this often occurs if the difference in slice times across the slice ranges is not monotonically increasing as expected."),
+                     "Note that some extrapolations are not included because they did not have intersection points in the positive quadrant. "
+                     "This often occurs if the difference in slice range times in small and not monotonically increasing."),
             **plot_kwargs,
         )
 
@@ -646,6 +642,15 @@ class BenchmarkVisualizer:
             ax=axes[2], title="Remote Slicing", vmin=0, vmax=10,
         )
 
+        # Add figure caption
+        caption = (f"Heatmap showing mean benchmark performance times (in seconds) across different data modalities. "
+                   "Each cell displays the average time for a specific method-modality combination. "
+                   "The order is sorted by format type (lindi, zarr, hdf5) and then by average performance within each type. "
+                   "Stars (*) indicate the fastest method for each modality. "
+                   "For remote slicing, only the largest slice range was used to compute the averages.")
+        fig.text(0.5, -0.01, caption, ha='center', va='top', fontsize=9, wrap=True, style='italic')
+
+        
         plt.tight_layout()
         plt.savefig(self.output_directory / "method_rankings_heatmap.pdf", dpi=300)
         plt.close()
@@ -690,9 +695,9 @@ class BenchmarkVisualizer:
         # Add figure caption
         caption = ("Performance trends across different software environment versions over time. "
                    "Each line represents a different method, showing how execution time changes as dependencies are updated. "
-                   "Key dependencies of interest were fixed and the YYYY-06-30 timepoints were generated programmatically. "
-                   "See the _package_versions util for further details."
-                   "Note that the 2025-09-01 timepoint is an estimate for approximately when the latest environment was generated.")
+                   "Key dependencies of interest were fixed and environments with YYYY-06-30 timepoints were generated programmatically. "
+                   "See the _package_versions utility script for further details."
+                   "Note that the 2025-09-01 timepoint is an estimate for approximately when the latest environment was generated. ")
         g.figure.text(0.5, -0.01, caption, ha='center', va='top', fontsize=9, wrap=True, style='italic')
 
         sns.despine()
