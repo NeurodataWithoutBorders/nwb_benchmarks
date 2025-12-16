@@ -111,3 +111,34 @@ in sudo you may need to change the owner of the results first, e.g., via ``sudo 
 .. note::
 
     Each result file should be single to double-digit KB in size; if we ever reach the point where this is prohibitive to store on GitHub itself, then we will investigate other upload strategies and purge the folder from the repository history.
+
+
+Generating Figures from Results
+--------------------------------
+
+Once benchmark results have been collected (either from your own runs or from the central results repository), you can generate 
+figures to visualize the performance data.
+
+To generate all figures with default settings:
+
+.. code-block::
+
+    nwb_benchmarks generate_figures
+
+This will:
+
+1. Automatically clone or use the cached `nwb-benchmarks-results <https://github.com/NeurodataWithoutBorders/nwb-benchmarks-results>`_ repository in the default path ``~/.cache/nwb-benchmarks/nwb-benchmarks-results``
+2. Process the benchmark results into a parquet file
+3. Generate all visualization figures in a ``./figures/`` directory in your current working directory
+
+
+You can specify additional options such as a custom benchmarks results directory or output directory as follows: 
+
+
+.. code-block::
+
+    nwb_benchmarks generate_figures --output-dir /path/to/output --results-dir /path/to/results
+
+Note that older results are excluded by default to focus on performance data after some updates to the benchmarks test suite.
+You can override this behavior using the following flag with a custom date: `--exclude-older YYYY-MM-DD`. 
+
