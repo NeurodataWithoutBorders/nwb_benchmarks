@@ -140,5 +140,4 @@ You can specify additional options such as a custom benchmarks results directory
     nwb_benchmarks generate_figures --output-dir /path/to/output --results-dir /path/to/results
 
 Note that older results are excluded by default to focus on performance data after some updates to the benchmarks test suite.
-You can override this behavior using the following flag with a custom date: ``--exclude-older YYYY-MM-DD``. 
-
+You can override this behavior using the following flag with a custom date: ``--exclude-older YYYY-MM-DD``.
