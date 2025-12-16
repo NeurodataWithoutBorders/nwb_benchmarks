@@ -116,7 +116,7 @@ in sudo you may need to change the owner of the results first, e.g., via ``sudo 
 Generating Figures from Results
 --------------------------------
 
-Once benchmark results have been collected (either from your own runs or from the central results repository), you can generate 
+Once benchmark results have been collected (either from your own runs or from the central results repository), you can generate
 figures to visualize the performance data.
 
 To generate all figures with default settings:
@@ -132,7 +132,7 @@ This will:
 3. Generate all visualization figures in a ``./figures/`` directory in your current working directory
 
 
-You can specify additional options such as a custom benchmarks results directory or output directory as follows: 
+You can specify additional options such as a custom benchmarks results directory or output directory as follows:
 
 
 .. code-block::
@@ -140,5 +140,4 @@ You can specify additional options such as a custom benchmarks results directory
     nwb_benchmarks generate_figures --output-dir /path/to/output --results-dir /path/to/results
 
 Note that older results are excluded by default to focus on performance data after some updates to the benchmarks test suite.
-You can override this behavior using the following flag with a custom date: `--exclude-older YYYY-MM-DD`. 
-
+You can override this behavior using the following flag with a custom date: `--exclude-older YYYY-MM-DD`.

@@ -138,16 +138,16 @@ class BenchmarkVisualizer:
         Compute ordering for heatmap based on:
         1. Format type (lindi → zarr → hdf5)
         2. Average performance (ascending) within each format type
-        
+
         Args:
             heatmap_df: Pivoted DataFrame with benchmark names as index and modalities as columns
-            
+
         Returns:
             List of benchmark names in sorted order
         """
         # Calculate mean value across all modalities (columns)
         avg_performance = heatmap_df.mean(axis=1).to_frame(name="avg_value")
-        
+
         # Categorize by format type
         def get_format_order(name):
             if "lindi" in name.lower():
@@ -158,26 +158,28 @@ class BenchmarkVisualizer:
                 return 2  # hdf5 third
             else:
                 return 3  # other last
-        
+
         avg_performance["format_order"] = avg_performance.index.map(get_format_order)
-        
+
         # Sort by format type, then by average value (ascending = fastest first)
         sorted_df = avg_performance.sort_values(["format_order", "avg_value"])
-        
+
         return sorted_df.index.tolist()
 
-    def _create_heatmap_df(self, df: pl.DataFrame, group: str, metric_order: Optional[List[str]] = None, aggfunc: str = "mean") -> pd.DataFrame:
+    def _create_heatmap_df(
+        self, df: pl.DataFrame, group: str, metric_order: Optional[List[str]] = None, aggfunc: str = "mean"
+    ) -> pd.DataFrame:
         """Prepare data for heatmap visualization."""
         heatmap_df = (
             df.to_pandas()
             .pivot_table(index=group, columns="modality", values="value", aggfunc=aggfunc)
             .reindex(["Ecephys", "Ophys", "Icephys"], axis=1)
         )
-        
+
         # Compute order from the pivoted data if not provided
         if metric_order is None:
             metric_order = self._compute_heatmap_order(heatmap_df)
-        
+
         return heatmap_df.reindex(metric_order)
 
     def plot_benchmark_heatmap(
@@ -193,7 +195,7 @@ class BenchmarkVisualizer:
     ) -> plt.Axes:
         """Create heatmap visualization of benchmark results."""
         collected_df = df.collect()
-        
+
         if collected_df.to_pandas().empty:
             warnings.warn(f"No data available to plot for benchmark heatmap. Skipping plot.")
             return
@@ -263,12 +265,12 @@ class BenchmarkVisualizer:
 
         # Add figure caption
         if kind == "strip" and caption is not None:
-            caption += ("Each point represents a single benchmark run. ")
-        g.figure.text(0.5, -0.01, caption, ha='center', va='top', fontsize=9, wrap=True, style='italic')
+            caption += "Each point represents a single benchmark run. "
+        g.figure.text(0.5, -0.01, caption, ha="center", va="top", fontsize=9, wrap=True, style="italic")
 
         sns.despine()
         plt.tight_layout()
-        plt.savefig(filename, dpi=300, bbox_inches='tight')
+        plt.savefig(filename, dpi=300, bbox_inches="tight")
         plt.close()
 
     def plot_benchmark_slices_vs_time(
@@ -281,7 +283,7 @@ class BenchmarkVisualizer:
         row: Optional[str] = None,
         sharex: bool = True,
         intersections_df: Optional[pl.DataFrame] = None,
-        caption = None,
+        caption=None,
     ):
         """Plot benchmark performance vs slice size."""
         if df.empty:
@@ -303,15 +305,15 @@ class BenchmarkVisualizer:
         )
 
         if caption is not None:
-            g.figure.text(0.5, -0.01, caption, ha='center', va='top', fontsize=9, wrap=True, style='italic')
+            g.figure.text(0.5, -0.01, caption, ha="center", va="top", fontsize=9, wrap=True, style="italic")
 
         # Add intersection annotations
         if intersections_df is not None:
             g.map_dataframe(self._add_annotations_df, intersections_df=intersections_df, order=metric_order)
 
-        g.set(xlabel="Relative slice size", ylabel="Time (s)")        
+        g.set(xlabel="Relative slice size", ylabel="Time (s)")
         sns.despine()
-        plt.savefig(filename, dpi=300, bbox_inches='tight')
+        plt.savefig(filename, dpi=300, bbox_inches="tight")
         plt.close()
 
     def plot_read_benchmarks(
@@ -332,8 +334,10 @@ class BenchmarkVisualizer:
 
         # Create base plot kwargs
         caption_suffix = " using pynwb. " if suffix == "_pynwb" else ". "
-        caption = (f"Benchmark execution times across different methods and modalities{caption_suffix}"
-                    "Text annotations, if present, display mean ± standard deviation and sample size (n). ")
+        caption = (
+            f"Benchmark execution times across different methods and modalities{caption_suffix}"
+            "Text annotations, if present, display mean ± standard deviation and sample size (n). "
+        )
         base_kwargs = self._create_plot_kwargs(
             df=filtered_df.to_pandas(),
             group=col_name,
@@ -395,8 +399,10 @@ class BenchmarkVisualizer:
                 {
                     "df": slice_df.to_pandas(),
                     "filename": self.output_directory / f"{prefix}slicing_range{slice_num}.pdf",
-                    "caption": (f"Benchmark execution times across different methods and modalities for slice data (range = {slice_num})."
-                                 "Text annotations, if present, display mean ± standard deviation and sample size (n). ")
+                    "caption": (
+                        f"Benchmark execution times across different methods and modalities for slice data (range = {slice_num})."
+                        "Text annotations, if present, display mean ± standard deviation and sample size (n). "
+                    ),
                 }
             )
             self.plot_benchmark_dist(**base_kwargs)
@@ -424,15 +430,14 @@ class BenchmarkVisualizer:
         xlabel: str = "Number of slices",
         ylabel: str = "Time (s)",
     ):
-        """Plot linear extrapolation showing intersection between remote and local approaches.
-        """
+        """Plot linear extrapolation showing intersection between remote and local approaches."""
         if len(remote_group["slice_number"].unique()) <= 1 or len(local_group["slice_number"].unique()) <= 1:
             return None  # Not enough data points to fit line
-        
+
         # Calculate linear fits
         m1, b1 = np.polyfit(remote_group["slice_number"], remote_group["total_time"], 1)
         m2, b2 = np.polyfit(local_group["slice_number"], local_group["total_time"], 1)
-        
+
         if abs(m1 - m2) < 1e-10:  # parallel lines
             return None
 
@@ -446,21 +451,21 @@ class BenchmarkVisualizer:
         # Create x-range from 0 to slightly past intersection
         x_max = max(intersection_x * 1.2, intersection_x + 2)
         x_range = np.linspace(0, x_max, 100)
-        
+
         # Calculate y-values for both lines
         y_remote = m1 * x_range + b1
         y_local = m2 * x_range + b2
-        
+
         # Plot the fitted lines and mark intersection point
-        ax.plot(x_range, y_remote, color=color, linestyle='solid', linewidth=2, label=f'{benchmark_name}')
-        if benchmark_name.startswith('hdf5'):
-            download_color = sns.color_palette('Greens')[-1]
-        elif benchmark_name.startswith('zarr'):
-            download_color = sns.color_palette('Reds')[-1]
+        ax.plot(x_range, y_remote, color=color, linestyle="solid", linewidth=2, label=f"{benchmark_name}")
+        if benchmark_name.startswith("hdf5"):
+            download_color = sns.color_palette("Greens")[-1]
+        elif benchmark_name.startswith("zarr"):
+            download_color = sns.color_palette("Reds")[-1]
         else:
-            download_color = sns.color_palette('Blues')[-1]
-        ax.plot(x_range, y_local, color=download_color, linestyle='dashed', linewidth=2)
-        ax.plot(intersection_x, intersection_y, 'x', color=color, markersize=8, zorder=5)
+            download_color = sns.color_palette("Blues")[-1]
+        ax.plot(x_range, y_local, color=download_color, linestyle="dashed", linewidth=2)
+        ax.plot(intersection_x, intersection_y, "x", color=color, markersize=8, zorder=5)
         ax.set(title=title, xlabel=xlabel, ylabel=ylabel)
 
         return ax
@@ -488,21 +493,25 @@ class BenchmarkVisualizer:
         self.plot_benchmark_slices_vs_time(
             df=remote_slice_and_read_df.collect().to_pandas(),
             metric_order=self.pynwb_read_order if order is None else order,
-            y_value="total_time", # includes file read + slice time
+            y_value="total_time",  # includes file read + slice time
             filename=f"{base_filename}_with_remote_read.pdf",
-            caption=("Performance trends as a function of data slice size. "
-                     "Data points indicate combined file open + slice times when streaming data remotely. "
-                     "A baseline value (slice size = 0) indicates the file open time alone."),
+            caption=(
+                "Performance trends as a function of data slice size. "
+                "Data points indicate combined file open + slice times when streaming data remotely. "
+                "A baseline value (slice size = 0) indicates the file open time alone."
+            ),
             **plot_kwargs,
         )
-        
+
         self.plot_benchmark_slices_vs_time(
             df=remote_slice_and_read_df.collect().to_pandas(),
             metric_order=self.pynwb_read_order if order is None else order,
-            y_value="value", # does not include file read time, only slice time
+            y_value="value",  # does not include file read time, only slice time
             filename=f"{base_filename}_range.pdf",
-            caption=("Performance trends as a function of data slice size. "
-                     "Data points include slice time only when streaming data remotely. "),
+            caption=(
+                "Performance trends as a function of data slice size. "
+                "Data points include slice time only when streaming data remotely. "
+            ),
             **plot_kwargs,
         )
 
@@ -513,12 +522,14 @@ class BenchmarkVisualizer:
         self.plot_benchmark_slices_vs_time(
             df=local_slice_and_read_df.collect().to_pandas(),
             metric_order=None,
-            y_value="total_time", # includes file read + slice time
+            y_value="total_time",  # includes file read + slice time
             filename=f"{base_filename}_with_local_read.pdf",
-            caption=("Performance trends as a function of data slice size. "
-                     "Data points indicate combined file open + slice times when accessing local data. "
-                     "This is the expected times as if the file has already been downloaded. "
-                     "A baseline value (slice size = 0) indicates the file open time alone."),
+            caption=(
+                "Performance trends as a function of data slice size. "
+                "Data points indicate combined file open + slice times when accessing local data. "
+                "This is the expected times as if the file has already been downloaded. "
+                "A baseline value (slice size = 0) indicates the file open time alone."
+            ),
             **plot_kwargs,
         )
 
@@ -531,12 +542,14 @@ class BenchmarkVisualizer:
             stream_df=remote_slice_and_read_df,
             download_df=download_slice_and_read_df,
             filename=f"{base_filename}_with_extrapolation.pdf",
-            caption=("Linear extrapolation comparing streaming vs. download approaches. "
-                     "Solid lines show streaming performance (remote open + slice), dashed lines show download performance (download + local open + slice). "
-                     "X markers indicate crossover points where downloading becomes faster than streaming. "
-                     "The x-axis represents the number of data slices, helping determine when to download vs. stream data. "
-                     "Note that some extrapolations are not included because they did not have intersection points in the positive quadrant. "
-                     "This often occurs if the difference in slice range times in small and not monotonically increasing."),
+            caption=(
+                "Linear extrapolation comparing streaming vs. download approaches. "
+                "Solid lines show streaming performance (remote open + slice), dashed lines show download performance (download + local open + slice). "
+                "X markers indicate crossover points where downloading becomes faster than streaming. "
+                "The x-axis represents the number of data slices, helping determine when to download vs. stream data. "
+                "Note that some extrapolations are not included because they did not have intersection points in the positive quadrant. "
+                "This often occurs if the difference in slice range times in small and not monotonically increasing."
+            ),
             **plot_kwargs,
         )
 
@@ -550,8 +563,7 @@ class BenchmarkVisualizer:
         sharex: bool = True,
         caption: str = None,
     ):
-        """Plot linear extrapolations showing streaming vs download crossover points.
-        """
+        """Plot linear extrapolations showing streaming vs download crossover points."""
         collected_download = download_df.collect()
         collected_stream = stream_df.collect()
 
@@ -560,28 +572,28 @@ class BenchmarkVisualizer:
             return
 
         # Get unique modalities and row values for subplot layout
-        modalities = sorted(collected_download.select('modality').unique().to_series().to_list())
+        modalities = sorted(collected_download.select("modality").unique().to_series().to_list())
         row_values = sorted(collected_download.select(row).unique().to_series().to_list()) if row else [None]
         benchmarks = sorted(collected_stream.select(group).unique().to_series().to_list())
 
         # Create mappings for plot
-        hdf5_colors = iter(sns.color_palette("Greens", n_colors=len([b for b in benchmarks if b.startswith('hdf5')])))
-        zarr_colors = iter(sns.color_palette("Reds", n_colors=len([b for b in benchmarks if b.startswith('zarr')])))
-        lindi_colors = iter(sns.color_palette("Blues", n_colors=len([b for b in benchmarks if b.startswith('lindi')])))
+        hdf5_colors = iter(sns.color_palette("Greens", n_colors=len([b for b in benchmarks if b.startswith("hdf5")])))
+        zarr_colors = iter(sns.color_palette("Reds", n_colors=len([b for b in benchmarks if b.startswith("zarr")])))
+        lindi_colors = iter(sns.color_palette("Blues", n_colors=len([b for b in benchmarks if b.startswith("lindi")])))
         modality_to_col = {mod: i for i, mod in enumerate(modalities)}
         row_to_row = {rv: i for i, rv in enumerate(row_values)}
         benchmarks_to_color = {}
         for bm in benchmarks:
-            if bm.startswith('hdf5'):
+            if bm.startswith("hdf5"):
                 benchmarks_to_color[bm] = next(hdf5_colors)
-            elif bm.startswith('zarr'):
+            elif bm.startswith("zarr"):
                 benchmarks_to_color[bm] = next(zarr_colors)
             else:
                 benchmarks_to_color[bm] = next(lindi_colors)
 
         # Create subplots
         fig, axes = plt.subplots(nrows=len(row_values), ncols=len(modalities), figsize=(15, 10), squeeze=False)
-        
+
         # Original loop structure
         for (modality, benchmark_name, is_preloaded), remote_group in collected_stream.group_by(
             ["modality", group, row]
@@ -598,7 +610,7 @@ class BenchmarkVisualizer:
                 col_idx = modality_to_col[modality]
                 row_idx = row_to_row[is_preloaded]
                 color = benchmarks_to_color[benchmark_name]
-                
+
                 # Plot the extrapolation
                 self.plot_linear_extrapolation_with_intersection(
                     remote_group=remote_group,
@@ -606,17 +618,17 @@ class BenchmarkVisualizer:
                     benchmark_name=benchmark_name,
                     ax=axes[row_idx, col_idx],
                     color=color,
-                    title=f'is_preloaded={is_preloaded} | modality = {modality}',
+                    title=f"is_preloaded={is_preloaded} | modality = {modality}",
                 )
-        
-        axes[0, 0].legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=8)
-        
+
+        axes[0, 0].legend(bbox_to_anchor=(1.05, 1), loc="upper left", fontsize=8)
+
         # Add figure caption
-        fig.text(0.5, -0.01, caption, ha='center', va='top', fontsize=9, wrap=True, style='italic')
-        
+        fig.text(0.5, -0.01, caption, ha="center", va="top", fontsize=9, wrap=True, style="italic")
+
         sns.despine()
         plt.tight_layout()
-        plt.savefig(filename, dpi=300, bbox_inches='tight')
+        plt.savefig(filename, dpi=300, bbox_inches="tight")
         plt.close()
 
     def plot_method_rankings(self, db: BenchmarkDatabase):
@@ -628,29 +640,42 @@ class BenchmarkVisualizer:
 
         fig, axes = plt.subplots(3, 1, figsize=(8, 16))
         axes[0] = self.plot_benchmark_heatmap(
-            df=read_df.filter(pl.col('benchmark_name_clean').is_in(self.file_open_order)),
-            ax=axes[0], title="Remote File Opening", vmin=0, vmax=4,
+            df=read_df.filter(pl.col("benchmark_name_clean").is_in(self.file_open_order)),
+            ax=axes[0],
+            title="Remote File Opening",
+            vmin=0,
+            vmax=4,
         )
         axes[1] = self.plot_benchmark_heatmap(
-            df=read_df.filter(pl.col('benchmark_name_clean').is_in(self.pynwb_read_order)),
-            ax=axes[1], title="Remote File Opening - PyNWB", vmin=0, vmax=200,
+            df=read_df.filter(pl.col("benchmark_name_clean").is_in(self.pynwb_read_order)),
+            ax=axes[1],
+            title="Remote File Opening - PyNWB",
+            vmin=0,
+            vmax=200,
         )
         # plot only largest slice range for clarity
         axes[2] = self.plot_benchmark_heatmap(
-            df=(slice_df.filter(pl.col('benchmark_name_clean').is_in(self.pynwb_read_order))
-                        .filter(pl.col('slice_number') == 5)), # NOTE - if updating, also update caption in plot_benchmark_heatmap
-            ax=axes[2], title="Remote Slicing", vmin=0, vmax=10,
+            df=(
+                slice_df.filter(pl.col("benchmark_name_clean").is_in(self.pynwb_read_order)).filter(
+                    pl.col("slice_number") == 5
+                )
+            ),  # NOTE - if updating, also update caption in plot_benchmark_heatmap
+            ax=axes[2],
+            title="Remote Slicing",
+            vmin=0,
+            vmax=10,
         )
 
         # Add figure caption
-        caption = (f"Heatmap showing mean benchmark performance times (in seconds) across different data modalities. "
-                   "Each cell displays the average time for a specific method-modality combination. "
-                   "The order is sorted by format type (lindi, zarr, hdf5) and then by average performance within each type. "
-                   "Stars (*) indicate the fastest method for each modality. "
-                   "For remote slicing, only the largest slice range was used to compute the averages.")
-        fig.text(0.5, -0.01, caption, ha='center', va='top', fontsize=9, wrap=True, style='italic')
+        caption = (
+            f"Heatmap showing mean benchmark performance times (in seconds) across different data modalities. "
+            "Each cell displays the average time for a specific method-modality combination. "
+            "The order is sorted by format type (lindi, zarr, hdf5) and then by average performance within each type. "
+            "Stars (*) indicate the fastest method for each modality. "
+            "For remote slicing, only the largest slice range was used to compute the averages."
+        )
+        fig.text(0.5, -0.01, caption, ha="center", va="top", fontsize=9, wrap=True, style="italic")
 
-        
         plt.tight_layout()
         plt.savefig(self.output_directory / "method_rankings_heatmap.pdf", dpi=300)
         plt.close()
@@ -666,9 +691,12 @@ class BenchmarkVisualizer:
         print(f"Plotting performance over time")
 
         df = db.join_results_with_environments()
-        df = (df.filter(pl.col("benchmark_name_type") == benchmark_type)
-              .filter(pl.col('benchmark_name_clean').is_in(self.pynwb_read_order))
-              .collect().to_pandas())
+        df = (
+            df.filter(pl.col("benchmark_name_type") == benchmark_type)
+            .filter(pl.col("benchmark_name_clean").is_in(self.pynwb_read_order))
+            .collect()
+            .to_pandas()
+        )
 
         if df.empty:
             warnings.warn(
@@ -679,9 +707,9 @@ class BenchmarkVisualizer:
         g = sns.catplot(
             data=df,
             x="environment_timepoint",
-            y='value',
+            y="value",
             col="modality",
-            row='is_preloaded' if benchmark_type == "time_remote_slicing" else None,
+            row="is_preloaded" if benchmark_type == "time_remote_slicing" else None,
             hue="benchmark_name_clean",
             hue_order=self.pynwb_read_order if order is None else order,
             order=sorted(df["environment_timepoint"].unique()),
@@ -693,15 +721,17 @@ class BenchmarkVisualizer:
         g.set(xlabel="Environment timepoint", ylabel="Time (s)")
 
         # Add figure caption
-        caption = ("Performance trends across different software environment versions over time. "
-                   "Each line represents a different method, showing how execution time changes as dependencies are updated. "
-                   "Key dependencies of interest were fixed and environments with YYYY-06-30 timepoints were generated programmatically. "
-                   "See the _package_versions utility script for further details."
-                   "Note that the 2025-09-01 timepoint is an estimate for approximately when the latest environment was generated. ")
-        g.figure.text(0.5, -0.01, caption, ha='center', va='top', fontsize=9, wrap=True, style='italic')
+        caption = (
+            "Performance trends across different software environment versions over time. "
+            "Each line represents a different method, showing how execution time changes as dependencies are updated. "
+            "Key dependencies of interest were fixed and environments with YYYY-06-30 timepoints were generated programmatically. "
+            "See the _package_versions utility script for further details."
+            "Note that the 2025-09-01 timepoint is an estimate for approximately when the latest environment was generated. "
+        )
+        g.figure.text(0.5, -0.01, caption, ha="center", va="top", fontsize=9, wrap=True, style="italic")
 
         sns.despine()
-        plt.savefig(self.output_directory / f"performance_over_{benchmark_type}.pdf", dpi=300, bbox_inches='tight')
+        plt.savefig(self.output_directory / f"performance_over_{benchmark_type}.pdf", dpi=300, bbox_inches="tight")
         plt.close()
 
     def plot_all(self, db: BenchmarkDatabase):
