@@ -22,9 +22,9 @@ PACKAGES_OF_INTEREST = [
 ]
 
 ENVIRONMENT_TIMEPOINTS = {
-    '9e225115ea6c99b60d419454a9457bb5db93c7b7': '2024_06_25', # all timepoints based on lbl mac
-    '15d059d5b6b9047f9bbeb4ac77bb4461411904c7': '2025_06_25',
-    '052cb4d925793bbbc270d9384a60bc24023025b7': '2025_09_01', # TODO - this environment was created after 2025-09-01 but exact date unknown
+    '2024-06-30': '9e225115ea6c99b60d419454a9457bb5db93c7b7', # all timepoints based on lbl mac
+    '2025-06-30': '15d059d5b6b9047f9bbeb4ac77bb4461411904c7',
+    '2025-09-01': '052cb4d925793bbbc270d9384a60bc24023025b7', # note - this environment was created after 2025-09-01 but exact date unknown
 }
 
 class BenchmarkDatabase:
@@ -195,7 +195,7 @@ class BenchmarkDatabase:
             ).filter(pl.col("package_version").is_not_null())
             .with_columns(
                     pl.col("environment_id")
-                    .replace(self.environment_timepoints, default=None)
+                    .replace({v: k for k, v in ENVIRONMENT_TIMEPOINTS.items()}, default=None)
                     .alias("environment_timepoint")
                 )
         )
@@ -233,6 +233,11 @@ class BenchmarkDatabase:
             on="environment_id",
             how="left",
         )
+    
+    def filter_results_for_environment_timepoints(self) -> pl.LazyFrame:
+        """Filter environments to only include those matching specified timepoints."""
+        return (self.join_results_with_environments()
+                .filter(pl.col("environment_id").is_in(list(self.environment_timepoints.values()))))
 
     def filter_tests(self, benchmark_type: str) -> pl.LazyFrame:
         """Filter benchmark tests."""

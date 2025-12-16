@@ -423,7 +423,7 @@ class BenchmarkVisualizer:
         intersection_y = m1 * intersection_x + b1
 
         if intersection_x < 0 or intersection_y < 0:
-            warnings.warn('Intersection point is not in the positive quadrant.')
+            # TODO add note to figure that intersection was not plotted
             return None  # Intersection is not in the positive quadrant
 
         # Create x-range from 0 to slightly past intersection
