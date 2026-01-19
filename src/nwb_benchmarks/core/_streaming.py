@@ -97,7 +97,7 @@ def read_hdf5_pynwb_fsspec_https_no_cache(
     https_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, HTTPFile]:
     """Read an HDF5 NWB file using fsspec with an HTTPS filesystem without a cache."""
-    (file, byte_stream) = read_hdf5_h5py_fsspec_https_no_cache(https_url=https_url)
+    file, byte_stream = read_hdf5_h5py_fsspec_https_no_cache(https_url=https_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream)
@@ -107,7 +107,7 @@ def read_hdf5_pynwb_fsspec_https_with_cache(
     https_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, HTTPFile, tempfile.TemporaryDirectory]:
     """Read an HDF5 NWB file using fsspec with an HTTPS filesystem with a cache."""
-    (file, byte_stream, tmpdir) = read_hdf5_h5py_fsspec_https_with_cache(https_url=https_url)
+    file, byte_stream, tmpdir = read_hdf5_h5py_fsspec_https_with_cache(https_url=https_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream, tmpdir)
@@ -117,7 +117,7 @@ def read_hdf5_pynwb_fsspec_s3_no_cache(
     https_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, S3File]:
     """Read an HDF5 NWB file using fsspec with an S3 filesystem without a cache."""
-    (file, byte_stream) = read_hdf5_h5py_fsspec_s3_no_cache(https_url=https_url)
+    file, byte_stream = read_hdf5_h5py_fsspec_s3_no_cache(https_url=https_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream)
@@ -127,7 +127,7 @@ def read_hdf5_pynwb_fsspec_s3_with_cache(
     https_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, S3File, tempfile.TemporaryDirectory]:
     """Read an HDF5 NWB file using fsspec with an S3 filesystem with a cache."""
-    (file, byte_stream, tmpdir) = read_hdf5_h5py_fsspec_s3_with_cache(https_url=https_url)
+    file, byte_stream, tmpdir = read_hdf5_h5py_fsspec_s3_with_cache(https_url=https_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream, tmpdir)
@@ -151,7 +151,7 @@ def read_hdf5_h5py_remfile_with_cache(https_url: str) -> Tuple[h5py.File, remfil
 
 def read_hdf5_pynwb_remfile_no_cache(https_url: str) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File]:
     """Read an HDF5 NWB file from an S3 URL using remfile without a cache."""
-    (file, byte_stream) = read_hdf5_h5py_remfile_no_cache(https_url=https_url)
+    file, byte_stream = read_hdf5_h5py_remfile_no_cache(https_url=https_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream)
@@ -161,7 +161,7 @@ def read_hdf5_pynwb_remfile_with_cache(
     https_url: str,
 ) -> Tuple[pynwb.NWBFile, pynwb.NWBHDF5IO, h5py.File, remfile.File, tempfile.TemporaryDirectory]:
     """Read an HDF5 NWB file from an S3 URL using remfile with a cache."""
-    (file, byte_stream, tmpdir) = read_hdf5_h5py_remfile_with_cache(https_url=https_url)
+    file, byte_stream, tmpdir = read_hdf5_h5py_remfile_with_cache(https_url=https_url)
     io = pynwb.NWBHDF5IO(file=file)
     nwbfile = io.read()
     return (nwbfile, io, file, byte_stream, tmpdir)
